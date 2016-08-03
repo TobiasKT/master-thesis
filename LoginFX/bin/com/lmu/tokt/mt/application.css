@@ -1,0 +1,31 @@
+/*  */
+ #login-hbox{
+   -fx-background-image: url("../../../../drawable/wallpaper/background_3.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}
+
+#round-login-btn{
+    -fx-background-color: rgba(230.0,230.0,230.0,0.6);
+    -fx-background-radius: 100.0;
+    -fx-background-image: url("../../../../drawable/icons/right-arrow.png");
+    -fx-background-size: 50.0%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+#round-login-btn:hover{
+    -fx-background-color: rgba(255.0,255.0,255.0,0.7);
+    -fx-cursor: hand;
+}
+
+#transparent-password-textfield{
+	-fx-background-color: rgba(255.0,255.0,255.0,0.6);
+	-fx-text-fill: white;
+	-fx-prompt-text-fill: rgba(255.0,255.0,255.0,0.7);
+	-fx-background-radius: 6.0px;
+}
+
+#add-user-img:hover, #users-img:hover, #sleep-img:hover, #shut-down-img:hover{
+	-fx-cursor: hand;
+}
