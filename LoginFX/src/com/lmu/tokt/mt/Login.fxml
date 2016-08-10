@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<HBox id="login-hbox" alignment="CENTER" minHeight="600.0" minWidth="800.0" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #757575;" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lmu.tokt.mt.LoginController">
+	<children>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+         <center>
+      		<AnchorPane fx:id="anchorPaneContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+      			<children>
+                  <AnchorPane fx:id="anchorPaneLogin" prefHeight="525.0" prefWidth="600.0">
+                     <children>
+            				<Circle fx:id="circProfile" fill="WHITE" layoutX="300.0" layoutY="136.0" radius="48.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+            				<Label fx:id="lblUserName" alignment="CENTER" contentDisplay="CENTER" layoutX="200.0" layoutY="202.0" prefHeight="40.0" prefWidth="200.0" text="Tobias Keinath" textAlignment="CENTER" textFill="WHITE">
+            					<font>
+            						<Font name="Helvetica Neue Light" size="14.0" />
+            					</font>
+            				</Label>
+            				<PasswordField fx:id="txtPassword" layoutX="202.0" layoutY="264.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onPasswordFieldKeyPressed" onKeyReleased="#onPasswordFieldKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
+            					<font>
+            						<Font name="Helvetica Neue" size="14.0" />
+            					</font>
+            				</PasswordField>
+            				<Button id="round-login-btn" fx:id="btnLogin" layoutX="416.0" layoutY="266.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginAction" prefHeight="28.0" prefWidth="28.0" visible="false">
+            					<font>
+            						<Font name="Helvetica Neue" size="14.0" />
+            					</font>
+            				</Button>
+                        <Label fx:id="lblAuthenticated" alignment="CENTER" layoutX="252.0" layoutY="445.0" prefWidth="100.0" text="Authenticated" textFill="WHITE" visible="false">
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="imgAuthenticatedSucceeded" fitHeight="40.0" fitWidth="40.0" layoutX="280.0" layoutY="393.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/success.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="anchorPaneRegister" disable="true" prefHeight="525.0" prefWidth="600.0" visible="false">
+                     <children>
+                        <Label fx:id="lblRegistrationFailed" alignment="CENTER" layoutX="145.0" layoutY="106.0" prefHeight="24.0" prefWidth="300.0" text="Registration failed - Username already exists!" textFill="WHITE" visible="false">
+                           <font>
+                              <Font name="Helvetica Neue Light" size="14.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="imgUsernameChecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="164.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/checked.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="imgPasswordChecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="210.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/checked.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="imgRepeatPasswordhecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="256.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/checked.png" />
+                           </image>
+                        </ImageView>
+                        <TextField id="transparent-username-textfield" fx:id="txtUsername" layoutX="202.0" layoutY="160.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegUsernameKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Username" styleClass="transparent-textfield">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </TextField>
+                        <PasswordField id="transparent-password-textfield" fx:id="txtRegisterPassword" layoutX="202.0" layoutY="206.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegPasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </PasswordField>
+                        <PasswordField id="transparent-password-textfield" fx:id="txtRegisterPasswordRepeat" layoutX="202.0" layoutY="252.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegRepeatPasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Repeat Password" styleClass="transparent-textfield">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </PasswordField>
+                        <Button fx:id="btnRegister" layoutX="202.0" layoutY="314.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRegisterAction" prefHeight="32.0" prefWidth="200.0" styleClass="white-outline-btn" text="REGISTER" visible="false">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </Button>
+                        <Label fx:id="lblRegistrationSuccess" alignment="CENTER" layoutX="202.0" layoutY="314.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="200.0" text="SUCCESS" textFill="WHITE" visible="false">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="imgCancelRegister" fitHeight="40.0" fitWidth="40.0" layoutX="275.0" layoutY="408.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <image>
+                              <Image url="@../../../../drawable/icons/cancel.png" />
+                           </image>
+                        </ImageView>
+                        <Label fx:id="lblCancel" alignment="CENTER" layoutX="263.0" layoutY="454.0" prefWidth="64.0" text="Cancel" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="imgBackRegister" fitHeight="40.0" fitWidth="40.0" layoutX="275.0" layoutY="408.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/back-arrow-circular.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane fx:id="anchorPaneChangeUser" disable="true" prefHeight="525.0" prefWidth="600.0" visible="false">
+                     <children>
+                        <Label fx:id="lblChangeUserTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="158.0" layoutY="106.0" prefHeight="24.0" prefWidth="300.0" text="Change User" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue Light" size="14.0" />
+                           </font>
+                        </Label>
+                        <TextField id="transparent-username-textfield" fx:id="txtChangeUsername" layoutX="202.0" layoutY="160.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onChangeUserKeyPressed" onKeyReleased="#onChangeUsernameKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Username" styleClass="transparent-textfield">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </TextField>
+                        <PasswordField id="transparent-password-textfield" fx:id="txtChangeUserPassword" layoutX="202.0" layoutY="206.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onChangeUserKeyPressed" onKeyReleased="#onChangePasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </PasswordField>
+                        <Button fx:id="btnChange" layoutX="202.0" layoutY="268.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onChangeAction" prefHeight="32.0" prefWidth="200.0" styleClass="white-outline-btn" text="CHANGE" visible="false">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </Button>
+                        <ImageView fx:id="imgBackChange" fitHeight="40.0" fitWidth="40.0" layoutX="275.0" layoutY="408.0" onMouseClicked="#onCancelChangeUserClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <image>
+                              <Image url="@../../../../drawable/icons/cancel.png" />
+                           </image>
+                        </ImageView>
+                        <Label fx:id="lblCancelChangeUser" alignment="CENTER" layoutX="263.0" layoutY="454.0" prefWidth="64.0" text="Cancel" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </AnchorPane>
+      			</children>
+      		</AnchorPane>
+         </center>
+         <bottom>
+            <HBox fx:id="hboxBottomButtons" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <ImageView fx:id="imgAddUser" fitHeight="40.0" fitWidth="40.0" onMouseClicked="#onAddUserClick" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <VBox.margin>
+                              <Insets bottom="8.0" />
+                           </VBox.margin>
+                           <image>
+                              <Image url="@../../../../drawable/icons/plus.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Add User" textFill="WHITE">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <ImageView fx:id="imgChangeUser" fitHeight="40.0" fitWidth="40.0" onMouseClicked="#onChangeUserClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <image>
+                              <Image url="@../../../../drawable/icons/user_2.png" />
+                           </image>
+                           <VBox.margin>
+                              <Insets bottom="8.0" />
+                           </VBox.margin>
+                        </ImageView>
+                        <Label text="Change User" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <ImageView fx:id="imgSleep" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <image>
+                              <Image url="@../../../../drawable/icons/sleep.png" />
+                           </image>
+                           <VBox.margin>
+                              <Insets bottom="8.0" />
+                           </VBox.margin>
+                        </ImageView>
+                        <Label text="Sleep" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <ImageView fx:id="imgShutDown" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <image>
+                              <Image url="@../../../../drawable/icons/power.png" />
+                           </image>
+                           <VBox.margin>
+                              <Insets bottom="8.0" />
+                           </VBox.margin>
+                        </ImageView>
+                        <Label text="Shut Down" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="16.0" />
+               </padding>
+            </HBox>
+         </bottom>
+         <top>
+            <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="lblDateTime" text="Mi. 13:51" textFill="WHITE">
+                     <font>
+                        <Font name="Helvetica Neue Light" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="8.0" top="4.0" />
+                     </HBox.margin>
+                  </Label>
+                  <ImageView fx:id="imgWatchConnection" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <HBox.margin>
+                        <Insets right="8.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../../../../drawable/icons/no_watch.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="imgSettings" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../drawable/icons/settings.png" />
+                     </image>
+                     <HBox.margin>
+                        <Insets top="4.0" />
+                     </HBox.margin>
+                  </ImageView>
+               </children>
+               <padding>
+                  <Insets right="8.0" top="8.0" />
+               </padding>
+            </HBox>
+         </top>
+      </BorderPane>
+	</children>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</HBox>

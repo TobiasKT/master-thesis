@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.wearable.view.BoxInsetLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="mt.lmu.android.com.authenticationapp.MainActivity"
+    tools:deviceIds="wear"
+    android:onClick="onBtnClicked">
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="-"
+        app:layout_box="all" />
+
+
+    <Button
+        android:id="@+id/btnAuth"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="-8dp"
+        android:textSize="12sp"
+        android:text="Auth"
+        android:layout_gravity="center"
+        app:layout_box="all"
+        android:onClick="onBtnClicked" />
+
+    <Button
+        android:id="@+id/btnStop"
+        android:layout_width="80dp"
+        android:layout_height="40dp"
+        android:enabled="false"
+        android:layout_marginTop="32dp"
+        android:textSize="12sp"
+        android:text="Stop"
+        android:layout_gravity="center"
+        app:layout_box="all"
+        android:onClick="onStopAuthenticationClicked" />
+
+    <TextView
+        android:id="@+id/clock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        app:layout_box="all" />
+
+</android.support.wearable.view.BoxInsetLayout>
