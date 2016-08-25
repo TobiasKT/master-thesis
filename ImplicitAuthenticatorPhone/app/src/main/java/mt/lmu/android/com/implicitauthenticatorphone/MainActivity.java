@@ -1,0 +1,173 @@
+package mt.lmu.android.com.implicitauthenticatorphone;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import mt.lmu.android.com.network.AuthenticatorAsyncTask;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    private TextView mTextView;
+    private Button mStop;
+    private Button mStart;
+
+    private Button mFakeHeartBeat;
+    private Button mZeroHeartBeat;
+
+    private WatchClient mWatchClient;
+
+    private Handler mHandler;
+
+    private AuthenticatorAsyncTask mAuthenticatorAsyncTask;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mTextView = (TextView) findViewById(R.id.text);
+
+        mStart = (Button) findViewById(R.id.start);
+        mStop = (Button) findViewById(R.id.stop);
+
+        mFakeHeartBeat = (Button) findViewById(R.id.sendFakeHeartBeatBtn);
+        mZeroHeartBeat = (Button) findViewById(R.id.sendFakeZeroHeartBeat);
+
+
+        mHandler = new Handler(Looper.getMainLooper()) {
+
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                switch (msg.what) {
+                    case AppConstants.STATE_CONFIRM:
+
+                        if (msg.obj != null) {
+                            int cheksum = (int) msg.obj;
+                            showConfirmConnectionDialog("Allow Connection? (" + cheksum + ")", cheksum);
+                        }
+                        break;
+                    case AppConstants.STATE_CONNECTED:
+                        //starte service
+                        if (msg.obj != null) {
+                            Log.d(TAG, "connect... " + msg.obj.toString());
+                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        break;
+                    case AppConstants.STATE_DISCONNECTED:
+                        //beende service
+                        if (msg.obj != null) {
+                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                        mAuthenticatorAsyncTask.getTCPClient().stopClient();
+                        mAuthenticatorAsyncTask.cancel(true);
+                        break;
+                    case AppConstants.STATE_AUTHENTICATED:
+
+                        if (msg.obj != null) {
+                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                        //sehr wichtig!!!
+                        if(WatchClient.getInstance() == null) {
+                            WatchClient.setInstance(MainActivity.this, mAuthenticatorAsyncTask.getTCPClient());
+                        }
+                        MainActivity.this.startService(new Intent(MainActivity.this, SensorService.class));
+                        mFakeHeartBeat.setEnabled(true);
+                        mZeroHeartBeat.setEnabled(true);
+                        break;
+                    case AppConstants.STATE_NOT_AUTHENTICATED:
+                        stopService(new Intent(MainActivity.this, SensorService.class));
+                        break;
+                    case AppConstants.ERROR:
+                        Toast.makeText(MainActivity.this, "ERROR! Network problems!", Toast.LENGTH_SHORT).show();
+                        mFakeHeartBeat.setEnabled(false);
+                        mZeroHeartBeat.setEnabled(false);
+                        break;
+                }
+            }
+        };
+
+
+        mStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Start service...");
+                mAuthenticatorAsyncTask = new AuthenticatorAsyncTask(mHandler);
+                mAuthenticatorAsyncTask.execute();
+                mStart.setEnabled(false);
+                mStop.setEnabled(true);
+            }
+        });
+
+        mStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "Stop service...");
+                stopService(new Intent(MainActivity.this, SensorService.class));
+                mAuthenticatorAsyncTask.getTCPClient().stopClient();
+                mAuthenticatorAsyncTask.cancel(true);
+                mStart.setEnabled(true);
+                mStop.setEnabled(false);
+            }
+        });
+
+
+        mFakeHeartBeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                WatchClient.getInstance().setFakeHeartBeat(60.0f);
+            }
+        });
+
+        mZeroHeartBeat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                WatchClient.getInstance().setFakeHeartBeat(0.0f);
+            }
+        });
+    }
+
+    //TODO auslagern start/stop
+
+
+    public void showConfirmConnectionDialog(String message, final int number) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        mAuthenticatorAsyncTask.getTCPClient().setIsConnected(true);
+                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_CONFIRM + ":" + number);
+
+
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_DISCONNECT);
+                        break;
+                }
+            }
+        };
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(message).setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+}

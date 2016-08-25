@@ -7,12 +7,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 
+import com.lmu.tokt.mt.anim.HeartBeatAnimation;
 import com.lmu.tokt.mt.anim.Shaker;
-import com.lmu.tokt.mt.server.Server;
+import com.lmu.tokt.mt.server.TCPServer;
+import com.lmu.tokt.mt.server.TCPServer.MessageCallback;
+import com.lmu.tokt.mt.util.AppConstants;
+import com.lmu.tokt.mt.util.Checksum;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -21,6 +26,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,25 +48,35 @@ public class LoginController implements Initializable {
 	private HBox hboxBottomButtons;
 	@FXML
 	private Label lblUserName, lblDateTime, lblRegistrationSuccess, lblRegistrationFailed, lblCancel,
-			lblCancelChangeUser, lblChangeUserTitle, lblAuthenticated;
+			lblCancelChangeUser, lblChangeUserTitle, lblConnectToWatch, lblServerStatus, lblPassword, lblHeartbeat,
+			lblHeartbeatValue;
 	@FXML
 	private PasswordField txtPassword, txtRegisterPassword, txtRegisterPasswordRepeat, txtChangeUserPassword;
 	@FXML
 	private TextField txtUsername, txtChangeUsername;
 	@FXML
-	private Button btnLogin, btnRegister, btnChange;
+	private Button btnLogin, btnRegister, btnChange, btnConnectToWatch;
 	@FXML
-	private ImageView imgAddUser, imgChangeUser, imgSleep, imgShutDown;
+	private ImageView imgAddUser, imgChangeUser, imgSleep, imgShutDown, imgWatchConnected, imgCancelConnectToWatch,
+			imgPassword, imgConnectedToWatchSuccess, imgPasswordCorrect, imgHeartBeat, imgHeartBeatDetected;
 	@FXML
-	private ImageView imgWatchConnection, imgSettings;
+	private ImageView imgSettings;
 	@FXML
-	private ImageView imgCancelRegister, imgBackRegister, imgBackChange,imgAuthenticatedSucceeded;
+	private ImageView imgCancelRegister, imgBackRegister, imgBackChange;
 	@FXML
 	private ImageView imgUsernameChecked, imgPasswordChecked, imgRepeatPasswordhecked;
 	@FXML
 	private Circle circProfile;
+	@FXML
+	private ProgressIndicator progressConnectToWatch,progressHeartrateDetection;
 
 	public LoginModel mLoginModel = new LoginModel();
+
+	private TCPServer mTCPServer;
+
+	private static Checksum mChecksum;
+
+	private HeartBeatAnimation mHeartBeatAnimation;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -67,14 +84,24 @@ public class LoginController implements Initializable {
 		circProfile.setFill(new ImagePattern(image));
 		setDateTime();
 
+		imgHeartBeat.setFitHeight(24.0);
+		imgHeartBeat.setFitWidth(24.0);
+		mHeartBeatAnimation = new HeartBeatAnimation(imgHeartBeat);
+
 		if (mLoginModel.isDBConnected()) {
 			System.out.println("DB is connected!");
 		} else {
 			System.out.println("DB is NOT connected!");
 		}
 
+		mChecksum = Checksum.getInstance();
+		// start TCP Server
+		mTCPServer = new TCPServer(mMessageCallback);
+		mTCPServer.start();
+
 	}
 
+	// set current date and time
 	private void setDateTime() {
 		Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0), new EventHandler<ActionEvent>() {
 			@Override
@@ -88,11 +115,188 @@ public class LoginController implements Initializable {
 		timeline.play();
 	}
 
+	// implements MessageCallback
+	private TCPServer.MessageCallback mMessageCallback = new MessageCallback() {
+
+		@Override
+		public void callbackMessageReceiver(String message) {
+			System.out.println("Message from Client: " + message);
+		}
+
+		@Override
+		public void callbackMessageReceiver(int state, String message) {
+			switch (state) {
+
+			case AppConstants.STATE_SERVER_RUNNING:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblServerStatus.setText("Server running (" + message + ")");
+					}
+				});
+
+				break;
+
+			case AppConstants.STATE_SERVER_STOPPED:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+
+						// Connection to watch stopped
+						lblServerStatus.setText("Server running (" + message + ")");
+						btnConnectToWatch.setVisible(true);
+						txtPassword.setDisable(false);
+						imgWatchConnected.setImage(new Image("drawable/icons/no_watch.png"));
+						imgWatchConnected.setVisible(true);
+						imgConnectedToWatchSuccess.setVisible(false);
+						imgCancelConnectToWatch.setVisible(false);
+						progressConnectToWatch.setVisible(false);
+
+					}
+				});
+
+				break;
+			case AppConstants.STATE_CONNECTED:
+				System.out.println("Successfully connected to SmartWatch!");
+
+				// Update UI
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+
+						// Successful connection with watch
+						lblConnectToWatch.setText("Connected");
+						imgConnectedToWatchSuccess.setVisible(true);
+						progressConnectToWatch.setVisible(false);
+						imgWatchConnected.setImage(new Image("drawable/icons/watch.png"));
+						imgWatchConnected.setVisible(true);
+						imgCancelConnectToWatch.setVisible(false);
+						txtPassword.setDisable(false);
+						txtPassword.setFocusTraversable(true);
+						btnConnectToWatch.setVisible(false);
+
+						txtPassword.requestFocus();
+					}
+				});
+
+				break;
+			case AppConstants.ERROR:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						// retry to connect with watch
+						lblConnectToWatch.setText("Retry connecting...");
+						imgConnectedToWatchSuccess.setVisible(false);
+						progressConnectToWatch.setVisible(true);
+						imgWatchConnected.setVisible(false);
+						imgCancelConnectToWatch.setVisible(true);
+						txtPassword.setDisable(true);
+						btnConnectToWatch.setVisible(false);
+
+						// reset PW Input
+						imgPassword.setImage(new Image("drawable/icons/no_permission.png"));
+						txtPassword.setDisable(true);
+						txtPassword.setVisible(true);
+						btnLogin.setVisible(true);
+						lblPassword.setVisible(false);
+						imgPasswordCorrect.setVisible(false);
+						txtPassword.clear();
+
+						// reset HeartBeat
+						mHeartBeatAnimation.stopAnimation();
+						imgHeartBeatDetected.setVisible(false);
+						lblHeartbeat.setText("No Heartbeat");
+					}
+				});
+				System.out.println("Failing to connect to SmartWatch!");
+				break;
+			case AppConstants.STATE_CONFIRM:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblConnectToWatch.setText("Connecting... (" + message + ")");
+					}
+				});
+				break;
+			case AppConstants.STATE_HEART_BEAT_DETECTED:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						
+						progressHeartrateDetection.setVisible(false);
+						imgHeartBeat.setVisible(true);
+						
+						mHeartBeatAnimation.startAnimation();
+						imgHeartBeatDetected.setVisible(true);
+						// display value
+						lblHeartbeat.setText("Heartbeat detected");
+					}
+				});
+
+				break;
+
+			case AppConstants.STATE_HEART_BEATING:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+
+						lblHeartbeatValue.setText(message);
+					}
+				});
+				break;
+			case AppConstants.STATE_HEART_STOPPED:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+
+						// reset HeartBeat
+						mHeartBeatAnimation.stopAnimation();
+						imgHeartBeatDetected.setVisible(false);
+						lblHeartbeat.setText("No Heartbeat");
+						lblHeartbeatValue.setText("(0.0)");
+
+						// reset PW Input
+						imgPassword.setImage(new Image("drawable/icons/no_permission.png"));
+						txtPassword.setVisible(true);
+						txtPassword.requestFocus();
+						txtPassword.setDisable(false);
+						btnLogin.setVisible(true);
+						lblPassword.setVisible(false);
+						imgPasswordCorrect.setVisible(false);
+						txtPassword.clear();
+					}
+				});
+
+				break;
+			default:
+				break;
+			}
+		}
+	};
+
 	/*----------------LOGIN----------------*/
 
 	@FXML
 	private void btnLoginAction(ActionEvent event) {
 		login(event);
+	}
+
+	@FXML
+	private void onConnectToWatchAction(ActionEvent event) {
+
+		lblConnectToWatch.setText("Connecting... (" + mChecksum.calculateChecksum() + ")");
+		btnConnectToWatch.setVisible(false);
+		progressConnectToWatch.setVisible(true);
+		progressConnectToWatch.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
+		imgCancelConnectToWatch.setVisible(true);
+		imgWatchConnected.setVisible(false);
+
 	}
 
 	@FXML
@@ -108,9 +312,9 @@ public class LoginController implements Initializable {
 	private void onPasswordFieldKeyReleased(KeyEvent event) {
 
 		if (txtPassword.getLength() == 0) {
-			btnLogin.setVisible(false);
+			btnLogin.setDisable(true);
 		} else {
-			btnLogin.setVisible(true);
+			btnLogin.setDisable(false);
 		}
 
 	}
@@ -120,17 +324,19 @@ public class LoginController implements Initializable {
 			if (mLoginModel.isValidCredentials(lblUserName.getText(), txtPassword.getText())) {
 
 				System.out.println("Username and Password is correct!");
-				/*
-				 * ((Node) (event.getSource())).getScene().getWindow().hide();
-				 * 
-				 * Parent parent =
-				 * FXMLLoader.load(getClass().getResource("Main.fxml")); Stage
-				 * stage = new Stage(); Scene scene = new Scene(parent);
-				 * stage.setScene(scene); stage.setTitle("Login"); stage.show();
-				 */
+				imgPassword.setImage(new Image("drawable/icons/permission.png"));
+				txtPassword.setDisable(true);
+				txtPassword.setVisible(false);
+				btnLogin.setVisible(false);
+				lblPassword.setVisible(true);
+				imgPasswordCorrect.setVisible(true);
+				
+				progressHeartrateDetection.setVisible(true);
+				imgHeartBeat.setVisible(false);
+				lblHeartbeat.setText("Detect heartrate ...");
 
-				Server server = new Server(this);
-				server.start();
+				// starteService (get Cues: Heartbeat, Proximity, usercontext)
+				mTCPServer.sendMessage(AppConstants.COMMAND_GET_CUES);
 
 			} else {
 				System.out.println("Username and Password is WRONG!");
@@ -141,6 +347,20 @@ public class LoginController implements Initializable {
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
+	}
+
+	@FXML
+	private void onCancelConnectToWatchClicked(MouseEvent event) {
+		// Stop server
+		// TODO RESET Method
+		lblConnectToWatch.setText("Not connected");
+		progressConnectToWatch.setVisible(false);
+		imgWatchConnected.setImage(new Image("drawable/icons/no_watch.png"));
+		imgWatchConnected.setVisible(true);
+		imgCancelConnectToWatch.setVisible(false);
+		btnConnectToWatch.setVisible(true);
+
+		// TODO killserver
 	}
 
 	/*----------------ADD USER----------------*/
@@ -353,17 +573,5 @@ public class LoginController implements Initializable {
 			e.printStackTrace();
 		}
 	}
-	
-	/*--------------------------------------*/
-	public Label getLblAuthenticated(){
-		return lblAuthenticated;
-	}
-	
-	public ImageView getImgAuthenticatedSucceeded(){
-		return imgAuthenticatedSucceeded;
-	}
-	
-	public PasswordField getTxtPassword(){
-		return txtPassword;
-	}
+
 }

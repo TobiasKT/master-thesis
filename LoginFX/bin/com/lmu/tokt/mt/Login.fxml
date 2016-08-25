@@ -24,22 +24,74 @@
             						<Font name="Helvetica Neue Light" size="14.0" />
             					</font>
             				</Label>
-            				<PasswordField fx:id="txtPassword" layoutX="202.0" layoutY="264.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onPasswordFieldKeyPressed" onKeyReleased="#onPasswordFieldKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
+                        <ProgressIndicator fx:id="progressConnectToWatch" layoutX="170.0" layoutY="264.0" prefHeight="24.0" prefWidth="24.0" visible="false" />
+                        <ImageView fx:id="imgWatchConnected" fitHeight="30.0" fitWidth="30.0" layoutX="168.0" layoutY="262.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <image>
+                              <Image url="@../../../../../../../../Documents/workspace_eclipse/LoginFX/src/drawable/icons/no_watch.png" />
+                           </image>
+                        </ImageView>
+                        <Label fx:id="lblConnectToWatch" layoutX="212.0" layoutY="265.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="180.0" text="Not connected" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="imgConnectedToWatchSuccess" fitHeight="24.0" fitWidth="24.0" layoutX="412.0" layoutY="265.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/success.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="imgCancelConnectToWatch" fitHeight="24.0" fitWidth="24.0" layoutX="412.0" layoutY="265.0" onMouseClicked="#onCancelConnectToWatchClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/cancel.png" />
+                           </image>
+                        </ImageView>
+                        <Button id="round-connect-btn" fx:id="btnConnectToWatch" alignment="CENTER" contentDisplay="CENTER" layoutX="410.0" layoutY="263.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectToWatchAction" prefHeight="28.0" prefWidth="28.0">
+                           <font>
+                              <Font name="Helvetica Neue" size="12.0" />
+                           </font>
+                        </Button>
+                        <ImageView fx:id="imgPassword" fitHeight="30.0" fitWidth="30.0" layoutX="171.0" layoutY="326.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                           <image>
+                              <Image url="@../../../../drawable/icons/no_permission.png" />
+                           </image>
+                        </ImageView>
+            				<PasswordField fx:id="txtPassword" disable="true" layoutX="212.0" layoutY="325.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onPasswordFieldKeyPressed" onKeyReleased="#onPasswordFieldKeyReleased" prefHeight="32.0" prefWidth="180.0" promptText="Password" styleClass="transparent-textfield">
             					<font>
             						<Font name="Helvetica Neue" size="14.0" />
             					</font>
             				</PasswordField>
-            				<Button id="round-login-btn" fx:id="btnLogin" layoutX="416.0" layoutY="266.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginAction" prefHeight="28.0" prefWidth="28.0" visible="false">
+                        <Label fx:id="lblPassword" layoutX="212.0" layoutY="329.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="180.0" text="Password correct" textFill="WHITE" visible="false">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </Label>
+            				<Button id="round-login-btn" fx:id="btnLogin" disable="true" layoutX="410.0" layoutY="327.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginAction" prefHeight="28.0" prefWidth="28.0">
             					<font>
             						<Font name="Helvetica Neue" size="14.0" />
             					</font>
             				</Button>
-                        <Label fx:id="lblAuthenticated" alignment="CENTER" layoutX="252.0" layoutY="445.0" prefWidth="100.0" text="Authenticated" textFill="WHITE" visible="false">
+                        <ImageView fx:id="imgPasswordCorrect" fitHeight="24.0" fitWidth="24.0" layoutX="412.0" layoutY="329.0" pickOnBounds="true" preserveRatio="true" visible="false">
+                           <image>
+                              <Image url="@../../../../drawable/icons/success.png" />
+                           </image>
+                        </ImageView>
+                        <ProgressIndicator fx:id="progressHeartrateDetection" layoutX="171.0" layoutY="393.0" prefHeight="24.0" prefWidth="24.0" visible="false" />
+                        <ImageView fx:id="imgHeartBeat" fitHeight="24.0" fitWidth="24.0" layoutX="171.0" layoutY="393.0" pickOnBounds="true">
+                           <image>
+                              <Image url="@../../../../drawable/icons/heart_beats.png" />
+                           </image>
+                        </ImageView>
+                        <Label fx:id="lblHeartbeat" layoutX="212.0" layoutY="393.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="127.0" text="Heartbeat detected" textFill="WHITE">
                            <font>
-                              <Font name="Helvetica Neue" size="12.0" />
+                              <Font name="Helvetica Neue" size="14.0" />
                            </font>
                         </Label>
-                        <ImageView fx:id="imgAuthenticatedSucceeded" fitHeight="40.0" fitWidth="40.0" layoutX="280.0" layoutY="393.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+                        <Label fx:id="lblHeartbeatValue" alignment="CENTER_RIGHT" layoutX="343.0" layoutY="393.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="49.0" textFill="WHITE">
+                           <font>
+                              <Font name="Helvetica Neue" size="14.0" />
+                           </font>
+                        </Label>
+                        <ImageView fx:id="imgHeartBeatDetected" fitHeight="24.0" fitWidth="24.0" layoutX="412.0" layoutY="393.0" pickOnBounds="true" preserveRatio="true" visible="false">
                            <image>
                               <Image url="@../../../../drawable/icons/success.png" />
                            </image>
@@ -239,6 +291,14 @@
          <top>
             <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
+                  <Label fx:id="lblServerStatus" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefWidth="256.0" text="Server not running" textFill="WHITE">
+                     <font>
+                        <Font name="Helvetica Neue Light" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="16.0" top="4.0" />
+                     </HBox.margin>
+                  </Label>
                   <Label fx:id="lblDateTime" text="Mi. 13:51" textFill="WHITE">
                      <font>
                         <Font name="Helvetica Neue Light" size="14.0" />
@@ -247,14 +307,6 @@
                         <Insets right="8.0" top="4.0" />
                      </HBox.margin>
                   </Label>
-                  <ImageView fx:id="imgWatchConnection" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                     <HBox.margin>
-                        <Insets right="8.0" />
-                     </HBox.margin>
-                     <image>
-                        <Image url="@../../../../drawable/icons/no_watch.png" />
-                     </image>
-                  </ImageView>
                   <ImageView fx:id="imgSettings" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../../../drawable/icons/settings.png" />
