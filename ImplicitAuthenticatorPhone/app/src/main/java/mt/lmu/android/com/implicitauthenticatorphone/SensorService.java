@@ -33,7 +33,7 @@ public class SensorService extends Service implements SensorEventListener {
     private final static int WRIST_TILT_SENSOR = 26;
     private final static int GYRO_SENSOR = TYPE_GYROSCOPE; //4
     private final static int LIGHT_SENSOR = TYPE_LIGHT; //5
-    // private final static int HEART_RATE_SENSOR = TYPE_HEART_RATE; //21
+     private final static int HEART_RATE_SENSOR = Sensor.TYPE_HEART_RATE; //21
     private final static int GAME_ROTATION_SENSOR = TYPE_GAME_ROTATION_VECTOR; //15
     private final static int WELLNESS_PASSIVE_SENSOR = 65538; //
     private final static int PPG_SENSOR = 65545;
@@ -46,7 +46,7 @@ public class SensorService extends Service implements SensorEventListener {
 
     SensorManager mSensorManager;
 
-    // private Sensor mHeartRateSensor;
+    private Sensor mHeartRateSensor;
 
     private WatchClient mWatchClient;
     private ScheduledExecutorService mScheduler;
@@ -114,7 +114,7 @@ public class SensorService extends Service implements SensorEventListener {
         Sensor linearAccelerationSensor = mSensorManager.getDefaultSensor(LINEAR_ACCELERATION_SENSOR);
         Sensor gravitySensor = mSensorManager.getDefaultSensor(GRAVITY_SENSOR);
 
-        //  mHeartRateSensor = mSensorManager.getDefaultSensor(HEART_RATE_SENSOR);
+        mHeartRateSensor = mSensorManager.getDefaultSensor(HEART_RATE_SENSOR);
 
         if (mSensorManager != null) {
 

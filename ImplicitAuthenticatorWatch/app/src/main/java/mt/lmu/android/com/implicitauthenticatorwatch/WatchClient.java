@@ -1,7 +1,6 @@
 package mt.lmu.android.com.implicitauthenticatorwatch;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.util.SparseLongArray;
 import android.widget.Toast;
@@ -20,7 +19,6 @@ import java.util.concurrent.Executors;
 public class WatchClient {
 
     private static final String TAG = WatchClient.class.getSimpleName();
-    private static final int CLIENT_CONNECTION_TIMEOUT = 150000;
 
     public static WatchClient instance;
 
@@ -31,39 +29,22 @@ public class WatchClient {
     private SparseLongArray mLastSensorData;
 
     private TCPClient mTcpClient;
-    private ConnectionAsynchTask mConnectionAsynchTask;
-
-    //TODO
-    //boolean isConnected
-    //sendData
 
 
-    public static WatchClient getInstance(Context context) {
-        if (instance == null) {
-            instance = new WatchClient(context.getApplicationContext());
-        }
+    public static WatchClient setInstance(Context context, TCPClient tcpClient) {
+        return instance = new WatchClient(context.getApplicationContext(), tcpClient);
+    }
+
+    public static WatchClient getInstance() {
         return instance;
     }
 
-    public WatchClient(Context context) {
+
+    public WatchClient(Context context, TCPClient tcpClient) {
         mContext = context;
+        mTcpClient = tcpClient;
         mExecutorService = Executors.newCachedThreadPool();
         mLastSensorData = new SparseLongArray();
-        mConnectionAsynchTask = new ConnectionAsynchTask();
-    }
-
-
-    public void stopAsyncTCPClient() {
-        mConnectionAsynchTask.cancel(true);
-    }
-
-    public void startAsyncTCPClient() {
-        mConnectionAsynchTask.execute("");
-    }
-
-    public void setSensorFilter(int filterId) {
-        Log.d(TAG, "Now filtering by sensor: " + filterId);
-        mFilterId = filterId;
     }
 
     public void sendSensorData(final int sensorType, final String sensorName, final int accuracy,
@@ -102,9 +83,14 @@ public class WatchClient {
 
         JSONObject jsonObject = new JSONObject();
 
+        //TESTING
+        /*sensorName = "heart_rate";
+        sensorType = 21;
+        accuracy = 3;
+        values = new float[]{mFakeHeartBeat};*/
         try {
             jsonObject.put("name", sensorName);
-            jsonObject.put("typ", sensorType);
+            jsonObject.put("type", sensorType);
             jsonObject.put("accuracy", accuracy);
             jsonObject.put("timestamp", timestamp);
 
@@ -121,7 +107,11 @@ public class WatchClient {
             Log.e(TAG, e.getMessage());
         }
 
-        sendMessageToServer(jsonObject);
+        //sendMessageToServer(jsonObject);
+
+        if (mTcpClient != null) {
+            mTcpClient.sendMessage(AppConstants.SENSORDATA + "::" + jsonObject.toString());
+        }
     }
 
     private boolean validateConnection() {
@@ -137,45 +127,27 @@ public class WatchClient {
         //Log.d(TAG, "Send data: " + data.toString());
 
         //sends the message to the server
-        Toast.makeText(mContext, "Send data: " + data.toString(),Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext, "Send data: " + data.toString(), Toast.LENGTH_SHORT).show();
         if (mTcpClient != null) {
             mTcpClient.sendMessage(data.toString());
         }
 
     }
 
-
-    public class ConnectionAsynchTask extends AsyncTask<String, String, TCPClient> {
-
-        @Override
-        protected TCPClient doInBackground(String... params) {
-
-            mTcpClient = new TCPClient(new TCPClient.OnMessageReceived() {
-
-                @Override
-                public void messageReceived(String message) {
-                    publishProgress(message);
-                    Log.d(TAG, "Server - " + message);
-                }
-            });
-            mTcpClient.startRunning();
-
-            return null;
-        }
-
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            Toast.makeText(mContext, "Message from Server " + values[0],Toast.LENGTH_SHORT).show();
-            //TODO in MainActivity verarbeiten
-        }
-
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-            Toast.makeText(mContext, "AsyncTask cancelled",Toast.LENGTH_SHORT).show();
-        }
+    public boolean isConnectedToServer() {
+        return mTcpClient.isConnected();
     }
+
+
+    /**
+     * JUST FOR TESTING
+     **/
+
+    private float mFakeHeartBeat = 0.0f;
+
+    public void setFakeHeartBeat(float heartbeat) {
+        mFakeHeartBeat = heartbeat;
+    }
+
 
 }

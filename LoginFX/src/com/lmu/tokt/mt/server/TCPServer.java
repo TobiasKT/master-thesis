@@ -19,6 +19,12 @@ import com.lmu.tokt.mt.util.AppConstants;
 import com.lmu.tokt.mt.util.Checksum;
 
 public class TCPServer extends Thread {
+	
+	// Terminal Ports Listen: netstat -an | grep -i "listen" , sudo lsof -i -P |
+	// grep -i "listen" , netstat -atp tcp | grep -i "listen"
+
+	/*-------------------------------------------*/
+	//ifconfig | grep "inet " | grep -v 127.0.0.1
 
 	private ServerSocket mServer;
 	private Socket mConnection;

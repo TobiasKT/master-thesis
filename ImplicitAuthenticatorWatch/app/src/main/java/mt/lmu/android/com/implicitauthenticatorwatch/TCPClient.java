@@ -1,5 +1,7 @@
 package mt.lmu.android.com.implicitauthenticatorwatch;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -17,101 +19,196 @@ public class TCPClient {
 
     private static final String TAG = TCPClient.class.getSimpleName();
 
-    private static final String SERVER_ENDED_CONNECTION = "server_end";
+    private final Handler mHandler;
 
-    private static String SERVER_IP = "192.168.178.96";
-    //private static String SERVER_IP = "127.0.0.1";
-    private static int SERVER_PORT = 8080;
+    private String SERVER_IP = "192.168.43.108"; //Public IP address of the computer
+    private int SERVER_PORT = 8080;
 
-    private OnMessageReceived mMessageListener = null;
+    private MessageCallBack mMessageListener = null;
 
     private BufferedReader mInput;
     private BufferedWriter mOutput;
-    private String mMessage = "";
+
+    private String mIncomingMessage;
+
     private Socket mConnection;
 
+    private boolean mRun = false;
 
-    public TCPClient(OnMessageReceived listener) {
+    private boolean mIsConnected = false;
+
+
+    public TCPClient(Handler handler, MessageCallBack listener) {
+        mHandler = handler;
         mMessageListener = listener;
     }
 
-    public void startRunning() {
+
+    public TCPClient(Handler handler, MessageCallBack listener, String ipAddress, int port) {
+        this(handler, listener);
+        SERVER_IP = ipAddress;
+        SERVER_PORT = port;
+    }
+
+    //start TCP Client
+    public void run() {
+
+        mRun = true;
+
         try {
             connectToServer();
             setupStreams();
             whileDataExchange();
-        } catch (EOFException eofException) {
-            // System.out.println
-            System.out.println("\n Client terminated the connection");
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
+        } catch (EOFException eofe) {
+            Log.e(TAG, "Client terminated the connection! Exception: " + eofe.getMessage());
+            mHandler.sendEmptyMessage(AppConstants.ERROR);
+        } catch (IOException ioe) {
+            Log.e(TAG, "Error while connection to server/setting uo streams! Exception: " + ioe.getMessage());
+            mHandler.sendEmptyMessage(AppConstants.ERROR);
         } finally {
             closeConnection();
         }
 
     }
 
-    // connect to server
-    private void connectToServer() throws IOException {
-        Log.i(TAG, "Attempting to connect server: " + SERVER_IP + ":" + SERVER_PORT);
-        mConnection = new Socket(SERVER_IP, SERVER_PORT);
-        Log.i(TAG, "Connection Established! Connected to: " + mConnection.getInetAddress().getHostName());
+    // stop TCP client
+    public void stopClient() {
+        Log.d(TAG, "Client stopped!");
+        mRun = false;
+        mIsConnected = false;
+        closeConnection();
     }
 
+    // try to connect to server
+    private void connectToServer() throws IOException {
+        Log.i(TAG, "Attempting to connect server: " + SERVER_IP + ":" + SERVER_PORT);
+
+        mConnection = new Socket(SERVER_IP, SERVER_PORT);
+        Log.i(TAG, "Connection Established! Connected to: " + mConnection.getInetAddress().getHostAddress());
+    }
+
+    // set up streams
     private void setupStreams() throws IOException {
         mOutput = new BufferedWriter(new OutputStreamWriter(mConnection.getOutputStream(), "UTF-8"));
         mOutput.flush();
-
         mInput = new BufferedReader(new InputStreamReader(mConnection.getInputStream(), "UTF-8"));
-        System.out.println("\n Streams are now setup \n");
+
+        Log.i(TAG, "Streams are now setup.");
     }
 
 
+    // receive messages from server and process them
     private void whileDataExchange() throws IOException {
-        do {
-            try {
-                mMessage = (String) mInput.readLine();
-                if (mMessage != null && mMessageListener != null) {
-                    Log.i(TAG, "Message from SERVER: " + mMessage + "\n");
+
+
+        //TODO: Request allowance to pair!!!!
+
+        while (mRun) {
+
+            mIncomingMessage = mInput.readLine();
+
+            //Check if there is an connection to server --> TODO: auslagern in validateConnection()
+           /* if (mInput.read(new char[10]) == -1) {
+                stopClient();
+                break;
+            }*/
+
+            if (mIncomingMessage != null && mMessageListener != null) {
+
+                if (mIncomingMessage.contains(AppConstants.COMMAND_CONFIRM)) {
+
+                    int receivedChecksum = Integer.parseInt(mIncomingMessage.split(":")[1]);
+
+                    //Send Message to MainActivity
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_CONFIRM, receivedChecksum);
+                    mHandler.sendMessage(completeMessage);
                 }
 
-            } catch (IOException ioe) {
-                System.out.println("Unknown data received!");
-                Log.e(TAG, ioe.getMessage());
+                if (mIncomingMessage.equals(AppConstants.COMMAND_CONNECT)) {
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_CONNECTED, "You are connected to autenticaton service");
+                    mHandler.sendMessage(completeMessage);
+                }
+
+                if (mIncomingMessage.equals(AppConstants.COMMAND_DISCONNECT)) {
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_DISCONNECTED, "Server closed connection!");
+                    mHandler.sendMessage(completeMessage);
+                    stopClient();
+                }
+
+                if (mIncomingMessage.equals(AppConstants.COMMAND_NOT_AUTHENTICATED)) {
+
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_NOT_AUTHENTICATED, "You are not authenticated!");
+                    mHandler.sendMessage(completeMessage);
+                }
+
+                if (mIncomingMessage.equals(AppConstants.COMMAND_GET_CUES)) {
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_AUTHENTICATED, "You are authenticated! Authenticator service is running...");
+                    mHandler.sendMessage(completeMessage);
+                }
+
+                mMessageListener.callbackMessageReceiver(mIncomingMessage);
             }
-        } while (mMessage != null && !mMessage.equals(SERVER_ENDED_CONNECTION));
+            mIncomingMessage = null;
+        }
+
+
     }
+
 
     public void sendMessage(String message) {
 
         try {
+
+            if (message.contains("SENSORDATA")) {
+                Message completeMessage =
+                        mHandler.obtainMessage(AppConstants.STATE_HEART_BEATING, message);
+                mHandler.sendMessage(completeMessage);
+            }
+
             mOutput.write(message);
             mOutput.newLine();
             mOutput.flush();
-            // Thread.sleep(5000);
-            System.out.println("\nCLIENT - " + message);
         } catch (IOException ioException) {
-            System.out.println("\n Oops! Something went wrong!");
-            //  } catch (InterruptedException ie) {
-            //    Log.e(TAG, ie.getMessage());
-
+            Log.e(TAG, "Something went wrong while sending message! Exception: " + ioException.getMessage());
         }
     }
 
     private void closeConnection() {
-        System.out.println("\n Closing the connection!");
-
         try {
+            sendMessage(AppConstants.COMMAND_DISCONNECT);
             mOutput.close();
             mInput.close();
             mConnection.close();
+            mHandler.sendEmptyMessageDelayed(AppConstants.STATE_DISCONNECTED, 3000);
+            Log.i(TAG, "Connection closed!");
         } catch (IOException ioException) {
-            ioException.printStackTrace();
+            Log.e(TAG, "Error while closing connection! Exception: " + ioException.getMessage());
         }
     }
 
-    public interface OnMessageReceived {
-        void messageReceived(String message);
+
+    public boolean isConnected() {
+        return mIsConnected;
+    }
+
+    public void setIsConnected(boolean isConnected) {
+        mIsConnected = isConnected;
+    }
+
+    public boolean isRunning() {
+        return mRun;
+    }
+
+
+    //Declare the interface. The method messageReceived(String message) will must be implemented
+    // AsynckTask doInBackground
+    public interface MessageCallBack {
+        void callbackMessageReceiver(String message);
     }
 
 }

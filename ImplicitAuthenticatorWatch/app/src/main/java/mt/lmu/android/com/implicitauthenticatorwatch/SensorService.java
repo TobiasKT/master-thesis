@@ -48,7 +48,7 @@ public class SensorService extends Service implements SensorEventListener {
     public void onCreate() {
         super.onCreate();
 
-        mWatchClient = WatchClient.getInstance(this);
+        mWatchClient = WatchClient.getInstance();
 
         Notification.Builder builder = new Notification.Builder(this);
         builder.setContentTitle("Implicit Authenticator");
@@ -77,8 +77,10 @@ public class SensorService extends Service implements SensorEventListener {
 
         String sensorName = getSensorName(event);
 
-        mWatchClient.sendSensorData(event.sensor.getType(), sensorName, event.accuracy,
-                event.timestamp, event.values);
+        if (mWatchClient.isConnectedToServer()) {
+            mWatchClient.sendSensorData(event.sensor.getType(), sensorName, event.accuracy,
+                    event.timestamp, event.values);
+        }
 
     }
 
@@ -112,7 +114,7 @@ public class SensorService extends Service implements SensorEventListener {
 
             //Accelerometer
             if (accelerometerSensor != null) {
-                mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                //  mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No Accelerometer found");
             }
@@ -126,21 +128,21 @@ public class SensorService extends Service implements SensorEventListener {
 
             //Detailed Step Counter
             if (detailedStepCounterSensor != null) {
-                mSensorManager.registerListener(this, detailedStepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                //  mSensorManager.registerListener(this, detailedStepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No DetailedStepCounterSensor found");
             }
 
             //Wrist Tilt
             if (wristTiltSensor != null) {
-                mSensorManager.registerListener(this, wristTiltSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                //   mSensorManager.registerListener(this, wristTiltSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No WristTiltSensor found");
             }
 
             //Gyro
             if (gyroSensor != null) {
-                mSensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                //  mSensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No GyroSensor found");
             }
@@ -196,21 +198,21 @@ public class SensorService extends Service implements SensorEventListener {
 
             //Linear Acceleration
             if (linearAccelerationSensor != null) {
-                mSensorManager.registerListener(this, linearAccelerationSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                //   mSensorManager.registerListener(this, linearAccelerationSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No LinearAccelerationSensor found");
             }
 
             //Gravity
             if (gravitySensor != null) {
-                mSensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+                //  mSensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No GravitySensor found");
             }
 
             if (mHeartRateSensor != null) {
-                final int measurementDuration = 6;   // Seconds
-                final int measurementBreak = 3;    // Seconds
+                final int measurementDuration = 2;   // Seconds 6
+                final int measurementBreak = 1;    // Seconds 3
 
                 mScheduler = Executors.newScheduledThreadPool(1);
                 mScheduler.scheduleAtFixedRate(

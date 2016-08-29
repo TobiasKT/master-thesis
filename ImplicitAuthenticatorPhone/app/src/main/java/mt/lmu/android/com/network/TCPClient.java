@@ -21,7 +21,7 @@ public class TCPClient {
 
     private final Handler mHandler;
 
-    private String SERVER_IP = "192.168.178.96"; //Public IP address of the computer
+    private String SERVER_IP = "192.168.43.108"; //Public IP address of the computer
     private int SERVER_PORT = 8080;
 
     private MessageCallBack mMessageListener = null;
