@@ -19,17 +19,17 @@ import com.lmu.tokt.mt.util.AppConstants;
 import com.lmu.tokt.mt.util.Checksum;
 
 public class TCPServer extends Thread {
-	
+
 	// Terminal Ports Listen: netstat -an | grep -i "listen" , sudo lsof -i -P |
 	// grep -i "listen" , netstat -atp tcp | grep -i "listen"
 
 	/*-------------------------------------------*/
-	//ifconfig | grep "inet " | grep -v 127.0.0.1
+	// ifconfig | grep "inet " | grep -v 127.0.0.1
 
 	private ServerSocket mServer;
 	private Socket mConnection;
 
-	private int SERVER_PORT = 8080;
+	private int SERVER_PORT = 8888;
 	private MessageCallback mMessageListener;
 
 	private BufferedReader mInput;
@@ -42,6 +42,14 @@ public class TCPServer extends Thread {
 	private boolean mServerIsRunning = false;
 	private boolean mDataExchangeIsRunning = false;
 	private boolean mIsConnectedToWatch = false;
+
+	private boolean mHeartRateDetectd = false;
+	private int mHeartRateCounter = 0;
+	private long mLastHeartrateTimestamp = 0;
+
+	private boolean mProximityDetected = false;
+	private int mProximityCounter = 0;
+	private long mLastProximityTimestamp = 0;
 
 	public TCPServer(MessageCallback messageListener) {
 		mMessageListener = messageListener;
@@ -117,7 +125,7 @@ public class TCPServer extends Thread {
 		System.out.println("Streams are now setup.");
 	}
 
-	private void whileDataExchange() throws IOException {
+	private synchronized void whileDataExchange() throws IOException {
 
 		// TODO: Request allowance to pair!!!!
 		if (!mIsConnectedToWatch) {
@@ -170,6 +178,27 @@ public class TCPServer extends Thread {
 					}
 				}
 
+				if (mIncomingMessage.contains(AppConstants.BEACONDATA)) {
+					String data = mIncomingMessage.split("::")[1];
+
+					JSONParser parser = new JSONParser();
+					try {
+						JSONObject json = (JSONObject) parser.parse(data);
+						// String name = (String) json.get("name");
+						String proximity = (String) json.get("proximity");
+						validateProximity(proximity);
+
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+				// validate lock state
+				validateLockState();
+				
+				validateHeartRateByTimeStamp();
+
 				mMessageListener.callbackMessageReceiver(mIncomingMessage);
 			}
 			mIncomingMessage = null;
@@ -177,11 +206,33 @@ public class TCPServer extends Thread {
 		System.out.println("Data exchange stopped!");
 
 	}
+	
+	
+	private void validateHeartRateByTimeStamp(){
+		
+		long t = System.currentTimeMillis();
+		long lastTimestamp = mLastHeartrateTimestamp;
+		long timeAgo = t - lastTimestamp;
+		System.out.println("timeAgo:"+timeAgo);
 
-	private boolean mHeartRateDetectd = false;
-	private int mHeartRateCounter = 0;
+		if (lastTimestamp != 0 && mHeartRateDetectd) {
+			if (timeAgo > 20000) {
+				System.out.println("No Heartbeat!");
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "No Heartbeat detected");
+				sendMessage(AppConstants.COMMAND_NOT_AUTHENTICATED);
+				mHeartRateDetectd = false;
+				mHeartRateCounter = 0;
+				return;
+			}
+		}
+
+		
+		
+	}
 
 	private void validateHeartRate(String data) {
+
+		
 
 		JSONParser parser = new JSONParser();
 		try {
@@ -201,10 +252,14 @@ public class TCPServer extends Thread {
 					if (!mHeartRateDetectd) {
 						mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEAT_DETECTED,
 								"HeartBeat detected");
+						mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING,
+								"(" + heartrate + ")");
+						mLastHeartrateTimestamp = System.currentTimeMillis();
 						mHeartRateDetectd = true;
 					} else {
 						mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING,
 								"(" + heartrate + ")");
+						mLastHeartrateTimestamp = System.currentTimeMillis();
 						mHeartRateCounter = 0;
 					}
 					return;
@@ -224,6 +279,49 @@ public class TCPServer extends Thread {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void validateProximity(String proximity) {
+
+		/*
+		 * if (proximity.equals(AppConstants.PROXIMITY_IMMEDIATE)) {
+		 * mProximityCounter = 0;
+		 * mMessageListener.callbackMessageReceiver(AppConstants.
+		 * STATE_PROXIMITY, AppConstants.PROXIMITY_IMMEDIATE);
+		 * mMessageListener.callbackMessageReceiver(AppConstants.STATE_UNLOCKED,
+		 * "unlocked"); }
+		 */
+		if (proximity.equals(AppConstants.PROXIMITY_NEAR)) {
+			mProximityDetected = true;
+			mProximityCounter = 0;
+			if (mHeartRateDetectd) {
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY, AppConstants.PROXIMITY_NEAR);
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_UNLOCKED, "unlocked");
+			}
+		}
+
+		if (proximity.equals(AppConstants.PROXIMITY_FAR)) {
+			mProximityDetected = true;
+			mProximityCounter++;
+
+			System.out.println("Proximity: far (" + mProximityCounter + ")");
+			if (mProximityCounter == 3) {
+				System.out.println("lock pc!");
+				if (mHeartRateDetectd) {
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY, AppConstants.PROXIMITY_FAR);
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_LOCKED, "locked");
+				}
+			}
+
+		}
+
+	}
+
+	private void validateLockState() {
+
+		if (mHeartRateDetectd && mProximityDetected) {
+			// Authenticated
+		}
 	}
 
 	// Send a mesage to the client

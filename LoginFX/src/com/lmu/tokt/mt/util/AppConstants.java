@@ -14,6 +14,7 @@ public class AppConstants {
 	public static final String COMMAND_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
 
 	public static final String SENSORDATA = "SENSORDATA";
+	public static final String BEACONDATA = "BEACONDATA";
 
 	public static final int STATE_CONNECTED = -1000;
 	public static final int STATE_DISCONNECTED = -1001;
@@ -27,6 +28,15 @@ public class AppConstants {
 	public static final int STATE_HEART_BEATING = -3001;
 	public static final int STATE_HEART_STOPPED = -3002;
 
-	public static final String STRING_TYPE_HEART_RATE = "heart_rate";
+	public static final int STATE_PROXIMITY = -4000;
+
+	public static final int STATE_LOCKED = -5000;
+	public static final int STATE_UNLOCKED = -5001;
+
+	public static final String STRING_TYPE_HEART_RATE = "HEART_RATE";
+
+	public static final String PROXIMITY_IMMEDIATE = "immediate";
+	public static final String PROXIMITY_NEAR = "near";
+	public static final String PROXIMITY_FAR = "far";
 
 }

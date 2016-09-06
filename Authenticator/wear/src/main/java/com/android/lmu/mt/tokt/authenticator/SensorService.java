@@ -8,10 +8,12 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
 
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,10 +33,15 @@ public class SensorService extends Service implements SensorEventListener {
     private WatchClient mWatchClient;
     private ScheduledExecutorService mScheduler;
 
+    private LocalBroadcastManager mLocalBroadcastManager;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
+
+
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         mWatchClient = WatchClient.getInstance(this);
 
@@ -71,9 +78,24 @@ public class SensorService extends Service implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
+        int type = sensorEvent.sensor.getType();
+        //update Watch UI
+        switch (type) {
+            case AppConstants.SENSOR_TYPE_HEART_RATE:
+                sendResult(AppConstants.SENSOR_HEART_RATE_RESULT, AppConstants.SENSOR_HEART_RATE_MESSAGE,
+                        Arrays.toString(sensorEvent.values));
+                break;
+            case AppConstants.SENSOR_TYPE_STEP_COUNTER:
+                sendResult(AppConstants.SENSOR_STEP_COUNT_RESULT, AppConstants.SENSOR_STEP_COUNT_MESSAGE,
+                        Arrays.toString(sensorEvent.values));
+                break;
+        }
+
         //TODO: check if connected to Desktop-App and authenticated
         mWatchClient.sendSensorData(sensorEvent.sensor.getType(), sensorEvent.accuracy,
                 sensorEvent.timestamp, sensorEvent.values);
+        Log.d(TAG, "type: " + sensorEvent.sensor.getType() + ", values: " + Arrays.toString(sensorEvent.values));
+
     }
 
     private void startMeasurement() {
@@ -112,7 +134,7 @@ public class SensorService extends Service implements SensorEventListener {
 
             //Step Counter
             if (stepCounterSensor != null) {
-                 mSensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                mSensorManager.registerListener(this, stepCounterSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No StepCounterSensor found");
             }
@@ -202,15 +224,15 @@ public class SensorService extends Service implements SensorEventListener {
             }
 
             if (mHeartRateSensor != null) {
-                final int measurementDuration = 10;   // Seconds
-                final int measurementBreak = 5;    // Seconds
+                final int measurementDuration = 8;   // Seconds
+                final int measurementBreak = 2;    // Seconds
 
                 mScheduler = Executors.newScheduledThreadPool(1);
                 mScheduler.scheduleAtFixedRate(
                         new Runnable() {
                             @Override
                             public void run() {
-                               // Log.d(TAG, "register Heartrate Sensor");
+                                // Log.d(TAG, "register Heartrate Sensor");
                                 mSensorManager.registerListener(SensorService.this, mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
 
                                 try {
@@ -219,7 +241,7 @@ public class SensorService extends Service implements SensorEventListener {
                                     Log.e(TAG, "Interrupted while waitting to unregister Heartrate Sensor");
                                 }
 
-                               // Log.d(TAG, "unregister Heartrate Sensor");
+                                // Log.d(TAG, "unregister Heartrate Sensor");
                                 mSensorManager.unregisterListener(SensorService.this, mHeartRateSensor);
                             }
                         }, 3, measurementDuration + measurementBreak, TimeUnit.SECONDS);
@@ -238,5 +260,12 @@ public class SensorService extends Service implements SensorEventListener {
         if (mScheduler != null && !mScheduler.isTerminated()) {
             mScheduler.shutdown();
         }
+    }
+
+    private void sendResult(String intentAction, String extraName, String message) {
+        Intent intent = new Intent(intentAction);
+        if (message != null)
+            intent.putExtra(extraName, message);
+        mLocalBroadcastManager.sendBroadcast(intent);
     }
 }

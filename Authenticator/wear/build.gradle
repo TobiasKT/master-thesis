@@ -24,5 +24,6 @@ android {
 dependencies {
     compile 'com.google.android.support:wearable:2.0.0-alpha2'
     compile 'com.google.android.gms:play-services-wearable:9.4.0'
+    compile 'org.altbeacon:android-beacon-library:2+'
     compile project(':shared')
 }

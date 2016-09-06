@@ -2,6 +2,7 @@ package com.android.lmu.mt.tokt.authenticator;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
@@ -22,9 +23,13 @@ public class MessageReceiverService extends WearableListenerService {
 
     private WatchClient mWatchClient;
 
+    private LocalBroadcastManager mLocalBroadcastManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         mWatchClient = WatchClient.getInstance(this);
     }
@@ -64,13 +69,28 @@ public class MessageReceiverService extends WearableListenerService {
             startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(startIntent);
 
+            sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "CONNECTED");
+
             //start service
             startService(new Intent(this, SensorService.class));
+            startService(new Intent(this, BeaconService.class));
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_STOP_MEASUREMENT)) {
+
+            sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "DISCONNECTED");
+
+            //stopservice
             stopService(new Intent(this, SensorService.class));
+            stopService(new Intent(this, BeaconService.class));
         }
+    }
+
+    private void sendResult(String intentAction, String extraName, String message) {
+        Intent intent = new Intent(intentAction);
+        if (message != null)
+            intent.putExtra(extraName, message);
+        mLocalBroadcastManager.sendBroadcast(intent);
     }
 
 }

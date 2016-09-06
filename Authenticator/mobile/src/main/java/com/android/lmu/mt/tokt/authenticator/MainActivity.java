@@ -1,14 +1,24 @@
 package com.android.lmu.mt.tokt.authenticator;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.lmu.mt.tokt.authenticator.data.Sensor;
 import com.android.lmu.mt.tokt.authenticator.data.SensorDataPoint;
@@ -18,6 +28,7 @@ import com.android.lmu.mt.tokt.authenticator.events.BusProvider;
 import com.android.lmu.mt.tokt.authenticator.events.NewSensorEvent;
 import com.android.lmu.mt.tokt.authenticator.events.SensorUpdatedEvent;
 import com.android.lmu.mt.tokt.authenticator.events.TagAddedEvent;
+import com.android.lmu.mt.tokt.authenticator.network.AuthenticatorAsyncTask;
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -38,6 +49,11 @@ import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -70,10 +86,21 @@ public class MainActivity extends AppCompatActivity implements
 
     private LinkedList<TagData> mTags = new LinkedList<>();
 
+    private SharedPreferences mSharedPreferences;
+
+    private AuthenticatorAsyncTask mAuthenticatorAsyncTask;
+
+    private Handler mHandler;
+
     //Views
     private TextView mWatchConnectionStatusText;
     private TextView mHeartrateText;
     private TextView mStepsText;
+    private TextView mProximityText;
+    private EditText mServerIpEditText;
+    private EditText mServerPortEditText;
+    private ImageView mServerIpImage;
+    private ImageView mServerPortImage;
     private TextView mServerConnectionStatusText;
     private TextView mServerStateText;
     private TextView mServerCommandText;
@@ -86,8 +113,8 @@ public class MainActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initViews();
-        initListeners();
+        mSharedPreferences = getSharedPreferences(
+                AppConstants.SHARED_PREF_APP_KEY, Context.MODE_PRIVATE);
 
         mExecutorService = Executors.newCachedThreadPool();
 
@@ -100,24 +127,124 @@ public class MainActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+        BusProvider.getInstance().register(this);
+
+        initViews();
+        initListeners();
+        initHandler();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        BusProvider.getInstance().unregister(this);
+    }
+
+    private String getSavedServerIP() {
+        return mSharedPreferences.getString(AppConstants.SHARED_PREF_SEVER_IP,
+                AppConstants.DEFAULT_SERVER_IP);
+    }
+
+    private int getSavedServerPort() {
+        return mSharedPreferences.getInt(AppConstants.SHARED_PREF_SEVER_PORT,
+                AppConstants.DEFAULT_SERVER_PORT);
+    }
 
     private void initViews() {
-
+        Log.d(TAG, "init Views...");
         mConnectToWatchBtn = (Button) findViewById(R.id.connect_phone_to_watch_btn);
         mConnectToServerBtn = (Button) findViewById(R.id.connect_phone_to_server_btn);
         mWatchConnectionStatusText = (TextView) findViewById(R.id.watch_connection_status_text);
         mHeartrateText = (TextView) findViewById(R.id.heart_rate_text);
         mStepsText = (TextView) findViewById(R.id.steps_text);
+        mProximityText = (TextView) findViewById(R.id.proximity_text);
+        mServerIpEditText = (EditText) findViewById(R.id.server_ip_edit_text);
+        mServerIpImage = (ImageView) findViewById(R.id.server_ip_img);
+        mServerPortEditText = (EditText) findViewById(R.id.server_port_edit_text);
+        mServerPortImage = (ImageView) findViewById(R.id.server_port_img);
         mServerConnectionStatusText = (TextView) findViewById(R.id.server_connection_status_text);
         mServerStateText = (TextView) findViewById(R.id.server_state_text);
         mServerCommandText = (TextView) findViewById(R.id.server_command_text);
 
+
+        mServerIpEditText.setText(getSavedServerIP());
+        mServerPortEditText.setText("" + getSavedServerPort());
+
     }
 
     private void initListeners() {
+        Log.d(TAG, "init Listeners...");
+
         mConnectToWatchBtn.setOnClickListener(this);
+        mConnectToServerBtn.setOnClickListener(this);
+        mServerIpImage.setOnClickListener(this);
+        mServerPortImage.setOnClickListener(this);
+    }
+
+
+    private void initHandler() {
+        Log.d(TAG, "init Handler...");
+
+        mHandler = new Handler(Looper.getMainLooper()) {
+
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+
+                switch (msg.what) {
+                    case AppConstants.STATE_CONFIRM:
+
+                        if (msg.obj != null) {
+                            int cheksum = (int) msg.obj;
+                            showConfirmConnectionDialog("Allow Connection? (" + cheksum + ")", cheksum);
+                        }
+                        break;
+                    case AppConstants.STATE_CONNECTED:
+                        //starte service
+                        if (msg.obj != null) {
+                            Log.d(TAG, "connect... " + msg.obj.toString());
+                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        break;
+                    case AppConstants.STATE_DISCONNECTED:
+                        //beende service
+                        if (msg.obj != null) {
+                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                        if (mAuthenticatorAsyncTask.getTCPClient().isRunning()) {
+                            mAuthenticatorAsyncTask.getTCPClient().stopClient();
+                        }
+                        mAuthenticatorAsyncTask.cancel(true);
+                        break;
+                    case AppConstants.STATE_AUTHENTICATED:
+
+                        if (msg.obj != null) {
+                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        if(mGoogleApiClient.isConnected()){
+                            startMeasurement();
+                        }else{
+                            //Connect to watch and start sensor service
+                            connectToWatch();
+                        }
+                        break;
+                    case AppConstants.STATE_NOT_AUTHENTICATED:
+                        stopMeasurement();
+                        // stopService(new Intent(MainActivity.this, SensorService.class));
+                        break;
+                    case AppConstants.ERROR:
+                        mConnectToServerBtn.setText("CONNECT");
+                        mAuthenticatorAsyncTask = null;
+                        Toast.makeText(MainActivity.this, "ERROR! Network problems!", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        };
+
+
     }
 
 
@@ -162,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements
         BusProvider.postOnMainThread(new SensorUpdatedEvent(sensor, dataPoint));
     }
 
+
     //TODO: e.g. unlocking state is removed/ connection lost/  etc.
     public synchronized void addTag(String tagName) {
 
@@ -190,8 +318,8 @@ public class MainActivity extends AppCompatActivity implements
         Wearable.CapabilityApi.addListener(
                 mGoogleApiClient, this, Uri.parse("wear://"), CapabilityApi.FILTER_REACHABLE);
 
+        //start sensorservice on watch and provide callback fo MainUIThread
         startMeasurement();
-        BusProvider.getInstance().register(this);
     }
 
     @Override
@@ -233,8 +361,82 @@ public class MainActivity extends AppCompatActivity implements
         Log.d(TAG, "onMessageReceived() A message from watch was received:"
                 + messageEvent.getRequestId() + " " + messageEvent.getPath());
 
+        if (messageEvent.getPath().startsWith(AppConstants.SERVER_PATH_SENSOR_DATA)) {
+            unpackSensorData(messageEvent.getData());
+        }
+
+        if (messageEvent.getPath().equals(AppConstants.SERVER_PATH_BEACON_DATA)) {
+            unpackBeaconData(messageEvent.getData());
+        }
 
     }
+
+    private void unpackSensorData(byte[] data) {
+
+        String dataString = new String(data, Charset.forName("UTF-8"));
+        int sensorType = -1;
+        int accuracy = -1;
+        long timestamp = -1;
+        float[] values = null;
+
+        try {
+            JSONObject jsonObject = new JSONObject(dataString);
+            sensorType = jsonObject.getInt("type");
+            accuracy = jsonObject.getInt("accuracy");
+            timestamp = jsonObject.getLong("timestamp");
+            JSONArray jsonArray = jsonObject.getJSONArray("values");
+            values = new float[jsonArray.length()];
+            for (int i = 0; i < jsonArray.length(); i++) {
+                values[i] = jsonArray.getLong(i);
+            }
+        } catch (JSONException je) {
+
+        }
+
+
+        Log.d(TAG, "Received sensor data " + sensorType + " = " + dataString);
+
+        this.addSensorData(sensorType, accuracy, timestamp, values);
+
+        switch (sensorType) {
+            case AppConstants.SENSOR_TYPE_HEART_RATE:
+
+                //TODO: auslagern und im hintergrund senden
+                //forward dot server
+                sendSensorDataToServer(dataString);
+                BusProvider.updateTextViewOnMainThread(mHeartrateText, Arrays.toString(values));
+                break;
+            case AppConstants.SENSOR_TYPE_STEP_COUNTER:
+                //TODO: send to server
+                BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
+                break;
+            case -1:
+                Log.e(TAG, "Unknown sensorType");
+                break;
+        }
+    }
+
+    private void unpackBeaconData(byte[] data) {
+        String dataString = new String(data, Charset.forName("UTF-8"));
+        String proximity = "unknown";
+
+        try {
+            JSONObject jsonObject = new JSONObject(dataString);
+            proximity = jsonObject.getString("proximity");
+        } catch (JSONException je) {
+
+        }
+
+        Log.d(TAG, "Received beacon data: " + dataString);
+
+        //TODO: addBeaconData
+        sendBeaconDataToServer(dataString);
+        BusProvider.updateTextViewOnMainThread(mProximityText, proximity);
+
+
+    }
+
+
 
     /* --------------------- Capability handling --------------------- */
 
@@ -264,16 +466,13 @@ public class MainActivity extends AppCompatActivity implements
                     );
                 }
 
-                if (path.startsWith("/close/")) {
-
-                    if (Integer.parseInt(uri.getLastPathSegment()) == 1) {
-                        closeConnectionToWatch();
-                    }
-
+                if (path.startsWith("/beacon")) {
+                    unpackBeaconData(DataMapItem.fromDataItem(dataItem).getDataMap());
                 }
             }
         }
     }
+
 
     private void unpackSensorData(int sensorType, DataMap dataMap) {
         int accuracy = dataMap.getInt(AppConstants.DATA_MAP_KEY_ACCURACY);
@@ -286,12 +485,116 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (sensorType) {
             case AppConstants.SENSOR_TYPE_HEART_RATE:
+
+                //TODO: auslagern und im hintergrund senden
+                //forward dot server
+                sendSensorDataToServer(sensorType, accuracy, timestamp, values);
                 BusProvider.updateTextViewOnMainThread(mHeartrateText, Arrays.toString(values));
                 break;
             case AppConstants.SENSOR_TYPE_STEP_COUNTER:
                 BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
                 break;
         }
+    }
+
+    private void unpackBeaconData(DataMap dataMap) {
+        String proxminity = dataMap.getString(AppConstants.DATA_MAP_KEY_BEACON_PROXIMITY);
+
+        Log.d(TAG, "Received beacon data: " + proxminity);
+
+        //TODO: addBeaconData
+        sendBeaconDataToServer(proxminity);
+        BusProvider.updateTextViewOnMainThread(mProximityText, proxminity);
+
+
+    }
+
+    /* ------------- Sending to server -------------*/
+
+    public void sendSensorDataToServer(final int sensorType, final int accuracy,
+                                       final long timestamp, final float[] values) {
+
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+
+                JSONObject jsonObject = new JSONObject();
+
+                try {
+                    jsonObject.put("name", getSensor(sensorType).getName());
+                    jsonObject.put("type", sensorType);
+                    jsonObject.put("accuracy", accuracy);
+                    jsonObject.put("timestamp", timestamp);
+
+                    //test
+                    JSONArray sensorValues = new JSONArray();
+                    if (values.length != 0) {
+                        for (int i = 0; i < values.length; i++) {
+                            sensorValues.put(values[i]);
+                        }
+                        jsonObject.put("values", sensorValues);
+                    }
+
+                } catch (JSONException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+                //sendMessageToServer(jsonObject);
+
+                if (mAuthenticatorAsyncTask.getTCPClient() != null) {
+                    mAuthenticatorAsyncTask.getTCPClient().sendMessage(
+                            AppConstants.SENSORDATA_PREFIX + "::" + jsonObject.toString());
+                }
+            }
+        });
+    }
+
+    public void sendSensorDataToServer(final String data) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (mAuthenticatorAsyncTask.getTCPClient() != null) {
+                    mAuthenticatorAsyncTask.getTCPClient().sendMessage(
+                            AppConstants.SENSORDATA_PREFIX + "::" + data);
+                }
+            }
+        });
+    }
+
+    public void sendBeaconDataToServer(final String data) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (mAuthenticatorAsyncTask.getTCPClient() != null) {
+                    mAuthenticatorAsyncTask.getTCPClient().sendMessage(
+                            AppConstants.BEACONDATA_PREFIX + "::" + data);
+                }
+            }
+        });
+    }
+
+    public void sendBeaconDataToServer(final String proximity, final long timestamp) {
+
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject jsonObject = new JSONObject();
+
+                try {
+                    jsonObject.put("name", "beacon");
+                    jsonObject.put("proximity", proximity);
+                    jsonObject.put("timestamp", timestamp);
+
+                } catch (JSONException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+
+                if (mAuthenticatorAsyncTask.getTCPClient() != null) {
+                    mAuthenticatorAsyncTask.getTCPClient().sendMessage(
+                            AppConstants.BEACONDATA_PREFIX + "::" + jsonObject.toString());
+                }
+            }
+        });
     }
 
     /* ------------- Sending commands to watch -------------*/
@@ -385,6 +688,23 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.connect_phone_to_server_btn:
+                if (mAuthenticatorAsyncTask == null ||
+                        !mAuthenticatorAsyncTask.getTCPClient().isRunning()) {
+                    mAuthenticatorAsyncTask = new AuthenticatorAsyncTask(MainActivity.this, mHandler);
+                    mAuthenticatorAsyncTask.execute();
+                    mConnectToServerBtn.setText("DISCONNECT");
+                } else {
+                    mAuthenticatorAsyncTask.getTCPClient().stopClient();
+                    mAuthenticatorAsyncTask.cancel(true);
+                    stopMeasurement();
+                    mConnectToServerBtn.setText("CONNECT");
+                }
+                break;
+            case R.id.server_ip_img:
+                editOrConfirmServerIp();
+                break;
+            case R.id.server_port_img:
+                editOrConfirmServerPort();
                 break;
             default:
                 Log.d(TAG, "Unkown view clicked");
@@ -400,9 +720,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private void disconnectFromWatch() {
 
-        //TODO never called in watch
         stopMeasurement();
-        BusProvider.getInstance().unregister(this);
 
         if (!mResolvingError && (mGoogleApiClient != null) && (mGoogleApiClient.isConnected())) {
             Wearable.DataApi.removeListener(mGoogleApiClient, this);
@@ -413,7 +731,60 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    private void closeConnectionToWatch() {
+    private void editOrConfirmServerIp() {
 
+        if (!mServerIpEditText.isEnabled()) {
+            mServerIpEditText.setEnabled(true);
+            mServerIpImage.setImageResource(android.R.drawable.ic_menu_save);
+        } else {
+            mServerIpEditText.setEnabled(false);
+            mServerIpImage.setImageResource(android.R.drawable.ic_menu_edit);
+
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putString(AppConstants.SHARED_PREF_SEVER_IP,
+                    mServerIpEditText.getText().toString());
+            editor.commit();
+        }
     }
+
+    private void editOrConfirmServerPort() {
+
+        if (!mServerPortEditText.isEnabled()) {
+            mServerPortEditText.setEnabled(true);
+            mServerPortImage.setImageResource(android.R.drawable.ic_menu_save);
+        } else {
+            mServerPortEditText.setEnabled(false);
+            mServerPortImage.setImageResource(android.R.drawable.ic_menu_edit);
+
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putInt(AppConstants.SHARED_PREF_SEVER_PORT,
+                    Integer.parseInt(mServerPortEditText.getText().toString()));
+            editor.commit();
+        }
+    }
+
+
+    /* --------------------- Confirmation Dialog --------------------- */
+    public void showConfirmConnectionDialog(String message, final int number) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_CONFIRM + ":" + number);
+                        break;
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_DISCONNECT);
+                        break;
+                }
+            }
+        };
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(message).setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+    }
+
+
 }

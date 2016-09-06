@@ -35,13 +35,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class LoginController implements Initializable {
 
+	@FXML
+	private BorderPane root;
 	@FXML
 	private AnchorPane anchorPaneContainer, anchorPaneRegister, anchorPaneLogin, anchorPaneChangeUser;
 	@FXML
@@ -49,7 +53,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private Label lblUserName, lblDateTime, lblRegistrationSuccess, lblRegistrationFailed, lblCancel,
 			lblCancelChangeUser, lblChangeUserTitle, lblConnectToWatch, lblServerStatus, lblPassword, lblHeartbeat,
-			lblHeartbeatValue;
+			lblHeartbeatValue, lblProximity;
 	@FXML
 	private PasswordField txtPassword, txtRegisterPassword, txtRegisterPasswordRepeat, txtChangeUserPassword;
 	@FXML
@@ -58,7 +62,8 @@ public class LoginController implements Initializable {
 	private Button btnLogin, btnRegister, btnChange, btnConnectToWatch;
 	@FXML
 	private ImageView imgAddUser, imgChangeUser, imgSleep, imgShutDown, imgWatchConnected, imgCancelConnectToWatch,
-			imgPassword, imgConnectedToWatchSuccess, imgPasswordCorrect, imgHeartBeat, imgHeartBeatDetected;
+			imgPassword, imgConnectedToWatchSuccess, imgPasswordCorrect, imgHeartBeat, imgHeartBeatDetected,
+			imgProximity, imgLockState;
 	@FXML
 	private ImageView imgSettings;
 	@FXML
@@ -68,7 +73,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private Circle circProfile;
 	@FXML
-	private ProgressIndicator progressConnectToWatch,progressHeartrateDetection;
+	private ProgressIndicator progressConnectToWatch, progressHeartrateDetection;
 
 	public LoginModel mLoginModel = new LoginModel();
 
@@ -80,13 +85,14 @@ public class LoginController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+
 		Image image = new Image("drawable/avatar/leaf.png");
 		circProfile.setFill(new ImagePattern(image));
 		setDateTime();
 
 		imgHeartBeat.setFitHeight(24.0);
 		imgHeartBeat.setFitWidth(24.0);
-		mHeartBeatAnimation = new HeartBeatAnimation(imgHeartBeat);
+		//mHeartBeatAnimation = new HeartBeatAnimation(imgHeartBeat);
 
 		if (mLoginModel.isDBConnected()) {
 			System.out.println("DB is connected!");
@@ -98,7 +104,6 @@ public class LoginController implements Initializable {
 		// start TCP Server
 		mTCPServer = new TCPServer(mMessageCallback);
 		mTCPServer.start();
-
 	}
 
 	// set current date and time
@@ -196,7 +201,7 @@ public class LoginController implements Initializable {
 						btnConnectToWatch.setVisible(false);
 
 						// reset PW Input
-						imgPassword.setImage(new Image("drawable/icons/no_permission.png"));
+						imgPassword.setImage(new Image("drawable/icons/no_key.png"));
 						txtPassword.setDisable(true);
 						txtPassword.setVisible(true);
 						btnLogin.setVisible(true);
@@ -205,9 +210,17 @@ public class LoginController implements Initializable {
 						txtPassword.clear();
 
 						// reset HeartBeat
-						mHeartBeatAnimation.stopAnimation();
+						//mHeartBeatAnimation.stopAnimation();
+						imgHeartBeat.setImage(new Image("drawable/icons/no_heartbeat.png"));
 						imgHeartBeatDetected.setVisible(false);
+						progressHeartrateDetection.setVisible(false);
 						lblHeartbeat.setText("No Heartbeat");
+						
+						//reset Poximity
+						lblProximity.setText("-");
+						imgProximity.setImage(new Image("drawable/icons/no_proximity.png"));
+						
+						imgLockState.setImage(new Image("drawable/icons/locked.png"));
 					}
 				});
 				System.out.println("Failing to connect to SmartWatch!");
@@ -226,11 +239,11 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						
+
 						progressHeartrateDetection.setVisible(false);
 						imgHeartBeat.setVisible(true);
-						
-						mHeartBeatAnimation.startAnimation();
+						imgHeartBeat.setImage(new Image("drawable/icons/heartbeat.png"));
+						//mHeartBeatAnimation.startAnimation();
 						imgHeartBeatDetected.setVisible(true);
 						// display value
 						lblHeartbeat.setText("Heartbeat detected");
@@ -255,14 +268,18 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 
+						imgLockState.setImage(new Image("drawable/icons/locked.png"));
+						
 						// reset HeartBeat
-						mHeartBeatAnimation.stopAnimation();
+						//mHeartBeatAnimation.stopAnimation();
+						imgHeartBeat.setImage(new Image("drawable/icons/no_heartbeat.png"));
+						progressHeartrateDetection.setVisible(false);
 						imgHeartBeatDetected.setVisible(false);
 						lblHeartbeat.setText("No Heartbeat");
 						lblHeartbeatValue.setText("(0.0)");
 
 						// reset PW Input
-						imgPassword.setImage(new Image("drawable/icons/no_permission.png"));
+						imgPassword.setImage(new Image("drawable/icons/no_key.png"));
 						txtPassword.setVisible(true);
 						txtPassword.requestFocus();
 						txtPassword.setDisable(false);
@@ -270,9 +287,57 @@ public class LoginController implements Initializable {
 						lblPassword.setVisible(false);
 						imgPasswordCorrect.setVisible(false);
 						txtPassword.clear();
+						
+						//reset Poximity
+						lblProximity.setText("-");
+						imgProximity.setImage(new Image("drawable/icons/no_proximity.png"));
 					}
 				});
 
+				break;
+			case AppConstants.STATE_PROXIMITY:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblProximity.setText(message.toUpperCase());
+						imgProximity.setImage(new Image("drawable/icons/proximity.png"));
+					}
+				});
+				break;
+			case AppConstants.STATE_LOCKED:
+
+				// TODO: MAXIMIZE APP
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						imgLockState.setImage(new Image("drawable/icons/locked.png"));
+
+						Stage stage = (Stage) root.getScene().getWindow();
+						stage.setIconified(false);
+						stage.setFullScreen(true);
+					}
+				});
+				break;
+
+			case AppConstants.STATE_UNLOCKED:
+
+				// TODO: MINIMIZE APP
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						imgLockState.setImage(new Image("drawable/icons/unlocked.png"));
+
+						Stage stage = (Stage) root.getScene().getWindow();
+						stage.setFullScreen(false);
+						//stage.toBack();
+
+						// TODO: createMiniView
+						// stage.setIconified(true);
+					}
+				});
 				break;
 			default:
 				break;
@@ -285,6 +350,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private void btnLoginAction(ActionEvent event) {
 		login(event);
+
 	}
 
 	@FXML
@@ -296,7 +362,6 @@ public class LoginController implements Initializable {
 		progressConnectToWatch.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
 		imgCancelConnectToWatch.setVisible(true);
 		imgWatchConnected.setVisible(false);
-
 	}
 
 	@FXML
@@ -324,13 +389,13 @@ public class LoginController implements Initializable {
 			if (mLoginModel.isValidCredentials(lblUserName.getText(), txtPassword.getText())) {
 
 				System.out.println("Username and Password is correct!");
-				imgPassword.setImage(new Image("drawable/icons/permission.png"));
+				imgPassword.setImage(new Image("drawable/icons/key.png"));
 				txtPassword.setDisable(true);
 				txtPassword.setVisible(false);
 				btnLogin.setVisible(false);
 				lblPassword.setVisible(true);
 				imgPasswordCorrect.setVisible(true);
-				
+
 				progressHeartrateDetection.setVisible(true);
 				imgHeartBeat.setVisible(false);
 				lblHeartbeat.setText("Detect heartrate ...");

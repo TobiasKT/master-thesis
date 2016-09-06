@@ -16,6 +16,16 @@ import static android.hardware.Sensor.TYPE_STEP_COUNTER;
  */
 public class AppConstants {
 
+    //Server
+    public final static String DEFAULT_SERVER_IP = "192.168.43.108";
+    public final static int DEFAULT_SERVER_PORT = 8080;
+
+
+    //Shared Preferences
+    public final static String SHARED_PREF_APP_KEY = "com.android.lmu.mt.tokt.authenticator.PREFERENCE_FILE_KEY";
+    public final static String SHARED_PREF_SEVER_IP = "server_ip";
+    public final static String SHARED_PREF_SEVER_PORT = "server_port";
+
 
     //SensorTypes
     public final static int SENSOR_TYPE_DEBUG = 0;
@@ -60,9 +70,61 @@ public class AppConstants {
     public static final String DATA_MAP_KEY_VALUES = "values";
     public static final String DATA_MAP_KEY_FILTER = "filter";
 
+    public static final String DATA_MAP_KEY_BEACON_PROXIMITY = "proximity";
 
     //ClientPaths
     public static final String CLIENT_PATH_START_MEASUREMENT = "/start";
     public static final String CLIENT_PATH_STOP_MEASUREMENT = "/stop";
+
+    //ServerPaths
+    public static final String SERVER_PATH_SENSOR_DATA = "/sensors/";
+    public static final String SERVER_PATH_BEACON_DATA = "/beacon/";
+
+
+    //Commands
+    public static final String COMMAND_CONNECT = "CONNECT";
+    public static final String COMMAND_DISCONNECT = "DISCONNECT";
+    public static final String COMMAND_CONFIRM = "CONFIRM";
+    public static final String COMMAND_GET_CUES = "GET_CUES";
+    public static final String COMMAND_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
+
+    //States
+    public static final int STATE_SERVER_RUNNING = 1000;
+    public static final int STATE_SERVER_STOPPED = 1001;
+    public static final int STATE_CONNECTED = -1000;
+    public static final int STATE_DISCONNECTED = -1001;
+    public static final int STATE_CONFIRM = -2000;
+    public static final int STATE_HEART_BEATING = -3000;
+    public static final int STATE_HEART_STOPPED = -3001;
+    public static final int STATE_AUTHENTICATED = -4000;
+    public static final int STATE_NOT_AUTHENTICATED = -4001;
+
+    public static final int ERROR = -9999;
+
+    //Message Prefix
+    public static final String SENSORDATA_PREFIX = "SENSORDATA";
+    public static final String BEACONDATA_PREFIX = "BEACONDATA";
+
+
+    //Proximity States
+    public static final String PROXIMITY_IMMEDIATE = "immediate";
+    public static final String PROXIMITY_NEAR = "near";
+    public static final String PROXIMITY_FAR = "far";
+
+
+    //Beacon Service Constants
+    public static final String BEACON_RESULT = "com.android.lmu.tokt.authenticator.BeaconService.REQUEST_PROCESSED";
+    public static final String BEACON_MESSAGE = "com.android.lmu.tokt.authenticator.BeaconService.BEACON_MESSAGE";
+
+
+    //Sensor Service Constants
+    public static final String SENSOR_HEART_RATE_RESULT = "com.android.lmu.tokt.authenticator.SensorService.HEART_RATE_REQUEST_PROCESSED";
+    public static final String SENSOR_HEART_RATE_MESSAGE = "com.android.lmu.tokt.authenticator.SensorService.HEART_REATE_MESSAGE";
+    public static final String SENSOR_STEP_COUNT_RESULT = "com.android.lmu.tokt.authenticator.SensorService.STEP_COUNT_REQUEST_PROCESSED";
+    public static final String SENSOR_STEP_COUNT_MESSAGE = "com.android.lmu.tokt.authenticator.SensorService.BEACON_MESSAGE";
+
+    //MessageReceiverService
+    public static final String MESSAGE_RECEIVER_RESULT = "com.android.lmu.tokt.authenticator.MessageReceiverService.REQUEST_PROCESSED";
+    public static final String MESSAGE_RECEIVER_MESSAGE = "com.android.lmu.tokt.authenticator.MessageReceiverService.MESSAGE_RECEIVER_MESSAGE";
 
 }

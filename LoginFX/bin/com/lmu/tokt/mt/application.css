@@ -1,5 +1,5 @@
 /*  */
- #login-hbox{
+ #login-app{
    -fx-background-image: url("../../../../drawable/wallpaper/background_3.jpg");
     -fx-background-size: cover;
     -fx-background-position: center center;
@@ -17,7 +17,7 @@
 #round-connect-btn{
     -fx-background-color: rgba(230.0,230.0,230.0,0.6);
     -fx-background-radius: 100.0;
-    -fx-background-image: url("../../../../drawable/icons/connect.png");
+    -fx-background-image: url("../../../../drawable/icons/connect_2.png");
     -fx-background-size: 45.0%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
