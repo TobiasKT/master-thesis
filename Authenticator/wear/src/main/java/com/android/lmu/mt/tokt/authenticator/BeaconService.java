@@ -15,6 +15,7 @@ import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
@@ -75,7 +76,8 @@ public class BeaconService extends Service implements BeaconConsumer {
     @Override
     public void onBeaconServiceConnect() {
         //TODO: consider hardcoding UID of Beacon
-        final Region region = new Region("myBeacons", null, null, null);
+        Identifier identifier = Identifier.parse(AppConstants.BEACON_IDENTIFIER_STRING);
+        final Region region = new Region("myBeacons", identifier, null, null);
         mBeaconManager.setMonitorNotifier(new MonitorNotifier() {
 
             // If the device enters a Beacon region
@@ -116,7 +118,10 @@ public class BeaconService extends Service implements BeaconConsumer {
                     long timestamp = System.currentTimeMillis();
                     String proximity = getProximityStringByRSSI(beacon.getRssi());
                     mWatchClient.sendBeaconData(proximity, timestamp);
-                    sendResultToMainUI(proximity);
+
+                    //TODO: only send if data changed
+                    sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, proximity);
+                    sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, beacon.getId1().toString());
                 }
 
 
@@ -132,10 +137,10 @@ public class BeaconService extends Service implements BeaconConsumer {
 
     }
 
-    private void sendResultToMainUI(String message) {
-        Intent intent = new Intent(AppConstants.BEACON_RESULT);
+    private void sendResultToMainUI(String intentFilter, String extraName, String message) {
+        Intent intent = new Intent(intentFilter);
         if (message != null)
-            intent.putExtra(AppConstants.BEACON_MESSAGE, message);
+            intent.putExtra(extraName, message);
         mLocalBroadcastManager.sendBroadcast(intent);
     }
 

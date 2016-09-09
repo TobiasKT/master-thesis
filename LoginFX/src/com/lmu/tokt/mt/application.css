@@ -18,9 +18,25 @@
     -fx-background-color: rgba(230.0,230.0,230.0,0.6);
     -fx-background-radius: 100.0;
     -fx-background-image: url("../../../../drawable/icons/connect_2.png");
-    -fx-background-size: 45.0%;
+    -fx-background-size: 50.0%;
+    -fx-background-insets: 0.0,20.0,0.0,0.0;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
+}
+
+#round-edit-btn{
+    -fx-background-color: rgba(230.0,230.0,230.0,0.6);
+    -fx-background-radius: 100.0;
+    -fx-background-image: url("../../../../drawable/icons/edit.png");
+    -fx-background-size: 50.0%;
+    -fx-background-insets: 0.0,20.0,0.0,0.0;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+}
+
+#round-edit-btn:hover{
+	-fx-background-color: rgba(255.0,255.0,255.0,0.7);
+    -fx-cursor: hand;
 }
 
 #round-connect-btn:hover{
@@ -32,6 +48,14 @@
     -fx-background-color: rgba(255.0,255.0,255.0,0.7);
     -fx-cursor: hand;
 }
+
+.window-button:hover{
+	-fx-background-color: rgba(230.0,230.0,230.0,0.4);
+    -fx-background-radius: 100.0;
+    -fx-background-size: 50.0%;
+	-fx-cursor: hand;
+}
+
 
 
 .hand-cursor:hover{
@@ -57,4 +81,6 @@
 	 -fx-background-color: rgba(255.0,255.0,255.0,0.3);
 	-fx-cursor: hand;
 }
+
+
 

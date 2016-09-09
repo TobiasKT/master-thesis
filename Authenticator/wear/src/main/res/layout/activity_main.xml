@@ -77,6 +77,16 @@
         android:textStyle="bold"
         app:layout_box="all" />
 
+    <TextView
+        android:id="@+id/beacon_identifier_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="36dp"
+        android:textSize="7sp"
+        android:text=""
+        app:layout_box="all" />
+
 
     <TextView
         android:id="@+id/clock"
@@ -91,8 +101,9 @@
         android:id="@+id/close"
         android:layout_gravity="bottom|center"
         android:layout_marginBottom="24dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="64dp"
+        android:layout_height="40dp"
+        android:textSize="12sp"
         android:text="close" />
 
 </android.support.wearable.view.BoxInsetLayout>

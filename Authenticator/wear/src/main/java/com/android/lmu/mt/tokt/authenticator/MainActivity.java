@@ -36,6 +36,7 @@ public class MainActivity extends WearableActivity {
     private TextView mHeartRateText;
     private TextView mStepCountText;
     private TextView mProximityText;
+    private TextView mBeaconIdentifierText;
     private Button mCloseBtn;
 
     private BroadcastReceiver mBroadcastReceiver;
@@ -54,6 +55,7 @@ public class MainActivity extends WearableActivity {
         mHeartRateText = (TextView) findViewById(R.id.heart_rate_text);
         mStepCountText = (TextView) findViewById(R.id.step_text);
         mProximityText = (TextView) findViewById(R.id.proximity_text);
+        mBeaconIdentifierText = (TextView)findViewById(R.id.beacon_identifier_text);
 
         mCloseBtn = (Button) findViewById(R.id.close);
 
@@ -83,6 +85,12 @@ public class MainActivity extends WearableActivity {
                     mProximityText.setText(message);
                 }
 
+                if (intent.getAction().equals(AppConstants.BEACON_IDENTIFIER_RESULT)) {
+                    Log.d(TAG, "Beacon ID result received");
+                    String message = intent.getStringExtra(AppConstants.BEACON_IDENTIFIER_MESSAGE);
+                    mBeaconIdentifierText.setText(message);
+                }
+
                 if (intent.getAction().equals(AppConstants.SENSOR_HEART_RATE_RESULT)) {
                     Log.d(TAG, "HeartRate result received");
                     String message = intent.getStringExtra(AppConstants.SENSOR_HEART_RATE_MESSAGE);
@@ -109,6 +117,7 @@ public class MainActivity extends WearableActivity {
         filter.addAction(AppConstants.SENSOR_HEART_RATE_RESULT);
         filter.addAction(AppConstants.SENSOR_STEP_COUNT_RESULT);
         filter.addAction(AppConstants.MESSAGE_RECEIVER_RESULT);
+        filter.addAction(AppConstants.BEACON_IDENTIFIER_RESULT);
 
         LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
                 filter);

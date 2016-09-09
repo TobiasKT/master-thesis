@@ -67,6 +67,12 @@ public class TCPServer extends Thread {
 		startRunning();
 	}
 
+	@Override
+	public void interrupt() {
+		super.interrupt();
+		stopRunning();
+	}
+
 	public void startRunning() {
 
 		mServerIsRunning = true;
@@ -196,7 +202,7 @@ public class TCPServer extends Thread {
 
 				// validate lock state
 				validateLockState();
-				
+
 				validateHeartRateByTimeStamp();
 
 				mMessageListener.callbackMessageReceiver(mIncomingMessage);
@@ -206,14 +212,13 @@ public class TCPServer extends Thread {
 		System.out.println("Data exchange stopped!");
 
 	}
-	
-	
-	private void validateHeartRateByTimeStamp(){
-		
+
+	private void validateHeartRateByTimeStamp() {
+
 		long t = System.currentTimeMillis();
 		long lastTimestamp = mLastHeartrateTimestamp;
 		long timeAgo = t - lastTimestamp;
-		System.out.println("timeAgo:"+timeAgo);
+		System.out.println("timeAgo:" + timeAgo);
 
 		if (lastTimestamp != 0 && mHeartRateDetectd) {
 			if (timeAgo > 20000) {
@@ -226,13 +231,9 @@ public class TCPServer extends Thread {
 			}
 		}
 
-		
-		
 	}
 
 	private void validateHeartRate(String data) {
-
-		
 
 		JSONParser parser = new JSONParser();
 		try {

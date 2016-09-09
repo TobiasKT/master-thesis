@@ -1,11 +1,16 @@
 package com.lmu.tokt.mt;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.ResourceBundle;
+
+import org.controlsfx.control.PopOver;
+import org.controlsfx.control.PopOver.ArrowLocation;
 
 import com.lmu.tokt.mt.anim.HeartBeatAnimation;
 import com.lmu.tokt.mt.anim.Shaker;
@@ -18,10 +23,12 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -35,8 +42,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -62,8 +75,7 @@ public class LoginController implements Initializable {
 	private Button btnLogin, btnRegister, btnChange, btnConnectToWatch;
 	@FXML
 	private ImageView imgAddUser, imgChangeUser, imgSleep, imgShutDown, imgWatchConnected, imgCancelConnectToWatch,
-			imgPassword, imgConnectedToWatchSuccess, imgPasswordCorrect, imgHeartBeat, imgHeartBeatDetected,
-			imgProximity, imgLockState;
+			imgPassword, imgConnectedToWatchSuccess, imgPasswordCorrect, imgHeartBeat, imgProximity, imgLockState;
 	@FXML
 	private ImageView imgSettings;
 	@FXML
@@ -83,16 +95,26 @@ public class LoginController implements Initializable {
 
 	private HeartBeatAnimation mHeartBeatAnimation;
 
+	private static LoginController instance;
+
+	public static LoginController getInstance() {
+		return instance;
+	}
+
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		Image image = new Image("drawable/avatar/leaf.png");
-		circProfile.setFill(new ImagePattern(image));
+		if (instance == null) {
+			instance = this;
+		}
+
+		setUpUserSettings();
+
 		setDateTime();
 
 		imgHeartBeat.setFitHeight(24.0);
 		imgHeartBeat.setFitWidth(24.0);
-		//mHeartBeatAnimation = new HeartBeatAnimation(imgHeartBeat);
+		// mHeartBeatAnimation = new HeartBeatAnimation(imgHeartBeat);
 
 		if (mLoginModel.isDBConnected()) {
 			System.out.println("DB is connected!");
@@ -104,6 +126,39 @@ public class LoginController implements Initializable {
 		// start TCP Server
 		mTCPServer = new TCPServer(mMessageCallback);
 		mTCPServer.start();
+
+	}
+
+	private void setUpUserSettings() {
+
+		// User settings
+		lblUserName.setText(LoginUtil.getInstance().getUsername());
+
+		// Backgorund Image
+		BufferedImage bufferedBG = LoginUtil.getInstance().getBackground();
+		Image image = null;
+		if (bufferedBG != null) {
+
+			// TODO: NOT WORKING
+			image = SwingFXUtils.toFXImage(bufferedBG, null);
+			BackgroundImage myBI = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT,
+					BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+			root.setBackground(new Background(myBI));
+
+		} else {
+			// Error
+			root.setStyle("-fx-background-image: url('file://../../../../drawable/wallpaper/background_3.jpg');");
+		}
+		// Avatar Image
+		bufferedBG = LoginUtil.getInstance().getAvatar();
+		if (bufferedBG != null) {
+			image = SwingFXUtils.toFXImage(bufferedBG, null);
+			circProfile.setFill(new ImagePattern(image));
+		} else {
+			image = new Image("drawable/avatar/leaf.png");
+			circProfile.setFill(new ImagePattern(image));
+		}
+
 	}
 
 	// set current date and time
@@ -210,16 +265,15 @@ public class LoginController implements Initializable {
 						txtPassword.clear();
 
 						// reset HeartBeat
-						//mHeartBeatAnimation.stopAnimation();
+						// mHeartBeatAnimation.stopAnimation();
 						imgHeartBeat.setImage(new Image("drawable/icons/no_heartbeat.png"));
-						imgHeartBeatDetected.setVisible(false);
 						progressHeartrateDetection.setVisible(false);
 						lblHeartbeat.setText("No Heartbeat");
-						
-						//reset Poximity
+
+						// reset Poximity
 						lblProximity.setText("-");
 						imgProximity.setImage(new Image("drawable/icons/no_proximity.png"));
-						
+
 						imgLockState.setImage(new Image("drawable/icons/locked.png"));
 					}
 				});
@@ -243,8 +297,7 @@ public class LoginController implements Initializable {
 						progressHeartrateDetection.setVisible(false);
 						imgHeartBeat.setVisible(true);
 						imgHeartBeat.setImage(new Image("drawable/icons/heartbeat.png"));
-						//mHeartBeatAnimation.startAnimation();
-						imgHeartBeatDetected.setVisible(true);
+						// mHeartBeatAnimation.startAnimation();
 						// display value
 						lblHeartbeat.setText("Heartbeat detected");
 					}
@@ -269,12 +322,11 @@ public class LoginController implements Initializable {
 					public void run() {
 
 						imgLockState.setImage(new Image("drawable/icons/locked.png"));
-						
+
 						// reset HeartBeat
-						//mHeartBeatAnimation.stopAnimation();
+						// mHeartBeatAnimation.stopAnimation();
 						imgHeartBeat.setImage(new Image("drawable/icons/no_heartbeat.png"));
 						progressHeartrateDetection.setVisible(false);
-						imgHeartBeatDetected.setVisible(false);
 						lblHeartbeat.setText("No Heartbeat");
 						lblHeartbeatValue.setText("(0.0)");
 
@@ -287,8 +339,8 @@ public class LoginController implements Initializable {
 						lblPassword.setVisible(false);
 						imgPasswordCorrect.setVisible(false);
 						txtPassword.clear();
-						
-						//reset Poximity
+
+						// reset Poximity
 						lblProximity.setText("-");
 						imgProximity.setImage(new Image("drawable/icons/no_proximity.png"));
 					}
@@ -332,7 +384,7 @@ public class LoginController implements Initializable {
 
 						Stage stage = (Stage) root.getScene().getWindow();
 						stage.setFullScreen(false);
-						//stage.toBack();
+						// stage.toBack();
 
 						// TODO: createMiniView
 						// stage.setIconified(true);
@@ -344,6 +396,22 @@ public class LoginController implements Initializable {
 			}
 		}
 	};
+
+	/*---------------- EDIT AVATAR ----------------*/
+	@FXML
+	private void onEditAvatarAvtion(ActionEvent evetn) {
+
+	}
+
+	@FXML
+	private void onAvatarCircleMouseEntered(MouseEvent event) {
+
+	}
+
+	@FXML
+	private void onAvatarCircleMouseExited(MouseEvent event) {
+
+	}
 
 	/*----------------LOGIN----------------*/
 
@@ -398,7 +466,7 @@ public class LoginController implements Initializable {
 
 				progressHeartrateDetection.setVisible(true);
 				imgHeartBeat.setVisible(false);
-				lblHeartbeat.setText("Detect heartrate ...");
+				lblHeartbeat.setText("Detect heartbeat ...");
 
 				// starteService (get Cues: Heartbeat, Proximity, usercontext)
 				mTCPServer.sendMessage(AppConstants.COMMAND_GET_CUES);
@@ -623,6 +691,7 @@ public class LoginController implements Initializable {
 		try {
 			if (mLoginModel.isValidCredentials(txtChangeUsername.getText(), txtChangeUserPassword.getText())) {
 				lblUserName.setText(txtChangeUsername.getText());
+				LoginUtil.getInstance().setUsernamne(txtChangeUsername.getText());
 				cancelChangeUser();
 			} else {
 
@@ -637,6 +706,89 @@ public class LoginController implements Initializable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	/*---------------- SHUTDOWN ----------------*/
+	@FXML
+	private void onShutDownClicked(MouseEvent event) {
+
+		String[] shutdownCommand = null;
+		String operatingSystem = System.getProperty("os.name");
+
+		if ("Mac OS X".equals(operatingSystem)) {
+			shutdownCommand = new String[] { "osascript", "-e",
+					"tell application \"loginwindow\" to «event aevtrsdn»" };
+			System.out.println(shutdownCommand);
+		} else if ("Windows".equals(operatingSystem)) {
+			shutdownCommand = new String[] { "shutdown -s -t 60" };
+		} else {
+			throw new RuntimeException("Unsupported operating system.");
+		}
+
+		try {
+			Runtime.getRuntime().exec(shutdownCommand);
+		} catch (IOException e) { // TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/*---------------- SLEEP ----------------*/
+	@FXML
+	private void onSleepClicked(MouseEvent event) {
+
+		String sleepCommand;
+		String operatingSystem = System.getProperty("os.name");
+
+		if ("Linux".equals(operatingSystem) || "Mac OS X".equals(operatingSystem)) {
+			sleepCommand = "pmset sleepnow";
+		} else if ("Windows".equals(operatingSystem)) {
+			sleepCommand = "rundll32.exe powrprof.dll,SetSuspendState 0,1,0";
+		} else {
+			throw new RuntimeException("Unsupported operating system.");
+		}
+
+		try {
+			Runtime.getRuntime().exec(sleepCommand);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/*---------------- SETTINGS ----------------*/
+	@FXML
+	private void onSettingsClicked(MouseEvent event) {
+		try {
+			VBox root = FXMLLoader.load(getClass().getResource("Settings.fxml"));
+			PopOver popOver = new PopOver(root);
+			popOver.setArrowLocation(ArrowLocation.TOP_RIGHT);
+			popOver.setDetached(false);
+			popOver.setDetachable(false);
+			popOver.show(imgSettings);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	/*---------------- GETTERS  & SETTERS----------------*/
+	public BorderPane getRoot() {
+		return root;
+	}
+
+	public Circle getAvatarCircle() {
+		return circProfile;
+	}
+
+	public TCPServer getTCPServer() {
+		return mTCPServer;
+	}
+
+	public void setTCPServer(TCPServer mTCPServer) {
+		this.mTCPServer = mTCPServer;
 	}
 
 }

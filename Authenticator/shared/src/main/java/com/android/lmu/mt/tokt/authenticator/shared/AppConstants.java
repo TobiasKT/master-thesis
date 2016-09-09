@@ -114,7 +114,10 @@ public class AppConstants {
 
     //Beacon Service Constants
     public static final String BEACON_RESULT = "com.android.lmu.tokt.authenticator.BeaconService.REQUEST_PROCESSED";
+    public static final String BEACON_IDENTIFIER_RESULT = "com.android.lmu.tokt.authenticator.BeaconService.ID_REQUEST_PROCESSED";
     public static final String BEACON_MESSAGE = "com.android.lmu.tokt.authenticator.BeaconService.BEACON_MESSAGE";
+    public static final String BEACON_IDENTIFIER_MESSAGE = "com.android.lmu.tokt.authenticator.BeaconService.ID_BEACON_MESSAGE";
+    public static final String BEACON_IDENTIFIER_STRING = "B0702880-A295-A8AB-F734-031A98A512DE";
 
 
     //Sensor Service Constants
@@ -126,5 +129,6 @@ public class AppConstants {
     //MessageReceiverService
     public static final String MESSAGE_RECEIVER_RESULT = "com.android.lmu.tokt.authenticator.MessageReceiverService.REQUEST_PROCESSED";
     public static final String MESSAGE_RECEIVER_MESSAGE = "com.android.lmu.tokt.authenticator.MessageReceiverService.MESSAGE_RECEIVER_MESSAGE";
+
 
 }

@@ -2,6 +2,8 @@ package com.lmu.tokt.mt.util;
 
 public class AppConstants {
 
+	public static final int DEFAULT_SERVER_PORT = 8888;
+
 	public static final String ACCURACY = "accuracy";
 	public static final String TIMESTAMP = "timestamp";
 	public static final String VALUES = "values";
@@ -39,4 +41,14 @@ public class AppConstants {
 	public static final String PROXIMITY_NEAR = "near";
 	public static final String PROXIMITY_FAR = "far";
 
+	// DB
+	public static final int IMAGE_TYPE_BACKGROUND = 1111;
+	public static final int IMAGE_TYPE_AVATAR = 2222;
+
+	public static final String DB_FIELD_USERNAME = "username";
+	public static final String DB_FIELD_PASSWORD = "password";
+	public static final String DB_FIELD_BACKGROUND = "background";
+	public static final String DB_FIELD_AVATAR = "avatar";
+
+	public static final String DB_FIELD_LAST_USER = "lastUser";
 }
