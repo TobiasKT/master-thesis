@@ -17,6 +17,8 @@ import javafx.stage.WindowEvent;
 
 public class LoginApp extends Application {
 
+	private static final String TAG = LoginApp.class.getSimpleName();
+
 	private Stage mStage;
 
 	private static LoginApp instance;
@@ -29,9 +31,13 @@ public class LoginApp extends Application {
 		return instance;
 	}
 
+	public static void main(String[] args) {
+		launch(args);
+	}
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		System.out.println("Start Application...");
+		System.out.println(TAG + ": start application");
 		try {
 			BorderPane root = FXMLLoader.load(getClass().getResource("Login.fxml"));
 			Scene scene = new Scene(root);
@@ -44,7 +50,7 @@ public class LoginApp extends Application {
 
 				@Override
 				public void handle(WindowEvent event) {
-
+					System.out.println(TAG + ": handling close Event");
 					Alert alert = new Alert(AlertType.NONE);
 					alert.setTitle("Confirmation - Close Application");
 					alert.setContentText("Do you want do close the \nAuthenticator application?");
@@ -56,14 +62,12 @@ public class LoginApp extends Application {
 
 					Optional<ButtonType> result = alert.showAndWait();
 					if (result.get() == buttonTypeOk) {
-
-						// TDOD Last loggedInUser
 						LoginModel model = new LoginModel();
 						try {
 							model.updateLastLoggedInUser(LoginUtil.getInstance().getUsername());
 						} catch (SQLException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							System.out.println(
+									TAG + ": ERROR updatating" + " last logged in user. Exception: " + e.toString());
 						}
 
 						System.exit(1);
@@ -74,21 +78,18 @@ public class LoginApp extends Application {
 				}
 			});
 		} catch (Exception e) {
-			e.printStackTrace();
+			System.out.println(TAG + ": ERROR loading primary stage. Exception: " + e.toString());
 		}
-	}
-
-	public Stage getStage() {
-		return mStage;
 	}
 
 	@Override
 	public void stop() throws Exception {
 		super.stop();
+		System.out.println(TAG + ": stop application");
 	}
 
-	public static void main(String[] args) {
-		launch(args);
+	public Stage getStage() {
+		return mStage;
 	}
 
 }

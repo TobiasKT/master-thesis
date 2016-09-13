@@ -8,7 +8,7 @@
 #round-login-btn{
     -fx-background-color: rgba(230.0,230.0,230.0,0.6);
     -fx-background-radius: 100.0;
-    -fx-background-image: url("../../../../drawable/icons/right-arrow.png");
+    -fx-background-image: url("../../../../drawable/icons/actions/right-arrow.png");
     -fx-background-size: 50.0%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
@@ -17,7 +17,7 @@
 #round-connect-btn{
     -fx-background-color: rgba(230.0,230.0,230.0,0.6);
     -fx-background-radius: 100.0;
-    -fx-background-image: url("../../../../drawable/icons/connect_2.png");
+    -fx-background-image: url("../../../../drawable/icons/actions/connect.png");
     -fx-background-size: 50.0%;
     -fx-background-insets: 0.0,20.0,0.0,0.0;
     -fx-background-repeat: no-repeat;
@@ -56,8 +56,6 @@
 	-fx-cursor: hand;
 }
 
-
-
 .hand-cursor:hover{
 	-fx-cursor: hand;
 }
@@ -80,6 +78,11 @@
 .white-outline-btn:hover{
 	 -fx-background-color: rgba(255.0,255.0,255.0,0.3);
 	-fx-cursor: hand;
+}
+
+.border-top-white{
+	-fx-border-width: 1.0 0.0 0.0 0.0; 
+	-fx-border-color: rgba(255.0,255.0,255.0,0.5);
 }
 
 

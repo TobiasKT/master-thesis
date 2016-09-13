@@ -12,7 +12,6 @@ import java.util.ResourceBundle;
 import org.controlsfx.control.PopOver;
 import org.controlsfx.control.PopOver.ArrowLocation;
 
-import com.lmu.tokt.mt.anim.HeartBeatAnimation;
 import com.lmu.tokt.mt.anim.Shaker;
 import com.lmu.tokt.mt.server.TCPServer;
 import com.lmu.tokt.mt.server.TCPServer.MessageCallback;
@@ -57,35 +56,76 @@ import javafx.util.Duration;
 
 public class LoginController implements Initializable {
 
+	private static final String TAG = LoginController.class.getSimpleName();
+
+	/*---------------- FXML FIELDS ----------------*/
 	@FXML
 	private BorderPane root;
 	@FXML
 	private AnchorPane anchorPaneContainer, anchorPaneRegister, anchorPaneLogin, anchorPaneChangeUser;
+
+	// root top fields
+	@FXML
+	private Label lblServerStatus, lblDateTime;
+	@FXML
+	private ImageView imgSettings, imgLockState;
+
+	// root bottom fields
 	@FXML
 	private HBox hboxBottomButtons;
 	@FXML
-	private Label lblUserName, lblDateTime, lblRegistrationSuccess, lblRegistrationFailed, lblCancel,
-			lblCancelChangeUser, lblChangeUserTitle, lblConnectToWatch, lblServerStatus, lblPassword, lblHeartbeat,
-			lblHeartbeatValue, lblProximity;
-	@FXML
-	private PasswordField txtPassword, txtRegisterPassword, txtRegisterPasswordRepeat, txtChangeUserPassword;
-	@FXML
-	private TextField txtUsername, txtChangeUsername;
-	@FXML
-	private Button btnLogin, btnRegister, btnChange, btnConnectToWatch;
-	@FXML
-	private ImageView imgAddUser, imgChangeUser, imgSleep, imgShutDown, imgWatchConnected, imgCancelConnectToWatch,
-			imgPassword, imgConnectedToWatchSuccess, imgPasswordCorrect, imgHeartBeat, imgProximity, imgLockState;
-	@FXML
-	private ImageView imgSettings;
-	@FXML
-	private ImageView imgCancelRegister, imgBackRegister, imgBackChange;
-	@FXML
-	private ImageView imgUsernameChecked, imgPasswordChecked, imgRepeatPasswordhecked;
+	private ImageView imgAddUser, imgChangeUser, imgSleep, imgShutDown;
+
+	// login fields
 	@FXML
 	private Circle circProfile;
 	@FXML
-	private ProgressIndicator progressConnectToWatch, progressHeartrateDetection;
+	private Label lblUserName, lblConnectToWatch, lblPassword;
+	@FXML
+	private ImageView imgWatchConnected, imgPassword, imgTyping, imgConnectedToWatchSuccess, imgCancelConnectToWatch,
+			imgPasswordCorrect;
+	@FXML
+	private Button btnConnectToWatch, btnLogin;
+	@FXML
+	private PasswordField txtPassword;
+	@FXML
+	private ProgressIndicator progressConnectToWatch;
+
+	// cues fields
+	@FXML
+	private Label lblHeartbeat, lblHeartbeatValue, lblProximity, lblProximityValue, lblUserState, lblUserStateValue,
+			lblSoundSignal, lblSoundSignalValue;
+	@FXML
+	private ImageView imgHeartBeat, imgProximity, imgUserState, imgSoundSignal;
+	@FXML
+	private ProgressIndicator progressHeartrateDetection;
+
+	// add user fields
+	@FXML
+	private Label lblRegistrationFailed, lblRegistrationSuccess, lblCancel;
+	@FXML
+	private TextField txtUsername;
+	@FXML
+	private PasswordField txtRegisterPassword, txtRegisterPasswordRepeat;
+	@FXML
+	private ImageView imgUsernameChecked, imgPasswordChecked, imgRepeatPasswordhecked, imgCancelRegister,
+			imgBackRegister;
+	@FXML
+	private Button btnRegister;
+
+	// Change user fields
+	@FXML
+	private Label lblCancelChangeUser, lblChangeUserTitle;
+	@FXML
+	private PasswordField txtChangeUserPassword;
+	@FXML
+	private TextField txtChangeUsername;
+	@FXML
+	private Button btnChange;
+	@FXML
+	private ImageView imgBackChange;
+
+	/*---------------- MEMBER FIELDS ----------------*/
 
 	public LoginModel mLoginModel = new LoginModel();
 
@@ -93,14 +133,13 @@ public class LoginController implements Initializable {
 
 	private static Checksum mChecksum;
 
-	private HeartBeatAnimation mHeartBeatAnimation;
-
 	private static LoginController instance;
 
 	public static LoginController getInstance() {
 		return instance;
 	}
 
+	/*---------------- INIT ----------------*/
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
@@ -112,10 +151,6 @@ public class LoginController implements Initializable {
 
 		setDateTime();
 
-		imgHeartBeat.setFitHeight(24.0);
-		imgHeartBeat.setFitWidth(24.0);
-		// mHeartBeatAnimation = new HeartBeatAnimation(imgHeartBeat);
-
 		if (mLoginModel.isDBConnected()) {
 			System.out.println("DB is connected!");
 		} else {
@@ -123,15 +158,17 @@ public class LoginController implements Initializable {
 		}
 
 		mChecksum = Checksum.getInstance();
+
 		// start TCP Server
 		mTCPServer = new TCPServer(mMessageCallback);
 		mTCPServer.start();
 
 	}
 
+	// load user settings
 	private void setUpUserSettings() {
 
-		// User settings
+		// username
 		lblUserName.setText(LoginUtil.getInstance().getUsername());
 
 		// Backgorund Image
@@ -175,12 +212,14 @@ public class LoginController implements Initializable {
 		timeline.play();
 	}
 
+	/*---------------- PROCESSING SERVER MESSAGES ----------------*/
+
 	// implements MessageCallback
 	private TCPServer.MessageCallback mMessageCallback = new MessageCallback() {
 
 		@Override
 		public void callbackMessageReceiver(String message) {
-			System.out.println("Message from Client: " + message);
+			System.out.println(TAG + ":callbackMessageReceiver() - Message from client: " + message);
 		}
 
 		@Override
@@ -188,7 +227,7 @@ public class LoginController implements Initializable {
 			switch (state) {
 
 			case AppConstants.STATE_SERVER_RUNNING:
-
+				System.out.println(TAG + ": STATE SERVER RUNNING callback");
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
@@ -199,6 +238,7 @@ public class LoginController implements Initializable {
 				break;
 
 			case AppConstants.STATE_SERVER_STOPPED:
+				System.out.println(TAG + ": STATE SERVER STOPPED callback");
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
@@ -218,7 +258,7 @@ public class LoginController implements Initializable {
 
 				break;
 			case AppConstants.STATE_CONNECTED:
-				System.out.println("Successfully connected to SmartWatch!");
+				System.out.println(TAG + ": STATE CONNECTED callback");
 
 				// Update UI
 				Platform.runLater(new Runnable() {
@@ -226,60 +266,46 @@ public class LoginController implements Initializable {
 					public void run() {
 
 						// Successful connection with watch
-						lblConnectToWatch.setText("Connected");
-						imgConnectedToWatchSuccess.setVisible(true);
-						progressConnectToWatch.setVisible(false);
-						imgWatchConnected.setImage(new Image("drawable/icons/watch.png"));
-						imgWatchConnected.setVisible(true);
-						imgCancelConnectToWatch.setVisible(false);
+						setConnectToWatchFields(new Image("drawable/icons/watch/watch_white_1.png"), true, false,
+								"Connected", true, false, false);
+
 						txtPassword.setDisable(false);
 						txtPassword.setFocusTraversable(true);
-						btnConnectToWatch.setVisible(false);
-
 						txtPassword.requestFocus();
 					}
 				});
 
 				break;
 			case AppConstants.ERROR:
-
+				System.out.println(TAG + ": STATE ERROR callback");
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
+
+						setLockStateImage(true);
+
 						// retry to connect with watch
-						lblConnectToWatch.setText("Retry connecting...");
-						imgConnectedToWatchSuccess.setVisible(false);
-						progressConnectToWatch.setVisible(true);
-						imgWatchConnected.setVisible(false);
-						imgCancelConnectToWatch.setVisible(true);
+						setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, true,
+								"Connecting...", false, true, false);
+
 						txtPassword.setDisable(true);
-						btnConnectToWatch.setVisible(false);
 
-						// reset PW Input
-						imgPassword.setImage(new Image("drawable/icons/no_key.png"));
-						txtPassword.setDisable(true);
-						txtPassword.setVisible(true);
-						btnLogin.setVisible(true);
-						lblPassword.setVisible(false);
-						imgPasswordCorrect.setVisible(false);
-						txtPassword.clear();
+						setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
+								new Image("drawable/icons/key/key_grey_1.png"), true, true, true, false, false, true);
+						resetProximityFields();
+						resetUserStateFields();
+						resetSoundSignalFields();
 
-						// reset HeartBeat
-						// mHeartBeatAnimation.stopAnimation();
-						imgHeartBeat.setImage(new Image("drawable/icons/no_heartbeat.png"));
-						progressHeartrateDetection.setVisible(false);
-						lblHeartbeat.setText("No Heartbeat");
+						// reset Heartbeat
+						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
+								"0.0");
 
-						// reset Poximity
-						lblProximity.setText("-");
-						imgProximity.setImage(new Image("drawable/icons/no_proximity.png"));
-
-						imgLockState.setImage(new Image("drawable/icons/locked.png"));
 					}
 				});
-				System.out.println("Failing to connect to SmartWatch!");
+				System.out.println(TAG + ": ERROR Failing to connect to Smartwatch/Phone");
 				break;
 			case AppConstants.STATE_CONFIRM:
+				System.out.println(TAG + ": STATE CONFIRM callback");
 
 				Platform.runLater(new Runnable() {
 					@Override
@@ -289,17 +315,11 @@ public class LoginController implements Initializable {
 				});
 				break;
 			case AppConstants.STATE_HEART_BEAT_DETECTED:
-
+				System.out.println(TAG + ": STATE HEARTBEAT DETECTED callback");
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-
-						progressHeartrateDetection.setVisible(false);
-						imgHeartBeat.setVisible(true);
-						imgHeartBeat.setImage(new Image("drawable/icons/heartbeat.png"));
-						// mHeartBeatAnimation.startAnimation();
-						// display value
-						lblHeartbeat.setText("Heartbeat detected");
+						setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), false, "Heartbeat", "");
 					}
 				});
 
@@ -316,33 +336,23 @@ public class LoginController implements Initializable {
 				});
 				break;
 			case AppConstants.STATE_HEART_STOPPED:
-
+				System.out.println(TAG + ": STATE HEART STOPPED callback");
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 
-						imgLockState.setImage(new Image("drawable/icons/locked.png"));
+						setLockStateImage(true);
+						setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
+								new Image("drawable/icons/key/key_grey_1.png"), true, true, true, false, false, true);
 
-						// reset HeartBeat
-						// mHeartBeatAnimation.stopAnimation();
-						imgHeartBeat.setImage(new Image("drawable/icons/no_heartbeat.png"));
-						progressHeartrateDetection.setVisible(false);
-						lblHeartbeat.setText("No Heartbeat");
-						lblHeartbeatValue.setText("(0.0)");
+						// reset Heartbeat
+						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
+								"0.0");
 
-						// reset PW Input
-						imgPassword.setImage(new Image("drawable/icons/no_key.png"));
-						txtPassword.setVisible(true);
-						txtPassword.requestFocus();
-						txtPassword.setDisable(false);
-						btnLogin.setVisible(true);
-						lblPassword.setVisible(false);
-						imgPasswordCorrect.setVisible(false);
-						txtPassword.clear();
+						resetProximityFields();
+						resetUserStateFields();
+						resetSoundSignalFields();
 
-						// reset Poximity
-						lblProximity.setText("-");
-						imgProximity.setImage(new Image("drawable/icons/no_proximity.png"));
 					}
 				});
 
@@ -352,39 +362,31 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						lblProximity.setText(message.toUpperCase());
-						imgProximity.setImage(new Image("drawable/icons/proximity.png"));
+						lblProximityValue.setText(message.toUpperCase());
+						imgProximity.setImage(new Image("drawable/icons/signal/signal_white_1.png"));
 					}
 				});
 				break;
 			case AppConstants.STATE_LOCKED:
 
-				// TODO: MAXIMIZE APP
-
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						imgLockState.setImage(new Image("drawable/icons/locked.png"));
 
-						Stage stage = (Stage) root.getScene().getWindow();
-						stage.setIconified(false);
-						stage.setFullScreen(true);
+						setLockStateImage(true);
+						setAppFullscreen(true);
 					}
 				});
 				break;
 
 			case AppConstants.STATE_UNLOCKED:
 
-				// TODO: MINIMIZE APP
-
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						imgLockState.setImage(new Image("drawable/icons/unlocked.png"));
 
-						Stage stage = (Stage) root.getScene().getWindow();
-						stage.setFullScreen(false);
-						// stage.toBack();
+						setLockStateImage(false);
+						setAppFullscreen(false);
 
 						// TODO: createMiniView
 						// stage.setIconified(true);
@@ -397,20 +399,103 @@ public class LoginController implements Initializable {
 		}
 	};
 
-	/*---------------- EDIT AVATAR ----------------*/
-	@FXML
-	private void onEditAvatarAvtion(ActionEvent evetn) {
+	private void setAppFullscreen(boolean fullscreen) {
+
+		Stage stage = (Stage) root.getScene().getWindow();
+
+		if (fullscreen) {
+			stage.setIconified(false);
+			stage.setFullScreen(true);
+		} else {
+			stage.setFullScreen(false);
+		}
+	}
+
+	private void setLockStateImage(boolean isLocked) {
+		if (isLocked) {
+			imgLockState.setImage(new Image("drawable/icons/lock_state/locked.png"));
+		} else {
+			imgLockState.setImage(new Image("drawable/icons/lock_state/unlocked.png"));
+		}
+	}
+
+	private void setPasswordFields(Image keyboardImage, Image keyImage, boolean showPWInput, boolean disablePWInput,
+			boolean showLoginBtn, boolean showLblPW, boolean pwCorrect, boolean clear) {
+
+		imgTyping.setImage(keyboardImage);
+		imgPassword.setImage(keyImage);
+		txtPassword.setVisible(showPWInput);
+
+		if (disablePWInput) {
+			txtPassword.requestFocus();
+			btnLogin.setDisable(true);
+			txtPassword.setDisable(true);
+		} else {
+			btnLogin.setDisable(true);
+			txtPassword.setDisable(false);
+		}
+
+		btnLogin.setVisible(showLoginBtn);
+		lblPassword.setVisible(showLblPW);
+		imgPasswordCorrect.setVisible(pwCorrect);
+
+		if (clear) {
+			txtPassword.clear();
+		}
 
 	}
 
-	@FXML
-	private void onAvatarCircleMouseEntered(MouseEvent event) {
+	private void setHeartBeatFields(Image img, boolean isInProgress, String heartbeat, String heartbeatValue) {
+
+		if (isInProgress) {
+			progressHeartrateDetection.setVisible(true);
+			imgHeartBeat.setVisible(false);
+		} else {
+			progressHeartrateDetection.setVisible(false);
+			imgHeartBeat.setVisible(true);
+		}
+
+		imgHeartBeat.setImage(img);
+		lblHeartbeat.setText(heartbeat);
+		lblHeartbeatValue.setText(heartbeatValue);
+	}
+
+	private void setConnectToWatchFields(Image img, boolean connectedToWatch, boolean isInProgress,
+			String connectionState, boolean connectedSuccess, boolean cancel, boolean showButton) {
+
+		if (isInProgress) {
+			progressConnectToWatch.setVisible(true);
+			imgWatchConnected.setVisible(false);
+		} else {
+			progressConnectToWatch.setVisible(false);
+			imgWatchConnected.setVisible(true);
+		}
+
+		imgWatchConnected.setImage(img);
+		imgWatchConnected.setVisible(connectedToWatch);
+		lblConnectToWatch.setText(connectionState);
+		imgConnectedToWatchSuccess.setVisible(connectedSuccess);
+		imgCancelConnectToWatch.setVisible(cancel);
+		btnConnectToWatch.setVisible(showButton);
+	}
+
+	private void resetProximityFields() {
+		imgProximity.setImage(new Image("drawable/icons/signal/signal_grey_1.png"));
+		lblProximity.setText("Proximity");
+		lblProximityValue.setText("-");
 
 	}
 
-	@FXML
-	private void onAvatarCircleMouseExited(MouseEvent event) {
+	private void resetUserStateFields() {
+		imgUserState.setImage(new Image("drawable/icons/user_state/standing_grey.png"));
+		lblUserState.setText("User State");
+		lblUserStateValue.setText("-");
+	}
 
+	private void resetSoundSignalFields() {
+		imgSoundSignal.setImage(new Image("drawable/icons/sound/sound_grey_1.png"));
+		lblSoundSignal.setText("Sound Signal");
+		lblSoundSignalValue.setText("none");
 	}
 
 	/*----------------LOGIN----------------*/
@@ -424,12 +509,12 @@ public class LoginController implements Initializable {
 	@FXML
 	private void onConnectToWatchAction(ActionEvent event) {
 
-		lblConnectToWatch.setText("Connecting... (" + mChecksum.calculateChecksum() + ")");
-		btnConnectToWatch.setVisible(false);
-		progressConnectToWatch.setVisible(true);
-		progressConnectToWatch.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
-		imgCancelConnectToWatch.setVisible(true);
-		imgWatchConnected.setVisible(false);
+		int checksum = mChecksum.calculateChecksum();
+
+		System.out.println(TAG + ": connecting to watch/phone (checksum:" + checksum + ")");
+
+		setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, true,
+				"Connecting (" + checksum + ") ...", false, true, false);
 	}
 
 	@FXML
@@ -456,58 +541,42 @@ public class LoginController implements Initializable {
 		try {
 			if (mLoginModel.isValidCredentials(lblUserName.getText(), txtPassword.getText())) {
 
-				System.out.println("Username and Password is correct!");
-				imgPassword.setImage(new Image("drawable/icons/key.png"));
-				txtPassword.setDisable(true);
-				txtPassword.setVisible(false);
-				btnLogin.setVisible(false);
-				lblPassword.setVisible(true);
-				imgPasswordCorrect.setVisible(true);
+				System.out.println(TAG + ": username and password CORRECT");
 
-				progressHeartrateDetection.setVisible(true);
-				imgHeartBeat.setVisible(false);
-				lblHeartbeat.setText("Detect heartbeat ...");
+				setPasswordFields(new Image("drawable/icons/keyboard/keyboard_white_1.png"),
+						new Image("drawable/icons/key/key_white_1.png"), false, true, false, true, true, false);
+
+				setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), true, "Detect...", "0.0");
 
 				// starteService (get Cues: Heartbeat, Proximity, usercontext)
 				mTCPServer.sendMessage(AppConstants.COMMAND_GET_CUES);
 
 			} else {
-				System.out.println("Username and Password is WRONG!");
+				System.out.println(TAG + ": username and/or password INCORRECT");
 				Shaker shaker = new Shaker(anchorPaneLogin);
 				shaker.shake();
 				txtPassword.selectAll();
 			}
 		} catch (SQLException sqle) {
-			sqle.printStackTrace();
+			System.out.println(TAG + ": SQL ERROR login user. Exception: " + sqle.toString());
 		}
 	}
 
 	@FXML
 	private void onCancelConnectToWatchClicked(MouseEvent event) {
-		// Stop server
-		// TODO RESET Method
-		lblConnectToWatch.setText("Not connected");
-		progressConnectToWatch.setVisible(false);
-		imgWatchConnected.setImage(new Image("drawable/icons/no_watch.png"));
-		imgWatchConnected.setVisible(true);
-		imgCancelConnectToWatch.setVisible(false);
-		btnConnectToWatch.setVisible(true);
 
-		// TODO killserver
+		setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), true, false, "Not conneceted",
+				false, false, true);
+
+		// TODO killserver, stop server
 	}
 
 	/*----------------ADD USER----------------*/
 
 	@FXML
 	private void onAddUserClick(MouseEvent event) {
+		showAddUserPane(true);
 
-		hboxBottomButtons.setVisible(false);
-
-		anchorPaneLogin.setDisable(true);
-		anchorPaneLogin.setVisible(false);
-
-		anchorPaneRegister.setDisable(false);
-		anchorPaneRegister.setVisible(true);
 	}
 
 	@FXML
@@ -555,16 +624,10 @@ public class LoginController implements Initializable {
 	@FXML
 	private void onCancelRegisterClicked(MouseEvent event) {
 
-		hboxBottomButtons.setVisible(true);
+		showAddUserPane(false);
 
-		anchorPaneLogin.setDisable(false);
-		anchorPaneLogin.setVisible(true);
-
-		anchorPaneRegister.setDisable(true);
-		anchorPaneRegister.setVisible(false);
-
+		// reset add user fields
 		lblRegistrationFailed.setVisible(false);
-
 		txtUsername.clear();
 		txtRegisterPassword.clear();
 		txtRegisterPasswordRepeat.clear();
@@ -577,6 +640,16 @@ public class LoginController implements Initializable {
 		imgPasswordChecked.setVisible(false);
 		imgRepeatPasswordhecked.setVisible(false);
 		btnRegister.setVisible(false);
+	}
+
+	private void showAddUserPane(boolean show) {
+		hboxBottomButtons.setVisible(!show);
+
+		anchorPaneLogin.setDisable(show);
+		anchorPaneLogin.setVisible(!show);
+
+		anchorPaneRegister.setDisable(!show);
+		anchorPaneRegister.setVisible(show);
 	}
 
 	private void checkIsPasswordEqual() {
@@ -614,7 +687,7 @@ public class LoginController implements Initializable {
 				txtUsername.selectAll();
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println(TAG + ": SQL ERROR resgister new user. Exception: " + e.toString());
 		}
 	}
 
@@ -622,15 +695,7 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private void onChangeUserClicked(MouseEvent event) {
-
-		hboxBottomButtons.setVisible(false);
-
-		anchorPaneLogin.setDisable(true);
-		anchorPaneLogin.setVisible(false);
-
-		anchorPaneChangeUser.setDisable(false);
-		anchorPaneChangeUser.setVisible(true);
-
+		showChangeUserPane(true);
 	}
 
 	@FXML
@@ -663,15 +728,20 @@ public class LoginController implements Initializable {
 		cancelChangeUser();
 	}
 
+	private void showChangeUserPane(boolean show) {
+
+		hboxBottomButtons.setVisible(!show);
+
+		anchorPaneLogin.setDisable(show);
+		anchorPaneLogin.setVisible(!show);
+
+		anchorPaneChangeUser.setDisable(!show);
+		anchorPaneChangeUser.setVisible(show);
+	}
+
 	private void cancelChangeUser() {
 
-		hboxBottomButtons.setVisible(true);
-
-		anchorPaneLogin.setDisable(false);
-		anchorPaneLogin.setVisible(true);
-
-		anchorPaneChangeUser.setVisible(false);
-		anchorPaneChangeUser.setDisable(true);
+		showChangeUserPane(false);
 
 		txtChangeUsername.clear();
 		txtChangeUserPassword.clear();
@@ -703,8 +773,7 @@ public class LoginController implements Initializable {
 				txtChangeUserPassword.selectAll();
 			}
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": SQL ERROR changing user. Exception: " + e.toString());
 		}
 	}
 
@@ -724,11 +793,11 @@ public class LoginController implements Initializable {
 		} else {
 			throw new RuntimeException("Unsupported operating system.");
 		}
-
 		try {
 			Runtime.getRuntime().exec(shutdownCommand);
-		} catch (IOException e) { // TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": Shutdown PC ");
+		} catch (IOException e) {
+			System.out.println(TAG + ": ERROR executing SHUTDOWN command. Exception: " + e.toString());
 		}
 	}
 
@@ -746,12 +815,11 @@ public class LoginController implements Initializable {
 		} else {
 			throw new RuntimeException("Unsupported operating system.");
 		}
-
 		try {
 			Runtime.getRuntime().exec(sleepCommand);
+			System.out.println(TAG + ": Send PC to sleep");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": ERROR executing SLEEP command. Exception: " + e.toString());
 		}
 
 	}
@@ -768,8 +836,7 @@ public class LoginController implements Initializable {
 			popOver.show(imgSettings);
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": ERROR opening settings. Exception: " + e.toString());
 		}
 
 	}
@@ -785,10 +852,6 @@ public class LoginController implements Initializable {
 
 	public TCPServer getTCPServer() {
 		return mTCPServer;
-	}
-
-	public void setTCPServer(TCPServer mTCPServer) {
-		this.mTCPServer = mTCPServer;
 	}
 
 }

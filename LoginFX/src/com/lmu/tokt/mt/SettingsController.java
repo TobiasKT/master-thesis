@@ -31,6 +31,8 @@ import javafx.stage.FileChooser;
 
 public class SettingsController implements Initializable {
 
+	private static final String TAG = SettingsController.class.getSimpleName();
+
 	final FileChooser fileChooser = new FileChooser();
 
 	@FXML
@@ -49,26 +51,16 @@ public class SettingsController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		mLoginModel = new LoginModel();
 
-		try {
-
-			int port = mLoginModel.getServerPort();
-			editServerPort.setText("" + port);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		setServerPort();
 		setPublicIPAdress();
 	}
 
 	@FXML
 	private void onEditBackgroundClicked(MouseEvent event) {
 
-		fileChooser.setTitle("Choose Backgorund Image");
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Images", "*.*"),
-				new FileChooser.ExtensionFilter("JPG", "*.jpg"), new FileChooser.ExtensionFilter("GIF", "*.gif"),
-				new FileChooser.ExtensionFilter("BMP", "*.bmp"), new FileChooser.ExtensionFilter("PNG", "*.png"));
+		String title = "Choose Background Image";
+		String dir = "user.home";
+		setUpFileChooser(title, dir);
 
 		File file = fileChooser.showOpenDialog(LoginApp.getInstance().getStage());
 		if (file != null) {
@@ -80,18 +72,15 @@ public class SettingsController implements Initializable {
 	@FXML
 	private void onEditAvatarClicked(MouseEvent event) {
 
-		fileChooser.setTitle("Choose Avatar Image");
-		fileChooser.setInitialDirectory(new File(System.getProperty("user.home")));
-		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Images", "*.*"),
-				new FileChooser.ExtensionFilter("JPG", "*.jpg"), new FileChooser.ExtensionFilter("GIF", "*.gif"),
-				new FileChooser.ExtensionFilter("BMP", "*.bmp"), new FileChooser.ExtensionFilter("PNG", "*.png"));
+		String title = "Choose Avatar Image";
+		String dir = "user.home";
+		setUpFileChooser(title, dir);
 
 		File file = fileChooser.showOpenDialog(LoginApp.getInstance().getStage());
 		if (file != null) {
 			setAvatarImage(file);
 			saveImageinDB(file, AppConstants.IMAGE_TYPE_AVATAR);
 		}
-
 	}
 
 	@FXML
@@ -117,9 +106,9 @@ public class SettingsController implements Initializable {
 		if (!isServerPortEditable) {
 			isServerPortEditable = true;
 			editServerPort.setDisable(false);
-			imgEditServerPort.setImage(new Image("drawable/icons/save.png"));
+			imgEditServerPort.setImage(new Image("drawable/icons/settings/save.png"));
 		} else {
-			setServerPort();
+			updateServerPort();
 		}
 
 	}
@@ -129,23 +118,22 @@ public class SettingsController implements Initializable {
 
 		if (event.getCode().equals(KeyCode.ENTER)) {
 			if (isServerPortEditable) {
-				setServerPort();
+				updateServerPort();
 			}
 		}
 	}
 
-	private void setServerPort() {
+	private void updateServerPort() {
 
 		isServerPortEditable = false;
 		editServerPort.setDisable(true);
-		imgEditServerPort.setImage(new Image("drawable/icons/edit_blue.png"));
+		imgEditServerPort.setImage(new Image("drawable/icons/settings/edit_blue.png"));
 
 		int port = Integer.parseInt(editServerPort.getText());
 		try {
 			mLoginModel.updateServerPort(port);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": SQL ERROR updating server port in DB. Exception: " + e.toString());
 		}
 	}
 
@@ -163,8 +151,7 @@ public class SettingsController implements Initializable {
 					BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 			LoginController.getInstance().getRoot().setBackground(new Background(myBI));
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": FILE NOT FOUND ERROR updating background image. Exception: " + e.toString());
 		}
 
 		// LoginController.getInstance().getRoot()
@@ -181,8 +168,7 @@ public class SettingsController implements Initializable {
 			LoginController.getInstance().getAvatarCircle().setFill(new ImagePattern(img));
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": FILE NOT FOUND ERROR updating avater image. Exception: " + e.toString());
 		}
 
 	}
@@ -192,8 +178,7 @@ public class SettingsController implements Initializable {
 		try {
 			mLoginModel.updateImageInDBSucceeded("Tobias Keinath", file, dbField);
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": SQL ERROR updating image in DB (" + dbField + "). Exception: " + e.toString());
 		}
 
 	}
@@ -203,13 +188,31 @@ public class SettingsController implements Initializable {
 		try {
 
 			ip = InetAddress.getLocalHost();
-			System.out.println("Current IP address : " + ip.getHostAddress());
 			lblServerIp.setText(ip.getHostAddress());
+			System.out.println(TAG + ": Current ip address : " + ip.getHostAddress());
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			System.out.println(TAG + ": ERROR getting public ip. Exception: " + e.toString());
 
 		}
+	}
 
+	private void setServerPort() {
+		try {
+
+			int port = mLoginModel.getServerPort();
+			editServerPort.setText("" + port);
+		} catch (SQLException e) {
+			System.out.println(TAG + ": ERROR getting server port from DB. Exception: " + e.toString());
+		}
+	}
+
+	private void setUpFileChooser(String title, String dir) {
+
+		fileChooser.setTitle(title);
+		fileChooser.setInitialDirectory(new File(System.getProperty(dir)));
+		fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Images", "*.*"),
+				new FileChooser.ExtensionFilter("JPG", "*.jpg"), new FileChooser.ExtensionFilter("GIF", "*.gif"),
+				new FileChooser.ExtensionFilter("BMP", "*.bmp"), new FileChooser.ExtensionFilter("PNG", "*.png"));
 	}
 
 }

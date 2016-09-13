@@ -16,233 +16,433 @@
 			<children>
 				<AnchorPane fx:id="anchorPaneLogin" prefHeight="525.0" prefWidth="600.0">
 					<children>
-						<Circle fx:id="circProfile" fill="WHITE" layoutX="301.0" layoutY="148.0" onMouseEntered="#onAvatarCircleMouseEntered" onMouseExited="#onAvatarCircleMouseExited" radius="48.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
-						<Label fx:id="lblUserName" alignment="CENTER" contentDisplay="CENTER" layoutX="200.0" layoutY="203.0" prefHeight="40.0" prefWidth="200.0" text="Tobias Keinath" textAlignment="CENTER" textFill="WHITE">
-							<font>
-								<Font name="Helvetica Neue Light" size="14.0" />
-							</font>
-						</Label>
-						<ProgressIndicator fx:id="progressConnectToWatch" layoutX="170.0" layoutY="264.0" prefHeight="24.0" prefWidth="24.0" visible="false" />
-						<ImageView fx:id="imgWatchConnected" fitHeight="30.0" fitWidth="30.0" layoutX="168.0" layoutY="262.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
-							<image>
-								<Image url="@../../../../../../../../Documents/workspace_eclipse/LoginFX/src/drawable/icons/no_watch.png" />
-							</image>
-						</ImageView>
-						<Label fx:id="lblConnectToWatch" layoutX="212.0" layoutY="265.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="180.0" text="Not connected" textFill="WHITE">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</Label>
-						<ImageView fx:id="imgConnectedToWatchSuccess" fitHeight="24.0" fitWidth="24.0" layoutX="412.0" layoutY="265.0" pickOnBounds="true" preserveRatio="true" visible="false">
-							<image>
-								<Image url="@../../../../drawable/icons/success.png" />
-							</image>
-						</ImageView>
-						<ImageView fx:id="imgCancelConnectToWatch" fitHeight="24.0" fitWidth="24.0" layoutX="412.0" layoutY="265.0" onMouseClicked="#onCancelConnectToWatchClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
-							<image>
-								<Image url="@../../../../drawable/icons/cancel.png" />
-							</image>
-						</ImageView>
-						<Button id="round-connect-btn" fx:id="btnConnectToWatch" alignment="CENTER" contentDisplay="CENTER" layoutX="410.0" layoutY="263.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectToWatchAction" prefHeight="28.0" prefWidth="28.0">
-							<font>
-								<Font name="Helvetica Neue" size="12.0" />
-							</font>
-						</Button>
-						<ImageView fx:id="imgPassword" fitHeight="30.0" fitWidth="30.0" layoutX="171.0" layoutY="326.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
-							<image>
-								<Image url="@../../../../drawable/icons/no_key.png" />
-							</image>
-						</ImageView>
-						<PasswordField fx:id="txtPassword" disable="true" layoutX="212.0" layoutY="325.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onPasswordFieldKeyPressed" onKeyReleased="#onPasswordFieldKeyReleased" prefHeight="32.0" prefWidth="180.0" promptText="Password" styleClass="transparent-textfield">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</PasswordField>
-						<Label fx:id="lblPassword" layoutX="212.0" layoutY="329.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="180.0" text="Password correct" textFill="WHITE" visible="false">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</Label>
-						<Button id="round-login-btn" fx:id="btnLogin" disable="true" layoutX="410.0" layoutY="327.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginAction" prefHeight="28.0" prefWidth="28.0">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</Button>
-						<ImageView fx:id="imgPasswordCorrect" fitHeight="24.0" fitWidth="24.0" layoutX="412.0" layoutY="329.0" pickOnBounds="true" preserveRatio="true" visible="false">
-							<image>
-								<Image url="@../../../../drawable/icons/success.png" />
-							</image>
-						</ImageView>
-						<ProgressIndicator fx:id="progressHeartrateDetection" layoutX="171.0" layoutY="393.0" prefHeight="24.0" prefWidth="24.0" visible="false" />
-						<AnchorPane layoutX="106.0" layoutY="405.0" prefHeight="24.0" prefWidth="180.0">
-							<children>
-								<Label fx:id="lblHeartbeat" layoutX="45.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="88.0" text="No Heartbeat" textFill="WHITE">
-									<font>
-										<Font name="Helvetica Neue" size="14.0" />
-									</font>
-								</Label>
-								<ImageView fx:id="imgHeartBeat" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
-									<image>
-										<Image url="@../../../../drawable/icons/no_heartbeat.png" />
-									</image>
-								</ImageView>
-								<Label fx:id="lblHeartbeatValue" alignment="CENTER" layoutX="133.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="49.0" textFill="WHITE">
-									<font>
-										<Font name="Helvetica Neue" size="14.0" />
-									</font>
-								</Label>
-							</children>
-						</AnchorPane>
-						<AnchorPane layoutX="107.0" layoutY="453.0" prefHeight="24.0" prefWidth="180.0">
-							<children>
-								<Label fx:id="lblProximity" layoutX="114.0" layoutY="3.0" text="-" textFill="WHITE">
-									<font>
-										<Font name="Helvetica Neue" size="14.0" />
-									</font>
-								</Label>
-								<Label layoutX="41.0" layoutY="3.0" text="Proximity: " textFill="WHITE">
-									<font>
-										<Font name="Helvetica Neue" size="14.0" />
-									</font>
-								</Label>
-								<ImageView fx:id="imgProximity" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
-									<image>
-										<Image url="@../../../../drawable/icons/no_proximity.png" />
-									</image>
-								</ImageView>
-							</children>
-						</AnchorPane>
-						<AnchorPane layoutX="340.0" layoutY="405.0" prefHeight="24.0" prefWidth="180.0">
-							<children>
-								<Label fx:id="lblUserSittingOrWalking" layoutX="45.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="144.0" text="Sitting" textFill="WHITE">
-									<font>
-										<Font name="Helvetica Neue" size="14.0" />
-									</font>
-								</Label>
-								<ImageView fx:id="imgUserSittingOrWalking" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
-									<image>
-										<Image url="@../../../../drawable/icons/sitting.png" />
-									</image>
-								</ImageView>
-							</children>
-						</AnchorPane>
-						<AnchorPane layoutX="338.0" layoutY="453.0" prefHeight="24.0" prefWidth="180.0">
-							<children>
-								<Label fx:id="lblSoundSignal" layoutX="45.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="144.0" text="No sound signal" textFill="WHITE">
-									<font>
-										<Font name="Helvetica Neue" size="14.0" />
-									</font>
-								</Label>
-								<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
-									<image>
-										<Image url="@../../../../drawable/icons/no_speaker.png" />
-									</image>
-								</ImageView>
-							</children>
-						</AnchorPane>
-						<ImageView fx:id="imgTyping" fitHeight="24.0" fitWidth="24.0" layoutX="136.0" layoutY="329.0" pickOnBounds="true">
-							<image>
-								<Image url="@../../../../drawable/icons/no_keyboard.png" />
-							</image>
-						</ImageView>
+                  <VBox alignment="CENTER" layoutX="215.0" layoutY="36.0">
+                     <children>
+      						<Circle fx:id="circProfile" fill="WHITE" layoutX="300.0" layoutY="92.0" radius="40.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+      						<Label fx:id="lblUserName" alignment="CENTER" contentDisplay="CENTER" layoutX="200.0" layoutY="147.0" prefHeight="24.0" prefWidth="180.0" text="Tobias Keinath" textAlignment="CENTER" textFill="WHITE">
+      							<font>
+      								<Font name="Helvetica Neue Light" size="14.0" />
+      							</font>
+                           <padding>
+                              <Insets top="16.0" />
+                           </padding>
+      						</Label>
+                     </children>
+                  </VBox>
+                  <HBox layoutX="167.0" layoutY="214.0">
+                     <children>
+                        <AnchorPane layoutX="167.0" layoutY="217.0">
+                           <children>
+            						<ProgressIndicator fx:id="progressConnectToWatch" prefHeight="32.0" prefWidth="32.0" visible="false" />
+            						<ImageView fx:id="imgWatchConnected" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+            							<image>
+            								<Image url="@../../../../drawable/icons/watch/watch_grey_1.png" />
+            							</image>
+            						</ImageView>
+                           </children>
+                           <padding>
+                              <Insets right="16.0" />
+                           </padding>
+                        </AnchorPane>
+      						<Label fx:id="lblConnectToWatch" layoutX="212.0" layoutY="220.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="180.0" text="Not connected" textFill="WHITE">
+      							<font>
+      								<Font name="Helvetica Neue" size="16.0" />
+      							</font>
+                           <HBox.margin>
+                              <Insets right="16.0" />
+                           </HBox.margin>
+      						</Label>
+                        <AnchorPane layoutX="410.0" layoutY="218.0">
+                           <children>
+            						<Button id="round-connect-btn" fx:id="btnConnectToWatch" alignment="CENTER" contentDisplay="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectToWatchAction" prefHeight="32.0" prefWidth="32.0">
+            							<font>
+            								<Font name="Helvetica Neue" size="12.0" />
+            							</font>
+            						</Button>
+            						<ImageView fx:id="imgConnectedToWatchSuccess" fitHeight="28.0" fitWidth="28.0" layoutX="2.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            							<image>
+            								<Image url="@../../../../drawable/icons/success/success.png" />
+            							</image>
+            						</ImageView>
+            						<ImageView fx:id="imgCancelConnectToWatch" fitHeight="28.0" fitWidth="28.0" layoutX="2.0" layoutY="2.0" onMouseClicked="#onCancelConnectToWatchClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+            							<image>
+            								<Image url="@../../../../drawable/icons/actions/cancel.png" />
+            							</image>
+            						</ImageView>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </HBox>
+                  <HBox alignment="TOP_CENTER" layoutX="119.0" layoutY="279.0">
+                     <children>
+      						<ImageView fx:id="imgTyping" fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" y="10.0">
+      							<image>
+      								<Image url="@../../../../drawable/icons/keyboard/keyboard_grey_1.png" />
+      							</image>
+                           <HBox.margin>
+                              <Insets right="20.0" top="2.0" />
+                           </HBox.margin>
+      						</ImageView>
+      						<ImageView fx:id="imgPassword" fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" x="1.0" y="1.0">
+      							<image>
+      								<Image url="@../../../../drawable/icons/key/key_grey_1.png" />
+      							</image>
+                           <HBox.margin>
+                              <Insets right="22.0" top="3.0" />
+                           </HBox.margin>
+      						</ImageView>
+                        <AnchorPane>
+                           <children>
+            						<Label fx:id="lblPassword" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="180.0" text="Password correct" textFill="WHITE" visible="false">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+            						</Label>
+            						<PasswordField fx:id="txtPassword" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onPasswordFieldKeyPressed" onKeyReleased="#onPasswordFieldKeyReleased" prefHeight="32.0" prefWidth="180.0" promptText="Password" styleClass="transparent-textfield">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+            						</PasswordField>
+                           </children>
+                           <HBox.margin>
+                              <Insets right="16.0" />
+                           </HBox.margin>
+                        </AnchorPane>
+                        <AnchorPane layoutX="410.0" layoutY="327.0">
+                           <children>
+            						<ImageView fx:id="imgPasswordCorrect" fitHeight="28.0" fitWidth="28.0" layoutX="2.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            							<image>
+            								<Image url="@../../../../drawable/icons/success/success.png" />
+            							</image>
+            						</ImageView>
+            						<Button id="round-login-btn" fx:id="btnLogin" disable="true" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginAction" prefHeight="32.0" prefWidth="32.0">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+            						</Button>
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </HBox>
+                  <HBox layoutX="73.0" layoutY="399.0" styleClass="border-top-white">
+                     <children>
+                        <VBox layoutX="106.0" layoutY="405.0">
+                           <children>
+                              <HBox layoutX="106.0" layoutY="405.0">
+                                 <children>
+                                    <AnchorPane layoutX="106.0" layoutY="405.0">
+                                       <children>
+                        						<ProgressIndicator fx:id="progressHeartrateDetection" prefHeight="24.0" prefWidth="24.0" visible="false" />
+                        								<ImageView fx:id="imgHeartBeat" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
+                        									<image>
+                        										<Image url="@../../../../drawable/icons/heart/heart_grey_1.png" />
+                        									</image>
+                        								</ImageView>
+                                       </children>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <HBox.margin>
+                                          <Insets right="16.0" />
+                                       </HBox.margin>
+                                    </AnchorPane>
+                                    <HBox>
+                                       <children>
+                        								<Label fx:id="lblHeartbeat" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="90.0" text="Heartbeat" textFill="WHITE">
+                        									<font>
+                        										<Font name="Helvetica Neue Thin" size="14.0" />
+                        									</font>
+                                             <HBox.margin>
+                                                <Insets right="8.0" />
+                                             </HBox.margin>
+                        								</Label>
+                        								<Label fx:id="lblHeartbeatValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="50.0" text="0.0" textFill="WHITE">
+                        									<font>
+                        										<Font name="Helvetica Neue" size="14.0" />
+                        									</font>
+                        								</Label>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="32.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox layoutX="107.0" layoutY="453.0">
+                                 <children>
+                  								<ImageView fx:id="imgProximity" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
+                  									<image>
+                  										<Image url="@../../../../drawable/icons/signal/signal_grey_1.png" />
+                  									</image>
+                                       <HBox.margin>
+                                          <Insets right="16.0" />
+                                       </HBox.margin>
+                  								</ImageView>
+                                    <HBox layoutX="148.0" layoutY="456.0">
+                                       <children>
+                        								<Label fx:id="lblProximity" prefHeight="24.0" prefWidth="90.0" text="Proximity" textFill="WHITE">
+                        									<font>
+                        										<Font name="Helvetica Neue Thin" size="14.0" />
+                        									</font>
+                                             <HBox.margin>
+                                                <Insets right="8.0" />
+                                             </HBox.margin>
+                        								</Label>
+                        								<Label fx:id="lblProximityValue" alignment="CENTER" layoutX="221.0" layoutY="456.0" prefHeight="24.0" prefWidth="50.0" text="-" textFill="WHITE">
+                        									<font>
+                        										<Font name="Helvetica Neue" size="14.0" />
+                        									</font>
+                        								</Label>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                           <HBox.margin>
+                              <Insets right="64.0" />
+                           </HBox.margin>
+                        </VBox>
+                        <VBox layoutX="338.0" layoutY="405.0">
+                           <children>
+                              <HBox layoutX="340.0" layoutY="405.0">
+                                 <children>
+                  								<ImageView fx:id="imgUserState" fitHeight="24.0" fitWidth="28.0" pickOnBounds="true">
+                  									<image>
+                  										<Image url="@../../../../drawable/icons/user_state/standing_grey.png" />
+                  									</image>
+                                       <HBox.margin>
+                                          <Insets right="12.0" />
+                                       </HBox.margin>
+                  								</ImageView>
+                  								<Label fx:id="lblUserState" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="90.0" text="User State" textFill="WHITE">
+                  									<font>
+                  										<Font name="Helvetica Neue Thin" size="14.0" />
+                  									</font>
+                                       <HBox.margin>
+                                          <Insets right="8.0" />
+                                       </HBox.margin>
+                  								</Label>
+                                    <Label fx:id="lblUserStateValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="50.0" text="-" textFill="WHITE">
+                                       <font>
+                                          <Font name="Helvetica Neue" size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="32.0" />
+                                 </VBox.margin>
+                              </HBox>
+                              <HBox layoutX="338.0" layoutY="453.0">
+                                 <children>
+                  								<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" layoutX="338.0" layoutY="453.0" pickOnBounds="true">
+                  									<image>
+                  										<Image url="@../../../../drawable/icons/sound/sound_grey_1.png" />
+                  									</image>
+                                       <HBox.margin>
+                                          <Insets right="16.0" />
+                                       </HBox.margin>
+                  								</ImageView>
+                  								<Label fx:id="lblSoundSignal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="90.0" text="Sound Signal" textFill="WHITE">
+                  									<font>
+                  										<Font name="Helvetica Neue Thin" size="14.0" />
+                  									</font>
+                                       <HBox.margin>
+                                          <Insets right="8.0" />
+                                       </HBox.margin>
+                  								</Label>
+                                    <Label fx:id="lblSoundSignalValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="50.0" text="none" textFill="WHITE">
+                                       <font>
+                                          <Font name="Helvetica Neue" size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="8.0" left="16.0" right="8.0" top="32.0" />
+                     </padding>
+                  </HBox>
 					</children>
 				</AnchorPane>
 				<AnchorPane fx:id="anchorPaneRegister" disable="true" prefHeight="525.0" prefWidth="600.0" visible="false">
 					<children>
-						<Label fx:id="lblRegistrationFailed" alignment="CENTER" layoutX="145.0" layoutY="106.0" prefHeight="24.0" prefWidth="300.0" text="Registration failed - Username already exists!" textFill="WHITE" visible="false">
-							<font>
-								<Font name="Helvetica Neue Light" size="14.0" />
-							</font>
-						</Label>
-						<ImageView fx:id="imgUsernameChecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="164.0" pickOnBounds="true" preserveRatio="true" visible="false">
-							<image>
-								<Image url="@../../../../drawable/icons/checked.png" />
-							</image>
-						</ImageView>
-						<ImageView fx:id="imgPasswordChecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="210.0" pickOnBounds="true" preserveRatio="true" visible="false">
-							<image>
-								<Image url="@../../../../drawable/icons/checked.png" />
-							</image>
-						</ImageView>
-						<ImageView fx:id="imgRepeatPasswordhecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="256.0" pickOnBounds="true" preserveRatio="true" visible="false">
-							<image>
-								<Image url="@../../../../drawable/icons/checked.png" />
-							</image>
-						</ImageView>
-						<TextField id="transparent-username-textfield" fx:id="txtUsername" layoutX="202.0" layoutY="160.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegUsernameKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Username" styleClass="transparent-textfield">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</TextField>
-						<PasswordField id="transparent-password-textfield" fx:id="txtRegisterPassword" layoutX="202.0" layoutY="206.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegPasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</PasswordField>
-						<PasswordField id="transparent-password-textfield" fx:id="txtRegisterPasswordRepeat" layoutX="202.0" layoutY="252.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegRepeatPasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Repeat Password" styleClass="transparent-textfield">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</PasswordField>
-						<Button fx:id="btnRegister" layoutX="202.0" layoutY="314.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRegisterAction" prefHeight="32.0" prefWidth="200.0" styleClass="white-outline-btn" text="REGISTER" visible="false">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</Button>
-						<Label fx:id="lblRegistrationSuccess" alignment="CENTER" layoutX="202.0" layoutY="314.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="200.0" text="SUCCESS" textFill="WHITE" visible="false">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</Label>
-						<ImageView fx:id="imgCancelRegister" fitHeight="40.0" fitWidth="40.0" layoutX="275.0" layoutY="408.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
-							<image>
-								<Image url="@../../../../drawable/icons/cancel.png" />
-							</image>
-						</ImageView>
-						<Label fx:id="lblCancel" alignment="CENTER" layoutX="263.0" layoutY="454.0" prefWidth="64.0" text="Cancel" textFill="WHITE">
-							<font>
-								<Font name="Helvetica Neue" size="12.0" />
-							</font>
-						</Label>
-						<ImageView fx:id="imgBackRegister" fitHeight="40.0" fitWidth="40.0" layoutX="275.0" layoutY="408.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
-							<image>
-								<Image url="@../../../../drawable/icons/back-arrow-circular.png" />
-							</image>
-						</ImageView>
+                  <VBox alignment="CENTER" layoutX="145.0" layoutY="106.0">
+                     <children>
+      						<Label fx:id="lblRegistrationFailed" alignment="CENTER" layoutX="145.0" layoutY="106.0" prefHeight="24.0" prefWidth="300.0" text="Registration failed - Username already exists!" textFill="WHITE" visible="false">
+      							<font>
+      								<Font name="Helvetica Neue Light" size="16.0" />
+      							</font>
+      						</Label>
+                        <HBox alignment="CENTER" layoutX="202.0" layoutY="160.0">
+                           <children>
+            						<TextField id="transparent-username-textfield" fx:id="txtUsername" layoutX="202.0" layoutY="160.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegUsernameKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Username" styleClass="transparent-textfield">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+                                 <HBox.margin>
+                                    <Insets left="32.0" right="16.0" />
+                                 </HBox.margin>
+            						</TextField>
+            						<ImageView fx:id="imgUsernameChecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="164.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            							<image>
+            								<Image url="@../../../../drawable/icons/success/success.png" />
+            							</image>
+                                 <HBox.margin>
+                                    <Insets top="4.0" />
+                                 </HBox.margin>
+            						</ImageView>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="32.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="202.0" layoutY="206.0">
+                           <children>
+            						<PasswordField id="transparent-password-textfield" fx:id="txtRegisterPassword" layoutX="202.0" layoutY="206.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegPasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+                                 <HBox.margin>
+                                    <Insets left="32.0" right="16.0" top="16.0" />
+                                 </HBox.margin>
+            						</PasswordField>
+            						<ImageView fx:id="imgPasswordChecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="210.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            							<image>
+            								<Image url="@../../../../drawable/icons/success/success.png" />
+            							</image>
+                                 <HBox.margin>
+                                    <Insets top="4.0" />
+                                 </HBox.margin>
+            						</ImageView>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="202.0" layoutY="252.0">
+                           <children>
+            						<PasswordField id="transparent-password-textfield" fx:id="txtRegisterPasswordRepeat" layoutX="202.0" layoutY="252.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onAddUserKeyPressed" onKeyReleased="#onRegRepeatPasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Repeat Password" styleClass="transparent-textfield">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+                                 <HBox.margin>
+                                    <Insets left="32.0" right="16.0" top="16.0" />
+                                 </HBox.margin>
+            						</PasswordField>
+            						<ImageView fx:id="imgRepeatPasswordhecked" fitHeight="24.0" fitWidth="24.0" layoutX="418.0" layoutY="256.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            							<image>
+            								<Image url="@../../../../drawable/icons/success/success.png" />
+            							</image>
+                                 <HBox.margin>
+                                    <Insets top="4.0" />
+                                 </HBox.margin>
+            						</ImageView>
+                           </children>
+                        </HBox>
+                        <AnchorPane>
+                           <children>
+            						<Button fx:id="btnRegister" layoutX="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRegisterAction" prefHeight="32.0" prefWidth="200.0" styleClass="white-outline-btn" text="REGISTER">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+            						</Button>
+            						<Label fx:id="lblRegistrationSuccess" alignment="CENTER" layoutX="15.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="32.0" prefWidth="200.0" text="SUCCESS" textFill="WHITE" visible="false">
+            							<font>
+            								<Font name="Helvetica Neue" size="14.0" />
+            							</font>
+            						</Label>
+                           </children>
+                           <VBox.margin>
+                              <Insets left="32.0" top="32.0" />
+                           </VBox.margin>
+                        </AnchorPane>
+                        <VBox alignment="CENTER" layoutX="263.0" layoutY="408.0">
+                           <children>
+                              <AnchorPane layoutX="275.0" layoutY="408.0">
+                                 <children>
+                  						<ImageView fx:id="imgCancelRegister" fitHeight="32.0" fitWidth="32.0" layoutX="134.0" layoutY="1.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+                  							<image>
+                  								<Image url="@../../../../drawable/icons/actions/cancel.png" />
+                  							</image>
+                  						</ImageView>
+                  						<ImageView fx:id="imgBackRegister" fitHeight="32.0" fitWidth="32.0" layoutX="134.0" layoutY="2.0" onMouseClicked="#onCancelRegisterClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+                  							<image>
+                  								<Image url="@../../../../drawable/icons/actions/back.png" />
+                  							</image>
+                  						</ImageView>
+                                 </children>
+                              </AnchorPane>
+            						<Label fx:id="lblCancel" alignment="CENTER" prefWidth="64.0" text="Cancel" textFill="WHITE">
+            							<font>
+            								<Font name="Helvetica Neue" size="12.0" />
+            							</font>
+                                 <VBox.margin>
+                                    <Insets top="8.0" />
+                                 </VBox.margin>
+            						</Label>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="48.0" />
+                           </VBox.margin>
+                        </VBox>
+                     </children>
+                  </VBox>
 					</children>
 				</AnchorPane>
 				<AnchorPane fx:id="anchorPaneChangeUser" disable="true" prefHeight="525.0" prefWidth="600.0" visible="false">
 					<children>
-						<Label fx:id="lblChangeUserTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="158.0" layoutY="106.0" prefHeight="24.0" prefWidth="300.0" text="Change User" textFill="WHITE">
-							<font>
-								<Font name="Helvetica Neue Light" size="14.0" />
-							</font>
-						</Label>
-						<TextField id="transparent-username-textfield" fx:id="txtChangeUsername" layoutX="202.0" layoutY="160.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onChangeUserKeyPressed" onKeyReleased="#onChangeUsernameKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Username" styleClass="transparent-textfield">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</TextField>
-						<PasswordField id="transparent-password-textfield" fx:id="txtChangeUserPassword" layoutX="202.0" layoutY="206.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onChangeUserKeyPressed" onKeyReleased="#onChangePasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</PasswordField>
-						<Button fx:id="btnChange" layoutX="202.0" layoutY="268.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onChangeAction" prefHeight="32.0" prefWidth="200.0" styleClass="white-outline-btn" text="CHANGE" visible="false">
-							<font>
-								<Font name="Helvetica Neue" size="14.0" />
-							</font>
-						</Button>
-						<ImageView fx:id="imgBackChange" fitHeight="40.0" fitWidth="40.0" layoutX="275.0" layoutY="408.0" onMouseClicked="#onCancelChangeUserClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
-							<image>
-								<Image url="@../../../../drawable/icons/cancel.png" />
-							</image>
-						</ImageView>
-						<Label fx:id="lblCancelChangeUser" alignment="CENTER" layoutX="263.0" layoutY="454.0" prefWidth="64.0" text="Cancel" textFill="WHITE">
-							<font>
-								<Font name="Helvetica Neue" size="12.0" />
-							</font>
-						</Label>
+                  <VBox alignment="CENTER" layoutX="158.0" layoutY="106.0">
+                     <children>
+      						<Label fx:id="lblChangeUserTitle" alignment="CENTER" contentDisplay="CENTER" layoutX="158.0" layoutY="106.0" prefHeight="24.0" prefWidth="300.0" text="Change User" textFill="WHITE">
+      							<font>
+      								<Font name="Helvetica Neue Light" size="16.0" />
+      							</font>
+      						</Label>
+      						<TextField id="transparent-username-textfield" fx:id="txtChangeUsername" layoutX="202.0" layoutY="160.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onChangeUserKeyPressed" onKeyReleased="#onChangeUsernameKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Username" styleClass="transparent-textfield">
+      							<font>
+      								<Font name="Helvetica Neue" size="14.0" />
+      							</font>
+                           <VBox.margin>
+                              <Insets top="32.0" />
+                           </VBox.margin>
+      						</TextField>
+      						<PasswordField id="transparent-password-textfield" fx:id="txtChangeUserPassword" layoutX="202.0" layoutY="206.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onKeyPressed="#onChangeUserKeyPressed" onKeyReleased="#onChangePasswordKeyReleased" prefHeight="32.0" prefWidth="200.0" promptText="Password" styleClass="transparent-textfield">
+      							<font>
+      								<Font name="Helvetica Neue" size="14.0" />
+      							</font>
+                           <VBox.margin>
+                              <Insets top="16.0" />
+                           </VBox.margin>
+      						</PasswordField>
+      						<Button fx:id="btnChange" layoutX="202.0" layoutY="268.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onChangeAction" prefHeight="32.0" prefWidth="200.0" styleClass="white-outline-btn" text="CHANGE" visible="false">
+      							<font>
+      								<Font name="Helvetica Neue" size="14.0" />
+      							</font>
+                           <VBox.margin>
+                              <Insets top="32.0" />
+                           </VBox.margin>
+      						</Button>
+                        <VBox alignment="CENTER" layoutX="263.0" layoutY="408.0">
+                           <children>
+            						<ImageView fx:id="imgBackChange" fitHeight="32.0" fitWidth="32.0" layoutX="275.0" layoutY="408.0" onMouseClicked="#onCancelChangeUserClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+            							<image>
+            								<Image url="@../../../../drawable/icons/actions/cancel.png" />
+            							</image>
+                                 <VBox.margin>
+                                    <Insets bottom="8.0" />
+                                 </VBox.margin>
+            						</ImageView>
+            						<Label fx:id="lblCancelChangeUser" alignment="CENTER" layoutX="263.0" layoutY="454.0" prefWidth="64.0" text="Cancel" textFill="WHITE">
+            							<font>
+            								<Font name="Helvetica Neue" size="12.0" />
+            							</font>
+            						</Label>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="48.0" />
+                           </VBox.margin>
+                        </VBox>
+                     </children>
+                  </VBox>
 					</children>
 				</AnchorPane>
 			</children>
@@ -258,7 +458,7 @@
 								<Insets bottom="8.0" />
 							</VBox.margin>
 							<image>
-								<Image url="@../../../../drawable/icons/plus.png" />
+								<Image url="@../../../../drawable/icons/actions/plus.png" />
 							</image>
 						</ImageView>
 						<Label text="Add User" textFill="WHITE">
@@ -275,7 +475,7 @@
 					<children>
 						<ImageView fx:id="imgChangeUser" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onChangeUserClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
 							<image>
-								<Image url="@../../../../drawable/icons/user_2.png" />
+								<Image url="@../../../../drawable/icons/actions/user_2.png" />
 							</image>
 							<VBox.margin>
 								<Insets bottom="8.0" />
@@ -295,7 +495,7 @@
 					<children>
 						<ImageView fx:id="imgSleep" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onSleepClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
 							<image>
-								<Image url="@../../../../drawable/icons/sleep.png" />
+								<Image url="@../../../../drawable/icons/actions/system/sleep.png" />
 							</image>
 							<VBox.margin>
 								<Insets bottom="8.0" />
@@ -315,7 +515,7 @@
 					<children>
 						<ImageView fx:id="imgShutDown" fitHeight="32.0" fitWidth="32.0" onMouseClicked="#onShutDownClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
 							<image>
-								<Image url="@../../../../drawable/icons/power.png" />
+								<Image url="@../../../../drawable/icons/actions/system/power.png" />
 							</image>
 							<VBox.margin>
 								<Insets bottom="8.0" />
@@ -333,53 +533,13 @@
 				</VBox>
 			</children>
 			<padding>
-				<Insets bottom="32.0" />
+				<Insets bottom="16.0" />
 			</padding>
 		</HBox>
 	</bottom>
 	<top>
 		<HBox alignment="TOP_RIGHT" prefHeight="48.0" BorderPane.alignment="CENTER">
 			<children>
-				<HBox fx:id="hBoxStageButtonsContainer" prefHeight="100.0" prefWidth="200.0" visible="false" HBox.hgrow="ALWAYS">
-					<children>
-						<AnchorPane maxHeight="16.0" maxWidth="16.0" prefHeight="16.0" prefWidth="16.0" styleClass="window-button">
-							<children>
-								<ImageView fx:id="imgWindowCancel" fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" styleClass="window-button">
-									<image>
-										<Image url="@../../../../drawable/icons/cancel_round.png" />
-									</image>
-									<HBox.margin>
-										<Insets right="8.0" />
-									</HBox.margin>
-								</ImageView>
-							</children>
-							<HBox.margin>
-								<Insets right="8.0" />
-							</HBox.margin>
-						</AnchorPane>
-						<AnchorPane maxHeight="16.0" maxWidth="16.0" prefHeight="16.0" prefWidth="16.0" styleClass="window-button">
-							<HBox.margin>
-								<Insets right="7.0" />
-							</HBox.margin>
-							<children>
-								<ImageView fx:id="imgWindowMinimize" fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="-1.25" AnchorPane.topAnchor="-0.75">
-									<image>
-										<Image url="@../../../../drawable/icons/minimize_round.png" />
-									</image>
-								</ImageView>
-							</children>
-						</AnchorPane>
-						<AnchorPane maxHeight="16.0" maxWidth="16.0" prefHeight="16.0" prefWidth="16.0" styleClass="window-button">
-							<children>
-								<ImageView fx:id="imgMaximize" fitHeight="14.0" fitWidth="14.0" pickOnBounds="true" preserveRatio="true" AnchorPane.leftAnchor="1.0" AnchorPane.topAnchor="1.25">
-									<image>
-										<Image url="@../../../../drawable/icons/maximize.png" />
-									</image>
-								</ImageView>
-							</children>
-						</AnchorPane>
-					</children>
-				</HBox>
 				<HBox alignment="TOP_RIGHT" HBox.hgrow="ALWAYS">
 					<children>
 						<Label fx:id="lblServerStatus" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutY="2.0" prefWidth="256.0" text="Server not running" textFill="WHITE">
@@ -400,7 +560,7 @@
 						</Label>
 						<ImageView fx:id="imgSettings" fitHeight="18.0" fitWidth="18.0" layoutX="345.0" onMouseClicked="#onSettingsClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
 							<image>
-								<Image url="@../../../../drawable/icons/settings.png" />
+								<Image url="@../../../../drawable/icons/actions/settings.png" />
 							</image>
 							<HBox.margin>
 								<Insets right="8.0" />
@@ -408,7 +568,7 @@
 						</ImageView>
 						<ImageView fx:id="imgLockState" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
 							<image>
-								<Image url="@../../../../drawable/icons/locked.png" />
+								<Image url="@../../../../drawable/icons/lock_state/locked.png" />
 							</image>
 						</ImageView>
 					</children>

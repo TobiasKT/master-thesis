@@ -8,6 +8,8 @@ import com.lmu.tokt.mt.util.AppConstants;
 
 public class LoginUtil {
 
+	private static final String TAG = LoginUtil.class.getSimpleName();
+
 	public static LoginUtil instance;
 
 	private String username;
@@ -21,6 +23,7 @@ public class LoginUtil {
 	private int serverport;
 
 	public LoginUtil() {
+		System.out.println(TAG + ": Init LoginUtil instance");
 		instance = this;
 		mLoginModel = new LoginModel();
 		loadUserSettings();
@@ -42,6 +45,7 @@ public class LoginUtil {
 			if (username == null) {
 				username = mLoginModel.getFirtUserInDB();
 			}
+
 			this.username = username;
 
 			BufferedImage image = mLoginModel.readImageFromDB(username, AppConstants.IMAGE_TYPE_BACKGROUND);
@@ -52,12 +56,11 @@ public class LoginUtil {
 
 			this.serverport = mLoginModel.getServerPort();
 
+			System.out.println(TAG + ": loading user settings successful");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": SQL ERROR loadUserSettings. Exception: " + e.toString());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": IO ERROR loadUserSettings. Exception: " + e.toString());
 		}
 
 	}
