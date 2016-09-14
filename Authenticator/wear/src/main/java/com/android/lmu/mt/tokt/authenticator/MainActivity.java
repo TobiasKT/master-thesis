@@ -5,18 +5,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -26,17 +31,34 @@ public class MainActivity extends WearableActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private static final int SPEECH_REQUEST_CODE = 0;
+
     private static final SimpleDateFormat AMBIENT_DATE_FORMAT =
             new SimpleDateFormat("HH:mm", Locale.US);
 
     private BoxInsetLayout mContainerView;
-    private TextView mClockView;
+    private RelativeLayout mContainerWatchStateRL;
 
+    private TextView mClockView;
     private TextView mConnectionStateText;
+
     private TextView mHeartRateText;
     private TextView mStepCountText;
     private TextView mProximityText;
     private TextView mBeaconIdentifierText;
+
+    private TextView mHeartRateTitleTxt;
+    private TextView mStepCountTitleTxt;
+    private TextView mProximityTitleTxt;
+
+
+    private ImageView mHeartRateImg;
+    private ImageView mStepsImg;
+    private ImageView mProximityImg;
+
+
+    private ImageView mBorder;
+
     private Button mCloseBtn;
 
     private BroadcastReceiver mBroadcastReceiver;
@@ -48,14 +70,24 @@ public class MainActivity extends WearableActivity {
         setAmbientEnabled();
 
         mContainerView = (BoxInsetLayout) findViewById(R.id.container);
+        mContainerWatchStateRL = (RelativeLayout) findViewById(R.id.container_clock_state_relative);
         mClockView = (TextView) findViewById(R.id.clock);
-
-
         mConnectionStateText = (TextView) findViewById(R.id.connection_status_text);
+
         mHeartRateText = (TextView) findViewById(R.id.heart_rate_text);
         mStepCountText = (TextView) findViewById(R.id.step_text);
         mProximityText = (TextView) findViewById(R.id.proximity_text);
-        mBeaconIdentifierText = (TextView)findViewById(R.id.beacon_identifier_text);
+        mBeaconIdentifierText = (TextView) findViewById(R.id.beacon_identifier_text);
+
+        mHeartRateTitleTxt = (TextView) findViewById(R.id.heart_rate_title_text);
+        mStepCountTitleTxt = (TextView) findViewById(R.id.step_title_text);
+        mProximityTitleTxt = (TextView) findViewById(R.id.proximity_title_text);
+
+        mHeartRateImg = (ImageView) findViewById(R.id.heartbeat_watch_img);
+        mStepsImg = (ImageView) findViewById(R.id.walking_watch_img);
+        mProximityImg = (ImageView) findViewById(R.id.proximity_watch_img);
+
+        mBorder = (ImageView) findViewById(R.id.border_1);
 
         mCloseBtn = (Button) findViewById(R.id.close);
 
@@ -103,9 +135,41 @@ public class MainActivity extends WearableActivity {
                     mStepCountText.setText(message);
                 }
 
+                if (intent.getAction().equals(AppConstants.SOUND_LISTENING_RESULT)) {
+                    displaySpeechRecognizer();
+                }
+
+
             }
         };
 
+    }
+
+    // Create an intent that can start the Speech Recognizer activity
+    private void displaySpeechRecognizer() {
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        // Start the activity, the intent will be populated with the speech text
+        startActivityForResult(intent, SPEECH_REQUEST_CODE);
+    }
+
+    // This callback is invoked when the Speech Recognizer returns.
+    // This is where you process the intent and extract the speech text from the intent.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    Intent data) {
+        if (requestCode == SPEECH_REQUEST_CODE && resultCode == RESULT_OK) {
+            List<String> results = data.getStringArrayListExtra(
+                    RecognizerIntent.EXTRA_RESULTS);
+            String spokenText = results.get(0);
+
+            if (spokenText.toLowerCase().equals(AppConstants.SOUND_PASSWORD)) {
+                Toast.makeText(this, "PC wil be unlocked", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -118,6 +182,7 @@ public class MainActivity extends WearableActivity {
         filter.addAction(AppConstants.SENSOR_STEP_COUNT_RESULT);
         filter.addAction(AppConstants.MESSAGE_RECEIVER_RESULT);
         filter.addAction(AppConstants.BEACON_IDENTIFIER_RESULT);
+        filter.addAction(AppConstants.SOUND_LISTENING_RESULT);
 
         LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
                 filter);
@@ -158,11 +223,42 @@ public class MainActivity extends WearableActivity {
     private void updateDisplay() {
         if (isAmbient()) {
             mContainerView.setBackgroundColor(getResources().getColor(android.R.color.black));
+            mContainerWatchStateRL.setBackgroundColor(getResources().getColor(android.R.color.black));
             mClockView.setVisibility(View.VISIBLE);
             mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
+            mBorder.setVisibility(View.GONE);
+            mCloseBtn.setVisibility(View.INVISIBLE);
+
+            mHeartRateText.setTextColor(getResources().getColor(R.color.white));
+            mStepCountText.setTextColor(getResources().getColor(R.color.white));
+            mProximityText.setTextColor(getResources().getColor(R.color.white));
+
+            mHeartRateTitleTxt.setTextColor(getResources().getColor(R.color.white));
+            mStepCountTitleTxt.setTextColor(getResources().getColor(R.color.white));
+            mProximityTitleTxt.setTextColor(getResources().getColor(R.color.white));
+
+            mHeartRateImg.setImageResource(R.drawable.heart_white_1);
+            mStepsImg.setImageResource(R.drawable.walking_white);
+            mProximityImg.setImageResource(R.drawable.signal_white_1);
+
         } else {
             mContainerView.setBackground(null);
-            mClockView.setVisibility(View.GONE);
+            mContainerWatchStateRL.setBackgroundColor(getResources().getColor(R.color.indigo_500));
+            mBorder.setVisibility(View.VISIBLE);
+            mCloseBtn.setVisibility(View.VISIBLE);
+            // mClockView.setVisibility(View.GONE);
+
+            mHeartRateText.setTextColor(getResources().getColor(R.color.gray_900));
+            mStepCountText.setTextColor(getResources().getColor(R.color.gray_900));
+            mProximityText.setTextColor(getResources().getColor(R.color.gray_900));
+
+            mHeartRateTitleTxt.setTextColor(getResources().getColor(R.color.gray_900));
+            mStepCountTitleTxt.setTextColor(getResources().getColor(R.color.gray_900));
+            mProximityTitleTxt.setTextColor(getResources().getColor(R.color.gray_900));
+
+            mHeartRateImg.setImageResource(R.drawable.heartbeat);
+            mStepsImg.setImageResource(R.drawable.walking);
+            mProximityImg.setImageResource(R.drawable.signal);
         }
     }
 }

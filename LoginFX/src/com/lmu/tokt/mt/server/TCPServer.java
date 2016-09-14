@@ -20,11 +20,10 @@ import com.lmu.tokt.mt.util.Checksum;
 
 public class TCPServer extends Thread {
 
-	// Terminal Ports Listen: netstat -an | grep -i "listen" , sudo lsof -i -P |
-	// grep -i "listen" , netstat -atp tcp | grep -i "listen"
-
 	/*-------------------------------------------*/
 	// ifconfig | grep "inet " | grep -v 127.0.0.1
+
+	private static final String TAG = TCPServer.class.getSimpleName();
 
 	private ServerSocket mServer;
 	private Socket mConnection;
@@ -85,14 +84,14 @@ public class TCPServer extends Thread {
 					setupStreams();
 					whileDataExchange();
 				}
-				System.out.println("Server stopped!");
+				System.out.println(TAG + ": server STOPPED");
 			} catch (EOFException eof) {
-				System.out.println("SERVER ended the connection! ");
+				System.out.println(TAG + ": server ENDED the connection ");
 			} finally {
 				closeConnection();
 			}
 		} catch (IOException ioe) {
-			ioe.printStackTrace();
+			System.out.println(TAG + ": IO ERROR startRunning(). Exception: " + ioe.toString());
 		}
 	}
 
@@ -104,20 +103,20 @@ public class TCPServer extends Thread {
 	}
 
 	private void waitForConnection() {
-		System.out.println("Wait for client to connect...");
+		System.out.println(TAG + ": wait for client to connect...");
 
 		try {
 			mConnection = mServer.accept();
 			System.out.println(
-					"CLIENT connected to " + mConnection.getInetAddress().getHostAddress() + ":" + SERVER_PORT);
+					TAG + ": CLIENT connected to " + mConnection.getInetAddress().getHostAddress() + ":" + SERVER_PORT);
 			mDataExchangeIsRunning = true;
 			if (mMessageListener != null) {
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_SERVER_RUNNING,
 						mConnection.getInetAddress().getHostAddress() + ":" + SERVER_PORT);
 			}
-			// publish to mainscreen
+
 		} catch (IOException ioe) {
-			System.err.println("Error while trying client to connect! Exception: " + ioe.getMessage());
+			System.err.println(TAG + ": IO ERROR while trying client to connect! Exception: " + ioe.getMessage());
 			mIsConnectedToWatch = false;
 		}
 
@@ -128,16 +127,15 @@ public class TCPServer extends Thread {
 		mOutput.flush();
 
 		mInput = new BufferedReader(new InputStreamReader(mConnection.getInputStream(), "UTF-8"));
-		System.out.println("Streams are now setup.");
+		System.out.println(TAG + ": streams are nset up successfully");
 	}
 
 	private synchronized void whileDataExchange() throws IOException {
 
-		// TODO: Request allowance to pair!!!!
 		if (!mIsConnectedToWatch) {
 			// send ConfirmConnectionRequest
 			sendMessage(AppConstants.COMMAND_CONFIRM + ":" + mChecksum.getChecksum());
-			System.out.println("Confirmation Request to client with: " + mChecksum.getChecksum());
+			System.out.println(TAG + ": confirmation Request to client with: " + mChecksum.getChecksum());
 		}
 
 		while (mDataExchangeIsRunning) {
@@ -175,12 +173,14 @@ public class TCPServer extends Thread {
 						JSONObject json = (JSONObject) parser.parse(data);
 						String name = (String) json.get("name");
 
-						if (name.equals(AppConstants.STRING_TYPE_HEART_RATE)) {
+						if (name.equals(AppConstants.SENSOR_NAME_HEART_RATE)) {
 							validateHeartRate(data);
 						}
+						if (name.equals(AppConstants.SENSOR_NAME_STEP_COUNTER)) {
+							validateStepCount(data);
+						}
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println(TAG + ": PARSE ERROR getting sensor name. Exception: " + e.toString());
 					}
 				}
 
@@ -195,21 +195,20 @@ public class TCPServer extends Thread {
 						validateProximity(proximity);
 
 					} catch (ParseException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println(TAG + ": PARSE ERROR getting beacon proximity. Exception: " + e.toString());
 					}
 				}
 
-				// validate lock state
+				// validate states by timeStamp
 				validateLockState();
-
 				validateHeartRateByTimeStamp();
+				validateUserStateByTimeStamp();
 
 				mMessageListener.callbackMessageReceiver(mIncomingMessage);
 			}
 			mIncomingMessage = null;
 		}
-		System.out.println("Data exchange stopped!");
+		System.out.println(TAG + ": Data exchange stopped!");
 
 	}
 
@@ -218,11 +217,11 @@ public class TCPServer extends Thread {
 		long t = System.currentTimeMillis();
 		long lastTimestamp = mLastHeartrateTimestamp;
 		long timeAgo = t - lastTimestamp;
-		System.out.println("timeAgo:" + timeAgo);
+		System.out.println("I/" + TAG + ": last heart beat time ago:" + timeAgo);
 
 		if (lastTimestamp != 0 && mHeartRateDetectd) {
 			if (timeAgo > 20000) {
-				System.out.println("No Heartbeat!");
+				System.out.println(TAG + ": No Heartbeat!");
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "No Heartbeat detected");
 				sendMessage(AppConstants.COMMAND_NOT_AUTHENTICATED);
 				mHeartRateDetectd = false;
@@ -231,6 +230,49 @@ public class TCPServer extends Thread {
 			}
 		}
 
+	}
+
+	private void validateUserStateByTimeStamp() {
+		long t = System.currentTimeMillis();
+		long lastTimestamp = mLastStepCountTimeStamp;
+		long timeAgo = t - lastTimestamp;
+		System.out.println("I/ " + TAG + ": last step count time ago:" + timeAgo);
+
+		if (lastTimestamp != 0 && mHeartRateDetectd) {
+			if (timeAgo > 5000) {
+				System.out.println(TAG + ": user state STILL");
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_STILL, "still");
+			} else {
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_WALKING, "walking");
+			}
+		}
+
+	}
+
+	private long mLastStepCountTimeStamp = 0;
+
+	private void validateStepCount(String data) {
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject json = (JSONObject) parser.parse(data);
+			String name = (String) json.get("name");
+			int type = ((Long) json.get("type")).intValue();
+			int accuracy = ((Long) json.get("accuracy")).intValue();
+			long timestamp = (long) json.get("timestamp");
+
+			JSONArray values = (JSONArray) json.get("values");
+			Iterator<Long> iterator = values.iterator();
+			while (iterator.hasNext()) {
+				float stepCount = iterator.next();
+				if (stepCount > 0) {
+					mLastStepCountTimeStamp = System.currentTimeMillis();
+					mMessageListener.callbackMessageReceiver(AppConstants.UPDATE_STEP_COUNT, "" + stepCount);
+				}
+			}
+
+		} catch (ParseException e) {
+			// TODO: handle exception
+		}
 	}
 
 	private void validateHeartRate(String data) {
@@ -284,14 +326,13 @@ public class TCPServer extends Thread {
 
 	private void validateProximity(String proximity) {
 
-		/*
-		 * if (proximity.equals(AppConstants.PROXIMITY_IMMEDIATE)) {
-		 * mProximityCounter = 0;
-		 * mMessageListener.callbackMessageReceiver(AppConstants.
-		 * STATE_PROXIMITY, AppConstants.PROXIMITY_IMMEDIATE);
-		 * mMessageListener.callbackMessageReceiver(AppConstants.STATE_UNLOCKED,
-		 * "unlocked"); }
-		 */
+		if (proximity.equals(AppConstants.PROXIMITY_IMMEDIATE)) {
+			mProximityCounter = 0;
+			// TODO Play sound
+			mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY, AppConstants.PROXIMITY_IMMEDIATE);
+			mMessageListener.callbackMessageReceiver(AppConstants.STATE_UNLOCKED, "unlocked");
+		}
+
 		if (proximity.equals(AppConstants.PROXIMITY_NEAR)) {
 			mProximityDetected = true;
 			mProximityCounter = 0;
@@ -332,7 +373,7 @@ public class TCPServer extends Thread {
 			mOutput.newLine();
 			mOutput.flush();
 		} catch (IOException ioException) {
-			System.err.println("ERROR: Cannot send message, please retry!");
+			System.err.println(TAG + ": IO ERROR: Cannot send message, please retry! " + ioException.toString());
 		}
 	}
 
@@ -342,7 +383,7 @@ public class TCPServer extends Thread {
 			mOutput.close();
 			mInput.close();
 			mConnection.close();
-			System.out.println("Connection closed!");
+			System.out.println(TAG + ": Connection closed!");
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -358,31 +399,6 @@ public class TCPServer extends Thread {
 
 	public boolean isRunning() {
 		return mDataExchangeIsRunning;
-	}
-
-	@SuppressWarnings("unchecked")
-	private JSONObject getConnectionJSON() {
-		try {
-			int checksum = -1;
-			String message = "Connection failed!";
-
-			if (mIsConnectedToWatch) {
-				checksum = (int) (Math.random() * 9999);
-				message = "You are connected!";
-			}
-
-			JSONObject jsonObject = new JSONObject();
-			jsonObject.put("dataType", "connectionData");
-			jsonObject.put("checksum", checksum);
-			jsonObject.put("message", message);
-
-			return jsonObject;
-
-		} catch (Exception jsone) {
-			System.out.println("ERROR creating  successful connection JSONObject! Exception: " + jsone.getMessage());
-			return null;
-		}
-
 	}
 
 	// show on Screen, use as callback to show if authenticated or not

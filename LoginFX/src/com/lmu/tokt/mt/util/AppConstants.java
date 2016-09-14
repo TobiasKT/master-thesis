@@ -14,6 +14,7 @@ public class AppConstants {
 	public static final String COMMAND_CONFIRM = "CONFIRM";
 	public static final String COMMAND_GET_CUES = "GET_CUES";
 	public static final String COMMAND_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
+	public static final String COMMAND_LISTEN_TO_SOUND = "LISTEN_TO_SOUND";
 
 	public static final String SENSORDATA = "SENSORDATA";
 	public static final String BEACONDATA = "BEACONDATA";
@@ -35,7 +36,8 @@ public class AppConstants {
 	public static final int STATE_LOCKED = -5000;
 	public static final int STATE_UNLOCKED = -5001;
 
-	public static final String STRING_TYPE_HEART_RATE = "HEART_RATE";
+	public static final String SENSOR_NAME_HEART_RATE = "HEART_RATE";
+	public static final String SENSOR_NAME_STEP_COUNTER = "STEP_COUNTER";
 
 	public static final String PROXIMITY_IMMEDIATE = "immediate";
 	public static final String PROXIMITY_NEAR = "near";
@@ -51,4 +53,8 @@ public class AppConstants {
 	public static final String DB_FIELD_AVATAR = "avatar";
 
 	public static final String DB_FIELD_LAST_USER = "lastUser";
+
+	public static final int UPDATE_STEP_COUNT = -6000;
+	public static final int STATE_WALKING = -6001;
+	public static final int STATE_STILL = -6002;
 }

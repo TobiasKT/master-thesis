@@ -84,6 +84,10 @@ public class MessageReceiverService extends WearableListenerService {
             stopService(new Intent(this, SensorService.class));
             stopService(new Intent(this, BeaconService.class));
         }
+
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_LISTEN_TO_SOUND)) {
+            sendResult(AppConstants.SOUND_LISTENING_RESULT, AppConstants.SOUND_LISTENING_MESSAGE, "");
+        }
     }
 
     private void sendResult(String intentAction, String extraName, String message) {

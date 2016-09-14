@@ -234,7 +234,7 @@
                               </HBox>
                               <HBox layoutX="338.0" layoutY="453.0">
                                  <children>
-                  								<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" layoutX="338.0" layoutY="453.0" pickOnBounds="true">
+                  								<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" layoutX="338.0" layoutY="453.0" onMouseClicked="#onSoundSignalClicked" pickOnBounds="true" styleClass="hand-cursor">
                   									<image>
                   										<Image url="@../../../../drawable/icons/sound/sound_grey_1.png" />
                   									</image>

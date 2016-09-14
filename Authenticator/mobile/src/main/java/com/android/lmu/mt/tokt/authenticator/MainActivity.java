@@ -224,9 +224,9 @@ public class MainActivity extends AppCompatActivity implements
                             Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
                         }
 
-                        if(mGoogleApiClient.isConnected()){
+                        if (mGoogleApiClient.isConnected()) {
                             startMeasurement();
-                        }else{
+                        } else {
                             //Connect to watch and start sensor service
                             connectToWatch();
                         }
@@ -239,6 +239,12 @@ public class MainActivity extends AppCompatActivity implements
                         mConnectToServerBtn.setText("CONNECT");
                         mAuthenticatorAsyncTask = null;
                         Toast.makeText(MainActivity.this, "ERROR! Network problems!", Toast.LENGTH_SHORT).show();
+                        break;
+                    case AppConstants.START_LISTEN_TO_SOUND:
+                        if (msg.obj != null) {
+                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                        startListeningToSound();
                         break;
                 }
             }
@@ -408,6 +414,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             case AppConstants.SENSOR_TYPE_STEP_COUNTER:
                 //TODO: send to server
+                sendSensorDataToServer(dataString);
                 BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
                 break;
             case -1:
@@ -603,7 +610,7 @@ public class MainActivity extends AppCompatActivity implements
         mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
-                controlMeasurementInBackground(AppConstants.CLIENT_PATH_START_MEASUREMENT);
+                sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_START_MEASUREMENT);
             }
         });
     }
@@ -612,7 +619,16 @@ public class MainActivity extends AppCompatActivity implements
         mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
-                controlMeasurementInBackground(AppConstants.CLIENT_PATH_STOP_MEASUREMENT);
+                sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_STOP_MEASUREMENT);
+            }
+        });
+    }
+
+    public void startListeningToSound() {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_LISTEN_TO_SOUND);
             }
         });
     }
@@ -628,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
     //TODO only allow ONE node!!!
-    private void controlMeasurementInBackground(final String path) {
+    private void sendRemoteCommandToWatch(final String path) {
 
         List<Node> nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await().getNodes();
 
@@ -641,7 +657,7 @@ public class MainActivity extends AppCompatActivity implements
             ).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                 @Override
                 public void onResult(MessageApi.SendMessageResult sendMessageResult) {
-                    Log.d(TAG, "controlMeasurementInBackground(" + path + "): " + sendMessageResult.getStatus().isSuccess());
+                    Log.d(TAG, "sendRemoteCommandToWatch(" + path + "): " + sendMessageResult.getStatus().isSuccess());
                 }
             });
         }

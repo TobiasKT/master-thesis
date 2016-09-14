@@ -75,6 +75,7 @@ public class AppConstants {
     //ClientPaths
     public static final String CLIENT_PATH_START_MEASUREMENT = "/start";
     public static final String CLIENT_PATH_STOP_MEASUREMENT = "/stop";
+    public static final String CLIENT_PATH_LISTEN_TO_SOUND = "/listen";
 
     //ServerPaths
     public static final String SERVER_PATH_SENSOR_DATA = "/sensors/";
@@ -87,6 +88,10 @@ public class AppConstants {
     public static final String COMMAND_CONFIRM = "CONFIRM";
     public static final String COMMAND_GET_CUES = "GET_CUES";
     public static final String COMMAND_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
+    public static final String COMMAND_LISTEN_TO_SOUND = "LISTEN_TO_SOUND";
+
+    //
+    public static final int START_LISTEN_TO_SOUND = -5000;
 
     //States
     public static final int STATE_SERVER_RUNNING = 1000;
@@ -125,6 +130,12 @@ public class AppConstants {
     public static final String SENSOR_HEART_RATE_MESSAGE = "com.android.lmu.tokt.authenticator.SensorService.HEART_REATE_MESSAGE";
     public static final String SENSOR_STEP_COUNT_RESULT = "com.android.lmu.tokt.authenticator.SensorService.STEP_COUNT_REQUEST_PROCESSED";
     public static final String SENSOR_STEP_COUNT_MESSAGE = "com.android.lmu.tokt.authenticator.SensorService.BEACON_MESSAGE";
+
+
+    //Sound Listening Constants
+    public static final String SOUND_LISTENING_RESULT = "com.android.lmu.tokt.authenticator.SensorService.SOUND_LISTENING_REQUEST_PROCESSED";
+    public static final String SOUND_LISTENING_MESSAGE = "com.android.lmu.tokt.authenticator.SensorService.SOUND_LISTENING_MESSAGE";
+    public static final String SOUND_PASSWORD = "welcome back";
 
     //MessageReceiverService
     public static final String MESSAGE_RECEIVER_RESULT = "com.android.lmu.tokt.authenticator.MessageReceiverService.REQUEST_PROCESSED";

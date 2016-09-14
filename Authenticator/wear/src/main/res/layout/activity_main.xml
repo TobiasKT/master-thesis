@@ -8,13 +8,42 @@
     tools:context="com.android.lmu.mt.tokt.authenticator.MainActivity"
     tools:deviceIds="wear">
 
-    <TextView
-        android:id="@+id/connection_status_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center"
-        android:text="DISCONNECTED"
-        android:textStyle="bold"
+    <RelativeLayout
+        android:id="@+id/container_clock_state_relative"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_gravity="top"
+        android:background="@color/indigo_500">
+
+        <TextView
+            android:id="@+id/clock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:gravity="center"
+            android:text="00:00"
+            android:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/connection_status_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            android:gravity="center"
+            android:text="DISCONNECTED"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/heartbeat_watch_img"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center|start"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="32dp"
+        android:src="@drawable/heartbeat"
         app:layout_box="all" />
 
     <TextView
@@ -22,8 +51,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|start"
-        android:layout_marginBottom="32dp"
-        android:text="Heartrate:"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="64dp"
+        android:text="Heartrate"
         app:layout_box="all" />
 
     <TextView
@@ -31,10 +61,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="32dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="48dp"
         android:text="0.0"
         android:textStyle="bold"
+        app:layout_box="all" />
+
+    <ImageView
+        android:id="@+id/walking_watch_img"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center|start"
+        android:layout_marginBottom="-8dp"
+        android:layout_marginLeft="32dp"
+        android:src="@drawable/walking"
         app:layout_box="all" />
 
     <TextView
@@ -42,8 +82,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|start"
-        android:layout_marginBottom="8dp"
-        android:text="Steps:"
+        android:layout_marginBottom="-8dp"
+        android:layout_marginLeft="64dp"
+        android:text="Steps"
         app:layout_box="all" />
 
     <TextView
@@ -51,10 +92,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="-8dp"
+        android:layout_marginLeft="48dp"
         android:text="0.0"
         android:textStyle="bold"
+        app:layout_box="all" />
+
+    <ImageView
+        android:id="@+id/proximity_watch_img"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_gravity="center|start"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/signal"
         app:layout_box="all" />
 
     <TextView
@@ -62,8 +113,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center|start"
-        android:layout_marginTop="16dp"
-        android:text="Proximity:"
+        android:layout_marginLeft="64dp"
+        android:layout_marginTop="32dp"
+        android:text="Proximity"
         app:layout_box="all" />
 
     <TextView
@@ -71,8 +123,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginLeft="48dp"
+        android:layout_marginTop="32dp"
         android:text="-"
         android:textStyle="bold"
         app:layout_box="all" />
@@ -82,28 +134,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="36dp"
-        android:textSize="7sp"
+        android:layout_marginTop="48dp"
         android:text=""
+        android:textSize="7sp"
         app:layout_box="all" />
 
-
-    <TextView
-        android:id="@+id/clock"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:text="00:00"
-        android:textColor="@android:color/white"
-        app:layout_box="all" />
+    <ImageView
+        android:id="@+id/border_1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="50dp"
+        android:src="#e0e0e0" />
 
     <Button
         android:id="@+id/close"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|center"
-        android:layout_marginBottom="24dp"
-        android:layout_width="64dp"
-        android:layout_height="40dp"
-        android:textSize="12sp"
-        android:text="close" />
+        android:layout_marginBottom="2dp"
+        android:background="?android:selectableItemBackground"
+        android:paddingBottom="16dp"
+        android:text="stop"
+        android:textColor="@color/indigo_500"
+        android:textSize="12sp" />
 
 </android.support.wearable.view.BoxInsetLayout>

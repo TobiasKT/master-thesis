@@ -152,9 +152,9 @@ public class LoginController implements Initializable {
 		setDateTime();
 
 		if (mLoginModel.isDBConnected()) {
-			System.out.println("DB is connected!");
+			System.out.println(TAG + ": DB is connected!");
 		} else {
-			System.out.println("DB is NOT connected!");
+			System.out.println(TAG + ": DB is NOT connected!");
 		}
 
 		mChecksum = Checksum.getInstance();
@@ -343,7 +343,7 @@ public class LoginController implements Initializable {
 
 						setLockStateImage(true);
 						setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
-								new Image("drawable/icons/key/key_grey_1.png"), true, true, true, false, false, true);
+								new Image("drawable/icons/key/key_grey_1.png"), true, false, true, false, false, true);
 
 						// reset Heartbeat
 						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
@@ -390,6 +390,37 @@ public class LoginController implements Initializable {
 
 						// TODO: createMiniView
 						// stage.setIconified(true);
+					}
+				});
+				break;
+			case AppConstants.UPDATE_STEP_COUNT:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+
+						lblUserState.setText("Steps (" + message + ")");
+					}
+				});
+
+				break;
+			case AppConstants.STATE_STILL:
+
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						imgUserState.setImage(new Image("drawable/icons/user_state/standing_white.png"));
+						lblUserStateValue.setText(message);
+					}
+				});
+
+				break;
+			case AppConstants.STATE_WALKING:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						imgUserState.setImage(new Image("drawable/icons/user_state/walking_white.png"));
+						lblUserStateValue.setText(message);
 					}
 				});
 				break;
@@ -852,6 +883,12 @@ public class LoginController implements Initializable {
 
 	public TCPServer getTCPServer() {
 		return mTCPServer;
+	}
+
+	@FXML
+	private void onSoundSignalClicked(MouseEvent event) {
+		mTCPServer.sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
+
 	}
 
 }

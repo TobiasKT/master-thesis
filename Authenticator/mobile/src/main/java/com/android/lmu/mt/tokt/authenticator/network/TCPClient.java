@@ -161,6 +161,14 @@ public class TCPClient {
                     mHandler.sendMessage(completeMessage);
                 }
 
+
+                if (mIncomingMessage.equals(AppConstants.COMMAND_LISTEN_TO_SOUND)) {
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.START_LISTEN_TO_SOUND,
+                                    "Start voice recognition");
+                    mHandler.sendMessage(completeMessage);
+                }
+
                 mMessageListener.callbackMessageReceiver(mIncomingMessage);
             }
             mIncomingMessage = null;

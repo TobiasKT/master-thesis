@@ -34,7 +34,7 @@
                         <AnchorPane layoutX="167.0" layoutY="217.0">
                            <children>
             						<ProgressIndicator fx:id="progressConnectToWatch" prefHeight="32.0" prefWidth="32.0" visible="false" />
-            						<ImageView fx:id="imgWatchConnected" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+            						<ImageView fx:id="imgWatchConnected" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
             							<image>
             								<Image url="@../../../../drawable/icons/watch/watch_grey_1.png" />
             							</image>
@@ -83,7 +83,7 @@
                               <Insets right="20.0" top="2.0" />
                            </HBox.margin>
       						</ImageView>
-      						<ImageView fx:id="imgPassword" fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" x="1.0" y="1.0">
+      						<ImageView fx:id="imgPassword" fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true" x="1.0" y="1.0">
       							<image>
       								<Image url="@../../../../drawable/icons/key/key_grey_1.png" />
       							</image>
@@ -234,7 +234,7 @@
                               </HBox>
                               <HBox layoutX="338.0" layoutY="453.0">
                                  <children>
-                  								<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" layoutX="338.0" layoutY="453.0" pickOnBounds="true">
+                  								<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" layoutX="338.0" layoutY="453.0" onMouseClicked="#onSoundSignalClicked" pickOnBounds="true" styleClass="hand-cursor">
                   									<image>
                   										<Image url="@../../../../drawable/icons/sound/sound_grey_1.png" />
                   									</image>

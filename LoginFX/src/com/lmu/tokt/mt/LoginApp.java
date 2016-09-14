@@ -69,7 +69,8 @@ public class LoginApp extends Application {
 							System.out.println(
 									TAG + ": ERROR updatating" + " last logged in user. Exception: " + e.toString());
 						}
-
+						// stop server
+						LoginController.getInstance().getTCPServer().interrupt();
 						System.exit(1);
 					} else if (result.get() == buttonTypeCancel) {
 						event.consume();
