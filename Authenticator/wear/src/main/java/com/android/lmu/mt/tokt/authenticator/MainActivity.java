@@ -94,8 +94,7 @@ public class MainActivity extends WearableActivity {
         mCloseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopService(new Intent(MainActivity.this, SensorService.class));
-                stopService(new Intent(MainActivity.this, BeaconService.class));
+                stopService(new Intent(MainActivity.this, AuthenticatorWatchService.class));
                 finish();
             }
         });
@@ -186,18 +185,11 @@ public class MainActivity extends WearableActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
                 filter);
-
-        //JUST FOR TESTING
-        // startService(new Intent(this, BeaconService.class));
-        //startService(new Intent(this, SensorService.class));
+        
     }
 
     @Override
     protected void onStop() {
-        //JUST FOR TESTING
-        //stopService(new Intent(this, BeaconService.class));
-        //stopService(new Intent(this, SensorService.class));
-
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mBroadcastReceiver);
         super.onStop();
     }
@@ -246,7 +238,7 @@ public class MainActivity extends WearableActivity {
             mContainerWatchStateRL.setBackgroundColor(getResources().getColor(R.color.indigo_500));
             mBorder.setVisibility(View.VISIBLE);
             mCloseBtn.setVisibility(View.VISIBLE);
-            // mClockView.setVisibility(View.GONE);
+            mClockView.setVisibility(View.GONE);
 
             mHeartRateText.setTextColor(getResources().getColor(R.color.gray_900));
             mStepCountText.setTextColor(getResources().getColor(R.color.gray_900));

@@ -8,6 +8,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.json.simple.JSONArray;
@@ -37,18 +39,24 @@ public class TCPServer extends Thread {
 
 	private static Checksum mChecksum;
 
-	private boolean mAllowConnection = true;
 	private boolean mServerIsRunning = false;
 	private boolean mDataExchangeIsRunning = false;
 	private boolean mIsConnectedToWatch = false;
 
-	private boolean mHeartRateDetectd = false;
-	private int mHeartRateCounter = 0;
-	private long mLastHeartrateTimestamp = 0;
+	private boolean isHeartBeating = false;
+	private boolean isWalking = false;
+	private boolean isFar = false;
 
-	private boolean mProximityDetected = false;
-	private int mProximityCounter = 0;
-	private long mLastProximityTimestamp = 0;
+	private long mLastHeartrateTimestamp = 0;
+	private long mLastStepCountTimeStamp = 0;
+	private long mLastProximityImmediateNearTimestamp = 0;
+
+	private float mLastStepCount = 0;
+
+	private boolean isAuthenticated = false;
+	private boolean isLocked = false;
+
+	/* ------ Constructors ------- */
 
 	public TCPServer(MessageCallback messageListener) {
 		mMessageListener = messageListener;
@@ -58,7 +66,6 @@ public class TCPServer extends Thread {
 	public TCPServer(MessageCallback messageListener, int port) {
 		this(messageListener);
 		SERVER_PORT = port;
-
 	}
 
 	@Override
@@ -66,15 +73,13 @@ public class TCPServer extends Thread {
 		startRunning();
 	}
 
-	@Override
-	public void interrupt() {
-		super.interrupt();
-		stopRunning();
-	}
-
 	public void startRunning() {
 
 		mServerIsRunning = true;
+
+		if (mMessageListener != null) {
+			mMessageListener.callbackMessageReceiver(AppConstants.STATE_SERVER_RUNNING, "(Server is runnning)");
+		}
 
 		try {
 			mServer = new ServerSocket(SERVER_PORT);
@@ -96,10 +101,18 @@ public class TCPServer extends Thread {
 	}
 
 	public void stopRunning() {
+		System.out.println(TAG + ": Server stopped!");
 		mDataExchangeIsRunning = false;
 		mIsConnectedToWatch = false;
 		mServerIsRunning = false;
-		// closeConnection();
+		/*
+		 * if (mConnection != null) {
+		 * sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT); }
+		 * mMessageListener.callbackMessageReceiver(AppConstants.
+		 * STATE_SERVER_STOPPED, "(Server stopped)"); try { mOutput.close();
+		 * mInput.close(); } catch (IOException e) { System.out.println(TAG +
+		 * ": Error stopping server. Exception " + e.toString()); }
+		 */
 	}
 
 	private void waitForConnection() {
@@ -110,10 +123,6 @@ public class TCPServer extends Thread {
 			System.out.println(
 					TAG + ": CLIENT connected to " + mConnection.getInetAddress().getHostAddress() + ":" + SERVER_PORT);
 			mDataExchangeIsRunning = true;
-			if (mMessageListener != null) {
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_SERVER_RUNNING,
-						mConnection.getInetAddress().getHostAddress() + ":" + SERVER_PORT);
-			}
 
 		} catch (IOException ioe) {
 			System.err.println(TAG + ": IO ERROR while trying client to connect! Exception: " + ioe.getMessage());
@@ -134,7 +143,7 @@ public class TCPServer extends Thread {
 
 		if (!mIsConnectedToWatch) {
 			// send ConfirmConnectionRequest
-			sendMessage(AppConstants.COMMAND_CONFIRM + ":" + mChecksum.getChecksum());
+			sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM + ":" + mChecksum.getChecksum());
 			System.out.println(TAG + ": confirmation Request to client with: " + mChecksum.getChecksum());
 		}
 
@@ -143,68 +152,50 @@ public class TCPServer extends Thread {
 			if (mIncomingMessage != null && mMessageListener != null) {
 
 				// confirm connection
-				if (mIncomingMessage.contains(AppConstants.COMMAND_CONFIRM)) {
+				if (mIncomingMessage.contains(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM)) {
 
 					int receivedChecksum = Integer.parseInt(mIncomingMessage.split(":")[1]);
 					if (receivedChecksum == mChecksum.getChecksum()) {
 						mIsConnectedToWatch = true;
-						mMessageListener.callbackMessageReceiver(AppConstants.STATE_CONNECTED,
+						mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_CONNECTED,
 								"Confirmation successful!");
-						sendMessage(AppConstants.COMMAND_CONNECT);
+						sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECT);
 					} else {
 						mDataExchangeIsRunning = false;
-						mMessageListener.callbackMessageReceiver(AppConstants.ERROR, "Confirmation failed!");
-						sendMessage(AppConstants.COMMAND_DISCONNECT);
+						mIsConnectedToWatch = false;
+						mMessageListener.callbackMessageReceiver(AppConstants.STATE_NETWORK_ERROR,
+								"Confirmation failed!");
+						sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
 					}
 
 				}
 
-				if (mIncomingMessage.equals(AppConstants.COMMAND_DISCONNECT)) {
+				if (mIncomingMessage.equals(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT)) {
 					mDataExchangeIsRunning = false;
 					mIsConnectedToWatch = false;
-					mMessageListener.callbackMessageReceiver(AppConstants.ERROR, "Client disconnected!");
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_NETWORK_ERROR, "Client disconnected!");
 				}
 
 				if (mIncomingMessage.contains(AppConstants.SENSORDATA)) {
 					String data = mIncomingMessage.split("::")[1];
-
-					JSONParser parser = new JSONParser();
-					try {
-						JSONObject json = (JSONObject) parser.parse(data);
-						String name = (String) json.get("name");
-
-						if (name.equals(AppConstants.SENSOR_NAME_HEART_RATE)) {
-							validateHeartRate(data);
-						}
-						if (name.equals(AppConstants.SENSOR_NAME_STEP_COUNTER)) {
-							validateStepCount(data);
-						}
-					} catch (ParseException e) {
-						System.out.println(TAG + ": PARSE ERROR getting sensor name. Exception: " + e.toString());
-					}
+					unpackSensorData(data);
 				}
 
-				if (mIncomingMessage.contains(AppConstants.BEACONDATA)) {
-					String data = mIncomingMessage.split("::")[1];
-
-					JSONParser parser = new JSONParser();
-					try {
-						JSONObject json = (JSONObject) parser.parse(data);
-						// String name = (String) json.get("name");
-						String proximity = (String) json.get("proximity");
-						validateProximity(proximity);
-
-					} catch (ParseException e) {
-						System.out.println(TAG + ": PARSE ERROR getting beacon proximity. Exception: " + e.toString());
-					}
+				if (mIncomingMessage.equals(AppConstants.COMMAND_USER_AUTHENTICATED)) {
+					isAuthenticated = true;
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_AUTHENTICATED,
+							"User authenticated");
 				}
 
 				// validate states by timeStamp
-				validateLockState();
+
 				validateHeartRateByTimeStamp();
 				validateUserStateByTimeStamp();
+				validateProximityByTimeStamp();
 
-				mMessageListener.callbackMessageReceiver(mIncomingMessage);
+				validateAuthenticatorState();
+
+				// mMessageListener.callbackMessageReceiver(mIncomingMessage);
 			}
 			mIncomingMessage = null;
 		}
@@ -212,158 +203,169 @@ public class TCPServer extends Thread {
 
 	}
 
+	private void unpackSensorData(String data) {
+		JSONParser parser = new JSONParser();
+		try {
+			JSONObject json = (JSONObject) parser.parse(data);
+			String name = (String) json.get("name");
+			int type = ((Long) json.get("type")).intValue();
+			int accuracy = ((Long) json.get("accuracy")).intValue();
+			long timestamp = (long) json.get("timestamp");
+
+			JSONArray jsonArray = (JSONArray) json.get("values");
+			float[] values = new float[jsonArray.size()];
+
+			for (int i = 0; i < values.length; i++) {
+				values[i] = ((Long) jsonArray.get(i)).floatValue();
+			}
+
+			if (name.equals(AppConstants.SENSOR_NAME_HEART_RATE)) {
+				validateHeartRate(name, type, accuracy, timestamp, values);
+			}
+			if (name.equals(AppConstants.SENSOR_NAME_STEP_COUNTER)) {
+				validateStepCount(name, type, accuracy, timestamp, values);
+			}
+			if (name.equals(AppConstants.SENSOR_NAME_BEACON)) {
+				validateBeacon(name, type, accuracy, timestamp, values);
+			}
+		} catch (ParseException e) {
+			System.out.println(TAG + ": PARSE ERROR unpacking sensor data. Exception: " + e.toString());
+		}
+	}
+
+	private void validateHeartRate(String name, int type, int accuracy, long timestamp, float[] values) {
+
+		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
+
+		float heartrate = values[0];
+		if (heartrate > 0) {
+			System.out.println("E/" + TAG + ": New HEARTRATE [" + heartrate + "]");
+			mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING, "" + heartrate);
+			mLastHeartrateTimestamp = System.currentTimeMillis();
+			isHeartBeating = true;
+		}
+	}
+
+	private void validateStepCount(String name, int type, int accuracy, long timestamp, float[] values) {
+
+		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
+
+		float stepCount = values[0];
+		if (stepCount > mLastStepCount) {
+			System.out.println("E/" + TAG + ": New step count [" + stepCount + "]");
+			mLastStepCount = stepCount;
+			mLastStepCountTimeStamp = System.currentTimeMillis();
+		}
+	}
+
+	private void validateBeacon(String name, int type, int accuracy, long timestamp, float[] values) {
+
+		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
+
+		String proximityString;
+
+		int rssi = (int) values[0];
+		if (rssi >= -72) {
+			proximityString = AppConstants.PROXIMITY_IMMEDIATE;
+			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
+		} else if (rssi < -79 && rssi >= -80) {
+			proximityString = AppConstants.PROXIMITY_NEAR;
+			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
+		} else {
+			proximityString = AppConstants.PROXIMITY_FAR;
+		}
+
+		mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY_DETECTED, proximityString);
+
+	}
+
 	private void validateHeartRateByTimeStamp() {
 
-		long t = System.currentTimeMillis();
-		long lastTimestamp = mLastHeartrateTimestamp;
-		long timeAgo = t - lastTimestamp;
-		System.out.println("I/" + TAG + ": last heart beat time ago:" + timeAgo);
+		if (mLastHeartrateTimestamp != 0) {
 
-		if (lastTimestamp != 0 && mHeartRateDetectd) {
+			long timeAgo = getTimeAgo(mLastHeartrateTimestamp);
+
+			System.out.println("I/" + TAG + ": last HEART BEAT time ago:" + timeAgo);
+
 			if (timeAgo > 20000) {
-				System.out.println(TAG + ": No Heartbeat!");
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "No Heartbeat detected");
-				sendMessage(AppConstants.COMMAND_NOT_AUTHENTICATED);
-				mHeartRateDetectd = false;
-				mHeartRateCounter = 0;
-				return;
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "NO HEARTBEAT");
+				isHeartBeating = false;
 			}
 		}
 
 	}
 
 	private void validateUserStateByTimeStamp() {
-		long t = System.currentTimeMillis();
-		long lastTimestamp = mLastStepCountTimeStamp;
-		long timeAgo = t - lastTimestamp;
-		System.out.println("I/ " + TAG + ": last step count time ago:" + timeAgo);
 
-		if (lastTimestamp != 0 && mHeartRateDetectd) {
-			if (timeAgo > 5000) {
-				System.out.println(TAG + ": user state STILL");
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_STILL, "still");
+		if (mLastStepCountTimeStamp != 0) {
+
+			long timeAgo = getTimeAgo(mLastStepCountTimeStamp);
+
+			System.out.println("I/ " + TAG + ": last STEP COUNT time ago:" + timeAgo);
+
+			if (timeAgo > 3000) {
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_STILL, "still");
+				isWalking = false;
 			} else {
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_WALKING, "walking");
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_WALKING, "walking");
+				isWalking = true;
 			}
 		}
-
 	}
 
-	private long mLastStepCountTimeStamp = 0;
+	private void validateProximityByTimeStamp() {
 
-	private void validateStepCount(String data) {
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject json = (JSONObject) parser.parse(data);
-			String name = (String) json.get("name");
-			int type = ((Long) json.get("type")).intValue();
-			int accuracy = ((Long) json.get("accuracy")).intValue();
-			long timestamp = (long) json.get("timestamp");
+		if (mLastProximityImmediateNearTimestamp != 0) {
 
-			JSONArray values = (JSONArray) json.get("values");
-			Iterator<Long> iterator = values.iterator();
-			while (iterator.hasNext()) {
-				float stepCount = iterator.next();
-				if (stepCount > 0) {
-					mLastStepCountTimeStamp = System.currentTimeMillis();
-					mMessageListener.callbackMessageReceiver(AppConstants.UPDATE_STEP_COUNT, "" + stepCount);
+			long timeAgo = getTimeAgo(mLastProximityImmediateNearTimestamp);
+			System.out.println("I/ " + TAG + ": last PROXIMTIY IMMEDIATE/NEAR time ago:" + timeAgo);
+
+			if (timeAgo > 3500) {
+				isFar = true;
+			} else {
+				isFar = false;
+			}
+		}
+	}
+
+	private long getTimeAgo(long timestamp) {
+		long t = System.currentTimeMillis();
+		long lastTimestamp = timestamp;
+		long timeAgo = t - lastTimestamp;
+		return timeAgo;
+	}
+
+	private void validateAuthenticatorState() {
+
+		if (isAuthenticated) {
+			// autenticate again, re enter password
+			if (!isHeartBeating && mLastHeartrateTimestamp != 0) {
+				isAuthenticated = false;
+				mLastHeartrateTimestamp = 0;
+				mLastProximityImmediateNearTimestamp = 0;
+				mLastStepCountTimeStamp = 0;
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED, "");
+				sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
+			}
+
+			// lock
+			if (isHeartBeating && (isWalking || isFar)) {
+				if (!isLocked) {
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_LOCKED, "locked");
+					isLocked = true;
+				}
+
+			}
+
+			// unlock
+			if (isHeartBeating && !isFar) {
+				if (isLocked) {
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_UNLOCKED, "unlocked");
+					isLocked =false;
 				}
 			}
-
-		} catch (ParseException e) {
-			// TODO: handle exception
-		}
-	}
-
-	private void validateHeartRate(String data) {
-
-		JSONParser parser = new JSONParser();
-		try {
-			JSONObject json = (JSONObject) parser.parse(data);
-			String name = (String) json.get("name");
-			int type = ((Long) json.get("type")).intValue();
-			int accuracy = ((Long) json.get("accuracy")).intValue();
-			long timestamp = (long) json.get("timestamp");
-
-			JSONArray values = (JSONArray) json.get("values");
-			Iterator<Long> iterator = values.iterator();
-			while (iterator.hasNext()) {
-				float heartrate = iterator.next();
-				if (heartrate > 0) {
-					System.out.println("HeartRate is: " + heartrate);
-					mHeartRateCounter = 0;
-					if (!mHeartRateDetectd) {
-						mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEAT_DETECTED,
-								"HeartBeat detected");
-						mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING,
-								"(" + heartrate + ")");
-						mLastHeartrateTimestamp = System.currentTimeMillis();
-						mHeartRateDetectd = true;
-					} else {
-						mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING,
-								"(" + heartrate + ")");
-						mLastHeartrateTimestamp = System.currentTimeMillis();
-						mHeartRateCounter = 0;
-					}
-					return;
-				} else if (mHeartRateDetectd && heartrate == 0 && mHeartRateCounter < 5) {
-					mHeartRateCounter++;
-				} else if (mHeartRateDetectd && heartrate == 0 && mHeartRateCounter == 5) {
-
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "No Heartbeat detected");
-					sendMessage(AppConstants.COMMAND_NOT_AUTHENTICATED);
-					mHeartRateDetectd = false;
-					mHeartRateCounter = 0;
-				}
-			}
-
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
-	}
-
-	private void validateProximity(String proximity) {
-
-		if (proximity.equals(AppConstants.PROXIMITY_IMMEDIATE)) {
-			mProximityCounter = 0;
-			// TODO Play sound
-			mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY, AppConstants.PROXIMITY_IMMEDIATE);
-			mMessageListener.callbackMessageReceiver(AppConstants.STATE_UNLOCKED, "unlocked");
-		}
-
-		if (proximity.equals(AppConstants.PROXIMITY_NEAR)) {
-			mProximityDetected = true;
-			mProximityCounter = 0;
-			if (mHeartRateDetectd) {
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY, AppConstants.PROXIMITY_NEAR);
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_UNLOCKED, "unlocked");
-			}
-		}
-
-		if (proximity.equals(AppConstants.PROXIMITY_FAR)) {
-			mProximityDetected = true;
-			mProximityCounter++;
-
-			System.out.println("Proximity: far (" + mProximityCounter + ")");
-			if (mProximityCounter == 3) {
-				System.out.println("lock pc!");
-				if (mHeartRateDetectd) {
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY, AppConstants.PROXIMITY_FAR);
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_LOCKED, "locked");
-				}
-			}
-
-		}
-
-	}
-
-	private void validateLockState() {
-
-		if (mHeartRateDetectd && mProximityDetected) {
-			// Authenticated
-		}
 	}
 
 	// Send a mesage to the client
@@ -379,7 +381,7 @@ public class TCPServer extends Thread {
 
 	private void closeConnection() {
 		try {
-			sendMessage(AppConstants.COMMAND_DISCONNECT);
+			sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
 			mOutput.close();
 			mInput.close();
 			mConnection.close();
@@ -398,7 +400,19 @@ public class TCPServer extends Thread {
 	}
 
 	public boolean isRunning() {
+		return mServerIsRunning;
+	}
+
+	public boolean isDataExchange() {
 		return mDataExchangeIsRunning;
+	}
+
+	public boolean isAuthenticated() {
+		return isAuthenticated;
+	}
+
+	public void setAuthenticated(boolean isAuthenticated) {
+		this.isAuthenticated = isAuthenticated;
 	}
 
 	// show on Screen, use as callback to show if authenticated or not

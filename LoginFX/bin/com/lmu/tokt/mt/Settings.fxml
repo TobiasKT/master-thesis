@@ -87,7 +87,7 @@
 						<Font size="16.0" />
 					</font>
 				</Label>
-				<ImageView fx:id="imgDisconnect" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+				<ImageView fx:id="imgDisconnect" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="19.0" onMouseClicked="#onDisconnectClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
 					<image>
 						<Image url="@../../../../drawable/icons/settings/diconnect_blue.png" />
 					</image>

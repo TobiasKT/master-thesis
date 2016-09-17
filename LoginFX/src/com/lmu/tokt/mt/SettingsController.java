@@ -91,6 +91,12 @@ public class SettingsController implements Initializable {
 	@FXML
 	private void onDisconnectClicked(MouseEvent event) {
 
+		if (LoginController.getInstance().getTCPServer().isRunning()) {
+			LoginController.getInstance().getTCPServer().stopRunning();
+			LoginController.getInstance().getTCPServer().interrupt();
+			LoginController.getInstance().getTCPServer().startRunning();
+		}
+
 	}
 
 	@FXML
@@ -131,6 +137,7 @@ public class SettingsController implements Initializable {
 
 		int port = Integer.parseInt(editServerPort.getText());
 		try {
+			LoginController.getInstance().getServerPort().setText("" + port);
 			mLoginModel.updateServerPort(port);
 		} catch (SQLException e) {
 			System.out.println(TAG + ": SQL ERROR updating server port in DB. Exception: " + e.toString());

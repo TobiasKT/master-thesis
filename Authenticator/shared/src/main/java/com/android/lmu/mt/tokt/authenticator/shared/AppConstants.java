@@ -45,6 +45,9 @@ public class AppConstants {
     public final static int SENSOR_TYPE_GRAVITY = TYPE_GRAVITY; //9
     public final static int SENSOR_TYPE_LINEAR_ACCELERATION = TYPE_LINEAR_ACCELERATION; //10
 
+    //BeaconType
+    public final static int SENSOR_TYPE_BEACON = 99988;
+
     //SensorNames
     public final static String SENSOR_NAME_DEBUG = "DEBUG";
     public final static String SENSOR_NAME_ACCELEROMETER = "ACCELEROMETER";
@@ -62,6 +65,9 @@ public class AppConstants {
     public final static String SENSOR_NAME_USER_STRIDE_FACTOR = "USER_STRIDE_FACTOR";
     public final static String SENSOR_NAME_GRAVITY = "GRAVITY";
     public final static String SENSOR_NAME_LINEAR_ACCELERATION = "LINEAR_ACCELERATION";
+
+    //BeaconName
+    public final static String SENSOR_NAME_BEACON = "BEACON";
 
 
     //DataMapKeys
@@ -83,11 +89,12 @@ public class AppConstants {
 
 
     //Commands
-    public static final String COMMAND_CONNECT = "CONNECT";
-    public static final String COMMAND_DISCONNECT = "DISCONNECT";
-    public static final String COMMAND_CONFIRM = "CONFIRM";
-    public static final String COMMAND_GET_CUES = "GET_CUES";
-    public static final String COMMAND_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
+    public static final String COMMAND_PHONE_WATCH_CONNECT = "CONNECT";
+    public static final String COMMAND_PHONE_WATCH_DISCONNECT = "DISCONNECT";
+    public static final String COMMAND_PHONE_WATCH_CONNECTION_CONFIRM = "CONFIRM";
+    public static final String COMMAND_START_SENDING_SENSORDATA = "START_SENDING_SENSORDATA";
+    public static final String COMMAND_USER_AUTHENTICATED = "AUTHENTICATED";
+    public static final String COMMAND_USER_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
     public static final String COMMAND_LISTEN_TO_SOUND = "LISTEN_TO_SOUND";
 
     //

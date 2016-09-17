@@ -30,6 +30,8 @@ public class SensorNames {
         names.append(AppConstants.SENSOR_TYPE_USER_STRIDE_FACTOR, AppConstants.SENSOR_NAME_USER_STRIDE_FACTOR);
         names.append(AppConstants.SENSOR_TYPE_GRAVITY, AppConstants.SENSOR_NAME_GRAVITY);
         names.append(AppConstants.SENSOR_TYPE_LINEAR_ACCELERATION, AppConstants.SENSOR_NAME_LINEAR_ACCELERATION);
+
+        names.append(AppConstants.SENSOR_TYPE_BEACON, AppConstants.SENSOR_NAME_BEACON);
     }
 
 

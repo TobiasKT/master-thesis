@@ -80,12 +80,12 @@ public class TCPClient {
     public void stopClient() {
         Log.d(TAG, "Client stopped!");
         mRun = false;
-        sendMessage(AppConstants.COMMAND_DISCONNECT);
+        sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
         try {
             mOutput.close();
             mInput.close();
         } catch (IOException ioe) {
-
+            Log.d(TAG, "IO ERROR stopping tcpsclient. Exception: " + ioe.getMessage());
         }
     }
 
@@ -120,7 +120,7 @@ public class TCPClient {
 
             if (mIncomingMessage != null && mMessageListener != null) {
 
-                if (mIncomingMessage.contains(AppConstants.COMMAND_CONFIRM)) {
+                if (mIncomingMessage.contains(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM)) {
 
                     int receivedChecksum = Integer.parseInt(mIncomingMessage.split(":")[1]);
 
@@ -130,14 +130,14 @@ public class TCPClient {
                     mHandler.sendMessage(completeMessage);
                 }
 
-                if (mIncomingMessage.equals(AppConstants.COMMAND_CONNECT)) {
+                if (mIncomingMessage.equals(AppConstants.COMMAND_PHONE_WATCH_CONNECT)) {
                     Message completeMessage =
                             mHandler.obtainMessage(AppConstants.STATE_CONNECTED,
                                     "You are connected to autenticaton service");
                     mHandler.sendMessage(completeMessage);
                 }
 
-                if (mIncomingMessage.equals(AppConstants.COMMAND_DISCONNECT)) {
+                if (mIncomingMessage.equals(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT)) {
                     Message completeMessage =
                             mHandler.obtainMessage(AppConstants.STATE_DISCONNECTED,
                                     "Server closed connection!");
@@ -146,7 +146,7 @@ public class TCPClient {
                     break;
                 }
 
-                if (mIncomingMessage.equals(AppConstants.COMMAND_NOT_AUTHENTICATED)) {
+                if (mIncomingMessage.equals(AppConstants.COMMAND_USER_NOT_AUTHENTICATED)) {
 
                     Message completeMessage =
                             mHandler.obtainMessage(AppConstants.STATE_NOT_AUTHENTICATED,
@@ -154,11 +154,12 @@ public class TCPClient {
                     mHandler.sendMessage(completeMessage);
                 }
 
-                if (mIncomingMessage.equals(AppConstants.COMMAND_GET_CUES)) {
+                if (mIncomingMessage.equals(AppConstants.COMMAND_START_SENDING_SENSORDATA)) {
                     Message completeMessage =
                             mHandler.obtainMessage(AppConstants.STATE_AUTHENTICATED,
                                     "You are authenticated! Authenticator service is running...");
                     mHandler.sendMessage(completeMessage);
+                    sendMessage(AppConstants.COMMAND_USER_AUTHENTICATED);
                 }
 
 

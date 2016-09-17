@@ -2,7 +2,9 @@ package com.lmu.tokt.mt;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -66,7 +68,7 @@ public class LoginController implements Initializable {
 
 	// root top fields
 	@FXML
-	private Label lblServerStatus, lblDateTime;
+	private Label lblPublicIP, lblServerPort, lblServerStatus, lblDateTime;
 	@FXML
 	private ImageView imgSettings, imgLockState;
 
@@ -148,8 +150,9 @@ public class LoginController implements Initializable {
 		}
 
 		setUpUserSettings();
-
 		setDateTime();
+		setPublicIPAdress();
+		setServerPort();
 
 		if (mLoginModel.isDBConnected()) {
 			System.out.println(TAG + ": DB is connected!");
@@ -212,6 +215,29 @@ public class LoginController implements Initializable {
 		timeline.play();
 	}
 
+	private void setPublicIPAdress() {
+		InetAddress ip;
+		try {
+
+			ip = InetAddress.getLocalHost();
+			lblPublicIP.setText(ip.getHostAddress());
+			System.out.println(TAG + ": Current ip address : " + ip.getHostAddress());
+		} catch (UnknownHostException e) {
+			System.out.println(TAG + ": ERROR getting public ip. Exception: " + e.toString());
+
+		}
+	}
+
+	private void setServerPort() {
+		try {
+
+			int port = mLoginModel.getServerPort();
+			lblServerPort.setText("" + port);
+		} catch (SQLException e) {
+			System.out.println(TAG + ": ERROR getting server port from DB. Exception: " + e.toString());
+		}
+	}
+
 	/*---------------- PROCESSING SERVER MESSAGES ----------------*/
 
 	// implements MessageCallback
@@ -227,40 +253,27 @@ public class LoginController implements Initializable {
 			switch (state) {
 
 			case AppConstants.STATE_SERVER_RUNNING:
-				System.out.println(TAG + ": STATE SERVER RUNNING callback");
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						lblServerStatus.setText("Server running (" + message + ")");
+						lblServerStatus.setText(message);
 					}
 				});
-
 				break;
 
 			case AppConstants.STATE_SERVER_STOPPED:
-				System.out.println(TAG + ": STATE SERVER STOPPED callback");
+
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 
 						// Connection to watch stopped
-						lblServerStatus.setText("Server running (" + message + ")");
-						btnConnectToWatch.setVisible(true);
-						txtPassword.setDisable(false);
-						imgWatchConnected.setImage(new Image("drawable/icons/no_watch.png"));
-						imgWatchConnected.setVisible(true);
-						imgConnectedToWatchSuccess.setVisible(false);
-						imgCancelConnectToWatch.setVisible(false);
-						progressConnectToWatch.setVisible(false);
-
+						lblServerStatus.setText(message);
+						resetAllFields();
 					}
 				});
-
 				break;
-			case AppConstants.STATE_CONNECTED:
-				System.out.println(TAG + ": STATE CONNECTED callback");
-
-				// Update UI
+			case AppConstants.STATE_PHONE_WATCH_CONNECTED:
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
@@ -276,35 +289,21 @@ public class LoginController implements Initializable {
 				});
 
 				break;
-			case AppConstants.ERROR:
-				System.out.println(TAG + ": STATE ERROR callback");
+			case AppConstants.STATE_NETWORK_ERROR:
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
 
-						setLockStateImage(true);
+						// TODO: reset all fields
+						resetAllFields();
 
-						// retry to connect with watch
 						setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, true,
 								"Connecting...", false, true, false);
-
-						txtPassword.setDisable(true);
-
-						setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
-								new Image("drawable/icons/key/key_grey_1.png"), true, true, true, false, false, true);
-						resetProximityFields();
-						resetUserStateFields();
-						resetSoundSignalFields();
-
-						// reset Heartbeat
-						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
-								"0.0");
-
 					}
 				});
 				System.out.println(TAG + ": ERROR Failing to connect to Smartwatch/Phone");
 				break;
-			case AppConstants.STATE_CONFIRM:
+			case AppConstants.STATE_PHONE_WATCH_CONNECTION_CONFIRMED:
 				System.out.println(TAG + ": STATE CONFIRM callback");
 
 				Platform.runLater(new Runnable() {
@@ -314,50 +313,26 @@ public class LoginController implements Initializable {
 					}
 				});
 				break;
-			case AppConstants.STATE_HEART_BEAT_DETECTED:
-				System.out.println(TAG + ": STATE HEARTBEAT DETECTED callback");
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), false, "Heartbeat", "");
-					}
-				});
-
-				break;
-
 			case AppConstants.STATE_HEART_BEATING:
-
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-
-						lblHeartbeatValue.setText(message);
+						setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), false, "Heartbeat",
+								message);
 					}
 				});
 				break;
 			case AppConstants.STATE_HEART_STOPPED:
-				System.out.println(TAG + ": STATE HEART STOPPED callback");
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-
-						setLockStateImage(true);
-						setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
-								new Image("drawable/icons/key/key_grey_1.png"), true, false, true, false, false, true);
-
-						// reset Heartbeat
+						// reset Heartbeat fields
 						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
 								"0.0");
-
-						resetProximityFields();
-						resetUserStateFields();
-						resetSoundSignalFields();
-
 					}
 				});
-
 				break;
-			case AppConstants.STATE_PROXIMITY:
+			case AppConstants.STATE_PROXIMITY_DETECTED:
 
 				Platform.runLater(new Runnable() {
 					@Override
@@ -367,7 +342,7 @@ public class LoginController implements Initializable {
 					}
 				});
 				break;
-			case AppConstants.STATE_LOCKED:
+			case AppConstants.STATE_APP_LOCKED:
 
 				Platform.runLater(new Runnable() {
 					@Override
@@ -379,7 +354,7 @@ public class LoginController implements Initializable {
 				});
 				break;
 
-			case AppConstants.STATE_UNLOCKED:
+			case AppConstants.STATE_APP_UNLOCKED:
 
 				Platform.runLater(new Runnable() {
 					@Override
@@ -389,22 +364,10 @@ public class LoginController implements Initializable {
 						setAppFullscreen(false);
 
 						// TODO: createMiniView
-						// stage.setIconified(true);
 					}
 				});
 				break;
-			case AppConstants.UPDATE_STEP_COUNT:
-
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-
-						lblUserState.setText("Steps (" + message + ")");
-					}
-				});
-
-				break;
-			case AppConstants.STATE_STILL:
+			case AppConstants.STATE_USER_STILL:
 
 				Platform.runLater(new Runnable() {
 					@Override
@@ -415,7 +378,7 @@ public class LoginController implements Initializable {
 				});
 
 				break;
-			case AppConstants.STATE_WALKING:
+			case AppConstants.STATE_USER_WALKING:
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
@@ -423,6 +386,27 @@ public class LoginController implements Initializable {
 						lblUserStateValue.setText(message);
 					}
 				});
+				break;
+
+			case AppConstants.STATE_USER_NOT_AUTHENTICATED:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
+								new Image("drawable/icons/key/key_grey_1.png"), true, false, true, false, false, true);
+
+						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
+								"0.0");
+						resetProximityFields();
+						resetUserStateFields();
+						resetSoundSignalFields();
+						
+						//stopMeasurement
+					}
+				});
+				break;
+			case AppConstants.STATE_USER_AUTHENTICATED:
+				System.out.println(TAG + ":" + message);
 				break;
 			default:
 				break;
@@ -440,6 +424,21 @@ public class LoginController implements Initializable {
 		} else {
 			stage.setFullScreen(false);
 		}
+	}
+
+	private void resetAllFields() {
+		setLockStateImage(true);
+
+		setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, false, "Not Connected",
+				false, false, true);
+
+		setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
+				new Image("drawable/icons/key/key_grey_1.png"), true, true, true, false, false, true);
+
+		setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat", "0.0");
+		resetProximityFields();
+		resetUserStateFields();
+		resetSoundSignalFields();
 	}
 
 	private void setLockStateImage(boolean isLocked) {
@@ -579,8 +578,9 @@ public class LoginController implements Initializable {
 
 				setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), true, "Detect...", "0.0");
 
+				//mTCPServer.setAuthenticated(true);
 				// starteService (get Cues: Heartbeat, Proximity, usercontext)
-				mTCPServer.sendMessage(AppConstants.COMMAND_GET_CUES);
+				mTCPServer.sendMessage(AppConstants.COMMAND_START_SENDING_SENSORDATA);
 
 			} else {
 				System.out.println(TAG + ": username and/or password INCORRECT");
@@ -883,6 +883,14 @@ public class LoginController implements Initializable {
 
 	public TCPServer getTCPServer() {
 		return mTCPServer;
+	}
+
+	public Label getPublicIP() {
+		return lblPublicIP;
+	}
+
+	public Label getServerPort() {
+		return lblServerPort;
 	}
 
 	@FXML

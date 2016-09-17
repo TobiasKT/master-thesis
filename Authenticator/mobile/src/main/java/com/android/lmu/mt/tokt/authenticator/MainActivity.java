@@ -30,6 +30,7 @@ import com.android.lmu.mt.tokt.authenticator.events.SensorUpdatedEvent;
 import com.android.lmu.mt.tokt.authenticator.events.TagAddedEvent;
 import com.android.lmu.mt.tokt.authenticator.network.AuthenticatorAsyncTask;
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
+import com.android.lmu.mt.tokt.authenticator.util.Util;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -92,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private Handler mHandler;
 
+
     //Views
     private TextView mWatchConnectionStatusText;
     private TextView mHeartrateText;
@@ -115,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements
 
         mSharedPreferences = getSharedPreferences(
                 AppConstants.SHARED_PREF_APP_KEY, Context.MODE_PRIVATE);
+
 
         mExecutorService = Executors.newCachedThreadPool();
 
@@ -472,10 +475,6 @@ public class MainActivity extends AppCompatActivity implements
                             DataMapItem.fromDataItem(dataItem).getDataMap()
                     );
                 }
-
-                if (path.startsWith("/beacon")) {
-                    unpackBeaconData(DataMapItem.fromDataItem(dataItem).getDataMap());
-                }
             }
         }
     }
@@ -490,16 +489,19 @@ public class MainActivity extends AppCompatActivity implements
 
         this.addSensorData(sensorType, accuracy, timestamp, values);
 
+        //forward data to server
+        sendSensorDataToServer(sensorType, accuracy, timestamp, values);
+
+        //update MainUi watch
         switch (sensorType) {
             case AppConstants.SENSOR_TYPE_HEART_RATE:
-
-                //TODO: auslagern und im hintergrund senden
-                //forward dot server
-                sendSensorDataToServer(sensorType, accuracy, timestamp, values);
                 BusProvider.updateTextViewOnMainThread(mHeartrateText, Arrays.toString(values));
                 break;
             case AppConstants.SENSOR_TYPE_STEP_COUNTER:
                 BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
+                break;
+            case AppConstants.SENSOR_TYPE_BEACON:
+                BusProvider.updateTextViewOnMainThread(mProximityText, Util.getProximityStringByRSSI((int) values[0]));
                 break;
         }
     }
@@ -787,10 +789,10 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case DialogInterface.BUTTON_POSITIVE:
-                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_CONFIRM + ":" + number);
+                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM + ":" + number);
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
-                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_DISCONNECT);
+                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
                         break;
                 }
             }

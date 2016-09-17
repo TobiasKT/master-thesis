@@ -9,8 +9,6 @@ import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
-import com.google.android.gms.wearable.DataMap;
-import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
@@ -46,12 +44,7 @@ public class MessageReceiverService extends WearableListenerService {
                 Uri uri = dataItem.getUri();
                 String path = uri.getPath();
 
-                //Example for setting filter
-                if (path.startsWith("/filter")) {
-                    DataMap dataMap = DataMapItem.fromDataItem(dataItem).getDataMap();
-                    int filterById = dataMap.getInt(AppConstants.DATA_MAP_KEY_FILTER);
-                    mWatchClient.setSensorFilter(filterById);
-                }
+
             }
         }
     }
@@ -72,8 +65,7 @@ public class MessageReceiverService extends WearableListenerService {
             sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "CONNECTED");
 
             //start service
-            startService(new Intent(this, SensorService.class));
-            startService(new Intent(this, BeaconService.class));
+            startService(new Intent(this, AuthenticatorWatchService.class));
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_STOP_MEASUREMENT)) {
@@ -81,8 +73,7 @@ public class MessageReceiverService extends WearableListenerService {
             sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "DISCONNECTED");
 
             //stopservice
-            stopService(new Intent(this, SensorService.class));
-            stopService(new Intent(this, BeaconService.class));
+            stopService(new Intent(this, AuthenticatorWatchService.class));
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_LISTEN_TO_SOUND)) {
