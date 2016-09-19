@@ -33,6 +33,9 @@ public class AppConstants {
 	public static final String COMMAND_USER_AUTHENTICATED = "AUTHENTICATED";
 	public static final String COMMAND_USER_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
 	public static final String COMMAND_LISTEN_TO_SOUND = "LISTEN_TO_SOUND";
+	public static final String COMMAND_UNLOCKED = "UNLOCKED";
+	public static final String COMMAND_LOCKED = "LOCKED";
+	public static final String COMMAND_USERNAME = "USERNAME";
 
 	/*------------------------ PHONE/WATCH CONNECTION STATES ------------------------*/
 

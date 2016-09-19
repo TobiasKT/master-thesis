@@ -96,6 +96,9 @@ public class AppConstants {
     public static final String COMMAND_USER_AUTHENTICATED = "AUTHENTICATED";
     public static final String COMMAND_USER_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
     public static final String COMMAND_LISTEN_TO_SOUND = "LISTEN_TO_SOUND";
+    public static final String COMMAND_UNLOCKED= "UNLOCKED";
+    public static final String COMMAND_LOCKED= "LOCKED";
+    public static final String COMMAND_USERNAME = "USERNAME";
 
     //
     public static final int START_LISTEN_TO_SOUND = -5000;
@@ -110,6 +113,10 @@ public class AppConstants {
     public static final int STATE_HEART_STOPPED = -3001;
     public static final int STATE_AUTHENTICATED = -4000;
     public static final int STATE_NOT_AUTHENTICATED = -4001;
+    public static final int STATE_LOCKED = -5001;
+    public static final int STATE_UNLOCKED = -5002;
+
+    public static final int SET_USERNAME = -6001;
 
     public static final int ERROR = -9999;
 
@@ -147,6 +154,22 @@ public class AppConstants {
     //MessageReceiverService
     public static final String MESSAGE_RECEIVER_RESULT = "com.android.lmu.tokt.authenticator.MessageReceiverService.REQUEST_PROCESSED";
     public static final String MESSAGE_RECEIVER_MESSAGE = "com.android.lmu.tokt.authenticator.MessageReceiverService.MESSAGE_RECEIVER_MESSAGE";
+
+
+    //LogKeys
+    public static final String LOG_KEY_ANDROID_DEVICE = "android_device";
+    public static final String LOG_KEY_USERNAME = "username";
+    public static final String LOG_KEY_TIMESTAMP = "timestamp";
+    public static final String LOG_KEY_DATE = "date";
+    public static final String LOG_KEY_X= "x";
+    public static final String LOG_KEY_Y= "y";
+    public static final String LOG_KEY_Z= "z";
+    public static final String LOG_KEY_ACCURACY= "accuracy";
+    public static final String LOG_KEY_DATASOURCE= "datasource";
+    public static final String LOG_KEY_DATATYPE= "datatype";
+
+
+
 
 
 }

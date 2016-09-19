@@ -9,6 +9,8 @@ public final class Util {
 
     private static final String TAG = Util.class.getSimpleName();
 
+    private static String mUsername = "";
+
     public static String getProximityStringByRSSI(int rssi) {
         String proximityString;
         if (rssi >= -72) {
@@ -19,6 +21,14 @@ public final class Util {
             proximityString = AppConstants.PROXIMITY_FAR;
         }
         return proximityString;
+    }
+
+    public static String getUsername() {
+        return mUsername;
+    }
+
+    public static void setUsername(String username) {
+        mUsername = username;
     }
 
 

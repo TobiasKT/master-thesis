@@ -353,6 +353,7 @@ public class TCPServer extends Thread {
 				if (!isLocked) {
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_LOCKED, "locked");
 					isLocked = true;
+					sendMessage(AppConstants.COMMAND_LOCKED);
 				}
 
 			}
@@ -362,6 +363,7 @@ public class TCPServer extends Thread {
 				if (isLocked) {
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_UNLOCKED, "unlocked");
 					isLocked =false;
+					sendMessage(AppConstants.COMMAND_UNLOCKED);
 				}
 			}
 		}

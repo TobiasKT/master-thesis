@@ -400,8 +400,8 @@ public class LoginController implements Initializable {
 						resetProximityFields();
 						resetUserStateFields();
 						resetSoundSignalFields();
-						
-						//stopMeasurement
+
+						// stopMeasurement
 					}
 				});
 				break;
@@ -578,8 +578,10 @@ public class LoginController implements Initializable {
 
 				setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), true, "Detect...", "0.0");
 
-				//mTCPServer.setAuthenticated(true);
+				// mTCPServer.setAuthenticated(true);
 				// starteService (get Cues: Heartbeat, Proximity, usercontext)
+				mTCPServer.sendMessage(AppConstants.COMMAND_USERNAME + "::" + LoginUtil.getInstance().getUsername());
+				mTCPServer.sendMessage(AppConstants.COMMAND_UNLOCKED);
 				mTCPServer.sendMessage(AppConstants.COMMAND_START_SENDING_SENSORDATA);
 
 			} else {

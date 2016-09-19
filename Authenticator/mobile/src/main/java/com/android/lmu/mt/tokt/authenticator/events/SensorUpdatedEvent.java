@@ -10,10 +10,12 @@ public class SensorUpdatedEvent {
 
     private Sensor mSensor;
     private SensorDataPoint mSensorDataPoint;
+    private String mUsername;
 
-    public SensorUpdatedEvent(Sensor sensor, SensorDataPoint sensorDataPoint) {
+    public SensorUpdatedEvent(Sensor sensor, SensorDataPoint sensorDataPoint, String username) {
         this.mSensor = sensor;
         this.mSensorDataPoint = sensorDataPoint;
+        this.mUsername = username;
     }
 
     public Sensor getSensor() {
@@ -22,6 +24,10 @@ public class SensorUpdatedEvent {
 
     public SensorDataPoint getDataPoint() {
         return mSensorDataPoint;
+    }
+
+    public String getUsername(){
+        return mUsername;
     }
 
 }

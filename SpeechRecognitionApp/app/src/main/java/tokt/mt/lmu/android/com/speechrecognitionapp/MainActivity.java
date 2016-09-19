@@ -52,6 +52,11 @@ public class MainActivity extends WearableActivity {
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
 // Start the activity, the intent will be populated with the speech text
         startActivityForResult(intent, SPEECH_REQUEST_CODE);
+
+
+
+
+
     }
 
     // This callback is invoked when the Speech Recognizer returns.

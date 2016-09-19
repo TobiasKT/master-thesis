@@ -185,7 +185,7 @@ public class MainActivity extends WearableActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
                 filter);
-        
+
     }
 
     @Override

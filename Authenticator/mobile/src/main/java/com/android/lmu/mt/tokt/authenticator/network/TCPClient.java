@@ -5,6 +5,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
+import com.android.lmu.mt.tokt.authenticator.util.Util;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -169,6 +170,30 @@ public class TCPClient {
                                     "Start voice recognition");
                     mHandler.sendMessage(completeMessage);
                 }
+
+                if (mIncomingMessage.equals(AppConstants.COMMAND_LOCKED)) {
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_LOCKED,
+                                    "PC locked!");
+                    mHandler.sendMessage(completeMessage);
+                }
+
+                if (mIncomingMessage.equals(AppConstants.COMMAND_UNLOCKED)) {
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_UNLOCKED,
+                                    "PC unlocked!");
+                    mHandler.sendMessage(completeMessage);
+                }
+
+                if (mIncomingMessage.contains(AppConstants.COMMAND_USERNAME)) {
+                    String username = mIncomingMessage.split("::")[1];
+                    Util.setUsername(username);
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.SET_USERNAME,
+                                    username);
+                    mHandler.sendMessage(completeMessage);
+                }
+
 
                 mMessageListener.callbackMessageReceiver(mIncomingMessage);
             }

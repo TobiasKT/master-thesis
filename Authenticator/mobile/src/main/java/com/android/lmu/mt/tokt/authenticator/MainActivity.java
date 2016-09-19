@@ -3,6 +3,7 @@ package com.android.lmu.mt.tokt.authenticator;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -10,9 +11,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +29,7 @@ import com.android.lmu.mt.tokt.authenticator.data.Sensor;
 import com.android.lmu.mt.tokt.authenticator.data.SensorDataPoint;
 import com.android.lmu.mt.tokt.authenticator.data.SensorNames;
 import com.android.lmu.mt.tokt.authenticator.data.TagData;
+import com.android.lmu.mt.tokt.authenticator.database.DataEntry;
 import com.android.lmu.mt.tokt.authenticator.events.BusProvider;
 import com.android.lmu.mt.tokt.authenticator.events.NewSensorEvent;
 import com.android.lmu.mt.tokt.authenticator.events.SensorUpdatedEvent;
@@ -49,6 +55,7 @@ import com.google.android.gms.wearable.NodeApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,6 +68,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import io.realm.Realm;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
@@ -85,13 +95,16 @@ public class MainActivity extends AppCompatActivity implements
     private ArrayList<Sensor> mSensors;
     private SensorNames mSensorNames;
 
-    private LinkedList<TagData> mTags = new LinkedList<>();
+    private static LinkedList<TagData> mTags = new LinkedList<>();
 
     private SharedPreferences mSharedPreferences;
 
     private AuthenticatorAsyncTask mAuthenticatorAsyncTask;
 
     private Handler mHandler;
+
+    private Realm mRealm;
+    private String mAndroidId;
 
 
     //Views
@@ -108,6 +121,8 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mServerCommandText;
     private Button mConnectToWatchBtn;
     private Button mConnectToServerBtn;
+    private TextView mLockstateText;
+    private TextView mUsernameText;
 
 
     @Override
@@ -136,6 +151,61 @@ public class MainActivity extends AppCompatActivity implements
         initViews();
         initListeners();
         initHandler();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+        try {
+            mRealm = Realm.getInstance(this);
+        } catch (RealmMigrationNeededException e) {
+            try {
+                Realm.deleteRealmFile(this);
+                mRealm = Realm.getInstance(this);
+            } catch (Exception ex) {
+                throw ex;
+                //No Realm file to remove.
+            }
+        }
+
+
+        mAndroidId = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+    }
+
+    @Subscribe
+    public void onSensorUpdatedEvent(SensorUpdatedEvent event) {
+        Log.d(TAG, "Subscribed onSensorUpdatedEvent");
+        mRealm.beginTransaction();
+        DataEntry entry = mRealm.createObject(DataEntry.class);
+        entry.setAndroidDevice(mAndroidId);
+        entry.setUsername(Util.getUsername());
+        entry.setTimestamp(event.getDataPoint().getTimestamp());
+        if (event.getDataPoint().getValues().length > 0) {
+            entry.setX(event.getDataPoint().getValues()[0]);
+        } else {
+            entry.setX(0.0f);
+        }
+
+        if (event.getDataPoint().getValues().length > 1) {
+            entry.setY(event.getDataPoint().getValues()[1]);
+        } else {
+            entry.setY(0.0f);
+        }
+
+        if (event.getDataPoint().getValues().length > 2) {
+            entry.setZ(event.getDataPoint().getValues()[2]);
+        } else {
+            entry.setZ(0.0f);
+        }
+
+        entry.setAccuracy(event.getDataPoint().getAccuracy());
+        entry.setDataSource("Acc");
+        entry.setDataType(event.getSensor().getSensorId());
+        mRealm.commitTransaction();
+
+
     }
 
     @Override
@@ -169,6 +239,8 @@ public class MainActivity extends AppCompatActivity implements
         mServerConnectionStatusText = (TextView) findViewById(R.id.server_connection_status_text);
         mServerStateText = (TextView) findViewById(R.id.server_state_text);
         mServerCommandText = (TextView) findViewById(R.id.server_command_text);
+        mLockstateText = (TextView) findViewById(R.id.lock_state_txt);
+        mUsernameText = (TextView) findViewById(R.id.username_txt);
 
 
         mServerIpEditText.setText(getSavedServerIP());
@@ -204,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements
                         }
                         break;
                     case AppConstants.STATE_CONNECTED:
+                        addTag("connected");
                         //starte service
                         if (msg.obj != null) {
                             Log.d(TAG, "connect... " + msg.obj.toString());
@@ -212,6 +285,7 @@ public class MainActivity extends AppCompatActivity implements
 
                         break;
                     case AppConstants.STATE_DISCONNECTED:
+                        addTag("disconnected");
                         //beende service
                         if (msg.obj != null) {
                             Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
@@ -222,6 +296,7 @@ public class MainActivity extends AppCompatActivity implements
                         mAuthenticatorAsyncTask.cancel(true);
                         break;
                     case AppConstants.STATE_AUTHENTICATED:
+                        addTag("authenticated");
 
                         if (msg.obj != null) {
                             Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
@@ -235,20 +310,41 @@ public class MainActivity extends AppCompatActivity implements
                         }
                         break;
                     case AppConstants.STATE_NOT_AUTHENTICATED:
+                        addTag("not_authenticated");
                         stopMeasurement();
                         // stopService(new Intent(MainActivity.this, SensorService.class));
                         break;
                     case AppConstants.ERROR:
+                        addTag("error");
                         mConnectToServerBtn.setText("CONNECT");
                         mAuthenticatorAsyncTask = null;
                         Toast.makeText(MainActivity.this, "ERROR! Network problems!", Toast.LENGTH_SHORT).show();
                         break;
                     case AppConstants.START_LISTEN_TO_SOUND:
+                        addTag("listen_to_sound");
                         if (msg.obj != null) {
                             Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
                         }
                         startListeningToSound();
                         break;
+                    case AppConstants.STATE_LOCKED:
+                        addTag("state_locked");
+
+                        BusProvider.updateTextViewOnMainThread(mLockstateText, "locked");
+                        //update MainUI
+                        break;
+                    case AppConstants.STATE_UNLOCKED:
+                        addTag("state_unlocked");
+                        BusProvider.updateTextViewOnMainThread(mLockstateText, "unlocked");
+                        break;
+                    case AppConstants.SET_USERNAME:
+                        String username = "-";
+                        if (msg.obj != null) {
+                            username = msg.obj.toString();
+                        }
+                        BusProvider.updateTextViewOnMainThread(mUsernameText, username);
+                        break;
+
                 }
             }
         };
@@ -256,6 +352,25 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+
+        // return true so that the menu pop up is opened
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_export:
+                startActivity(new Intent(MainActivity.this, ExportActivity.class));
+                return true;
+            default:
+                return true;
+        }
+    }
 
     /* --------------------- Sensor handling --------------------- */
     public List<Sensor> getSensors() {
@@ -293,9 +408,9 @@ public class MainActivity extends AppCompatActivity implements
 
         SensorDataPoint dataPoint = new SensorDataPoint(timestamp, accuracy, values);
         sensor.addDataPoint(dataPoint);
-
+String username = Util.getUsername();
         //TODO: new SensorUpdateEvent detected --> refector for authenticator purposes
-        BusProvider.postOnMainThread(new SensorUpdatedEvent(sensor, dataPoint));
+        BusProvider.postOnMainThread(new SensorUpdatedEvent(sensor, dataPoint,username));
     }
 
 
@@ -308,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements
         BusProvider.postOnMainThread(new TagAddedEvent(tag));
     }
 
-    public LinkedList<TagData> getTags() {
+    public static LinkedList<TagData> getTags() {
         return (LinkedList<TagData>) mTags.clone();
     }
 
@@ -339,6 +454,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
+
 
         if (!mResolvingError) {
             if (connectionResult.hasResolution()) {

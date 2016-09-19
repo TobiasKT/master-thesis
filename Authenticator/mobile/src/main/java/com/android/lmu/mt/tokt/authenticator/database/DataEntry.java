@@ -5,9 +5,12 @@ import io.realm.annotations.RealmClass;
 
 
 @RealmClass
-public class DataEntry extends RealmObject{
+public class DataEntry extends RealmObject {
 
     private String androidDevice;
+
+
+    private String username;
     private long timestamp;
     private float x;
     private float y;
@@ -25,6 +28,14 @@ public class DataEntry extends RealmObject{
 
     public void setAndroidDevice(String androidDevice) {
         this.androidDevice = androidDevice;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public long getTimestamp() {
