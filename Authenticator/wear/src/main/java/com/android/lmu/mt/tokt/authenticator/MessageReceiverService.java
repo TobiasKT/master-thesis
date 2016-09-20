@@ -79,6 +79,21 @@ public class MessageReceiverService extends WearableListenerService {
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_LISTEN_TO_SOUND)) {
             sendResult(AppConstants.SOUND_LISTENING_RESULT, AppConstants.SOUND_LISTENING_MESSAGE, "");
         }
+
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_LOCKED)) {
+            sendResult(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT, AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE, "locked");
+        }
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_UNLOCKED)) {
+            sendResult(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT, AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE, "unlocked");
+        }
+
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_USER_AUTHENTICATED)) {
+            mWatchClient.setAuthenticated(true);
+        }
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_USER_NOT_AUTHENTICATED)) {
+            mWatchClient.setAuthenticated(false);
+        }
+
     }
 
     private void sendResult(String intentAction, String extraName, String message) {

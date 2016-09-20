@@ -41,6 +41,8 @@ public class WatchClient {
     private SparseLongArray mLastSensorData;
 
 
+    private boolean isAuthenticated = false;
+
     private WatchClient(Context context) {
 
         mGoogleApiClient = new GoogleApiClient.Builder(context).addApi(Wearable.API).build();
@@ -119,5 +121,13 @@ public class WatchClient {
             default:
                 return "Unknown";
         }
+    }
+
+    public boolean isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    public void setAuthenticated(boolean authenticated) {
+        isAuthenticated = authenticated;
     }
 }

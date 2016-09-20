@@ -36,6 +36,8 @@ public class AppConstants {
 	public static final String COMMAND_UNLOCKED = "UNLOCKED";
 	public static final String COMMAND_LOCKED = "LOCKED";
 	public static final String COMMAND_USERNAME = "USERNAME";
+	public static final String COMMAND_START_TYPING_SENSORS = "START_TYPING_SENSORS";
+	public static final String COMMAND_STOP_TYPING_SENSORS = "START_TYPING_SENSORS";
 
 	/*------------------------ PHONE/WATCH CONNECTION STATES ------------------------*/
 
@@ -64,6 +66,9 @@ public class AppConstants {
 	/*------------------------ APP STATES ------------------------*/
 	public static final int STATE_APP_LOCKED = -5001;
 	public static final int STATE_APP_UNLOCKED = -5002;
+
+	public static final int STATE_SOUND_SIGNAL_SENDING = -8001;
+	public static final int STATE_SOUND_SENDING_NONE = -8002;
 
 	/*------------------------ DATABASE ------------------------*/
 	public static final int IMAGE_TYPE_BACKGROUND = 1111;

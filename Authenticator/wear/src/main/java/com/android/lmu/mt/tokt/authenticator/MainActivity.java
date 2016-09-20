@@ -11,7 +11,6 @@ import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.BoxInsetLayout;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,15 +50,14 @@ public class MainActivity extends WearableActivity {
     private TextView mStepCountTitleTxt;
     private TextView mProximityTitleTxt;
 
+    private TextView mLockStateText;
+    private RelativeLayout mLockstateRelative;
+
 
     private ImageView mHeartRateImg;
     private ImageView mStepsImg;
     private ImageView mProximityImg;
 
-
-    private ImageView mBorder;
-
-    private Button mCloseBtn;
 
     private BroadcastReceiver mBroadcastReceiver;
 
@@ -87,17 +85,8 @@ public class MainActivity extends WearableActivity {
         mStepsImg = (ImageView) findViewById(R.id.walking_watch_img);
         mProximityImg = (ImageView) findViewById(R.id.proximity_watch_img);
 
-        mBorder = (ImageView) findViewById(R.id.border_1);
-
-        mCloseBtn = (Button) findViewById(R.id.close);
-
-        mCloseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stopService(new Intent(MainActivity.this, AuthenticatorWatchService.class));
-                finish();
-            }
-        });
+        mLockStateText = (TextView) findViewById(R.id.lock_state_text);
+        mLockstateRelative = (RelativeLayout) findViewById(R.id.lock_state_relative);
 
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -136,6 +125,12 @@ public class MainActivity extends WearableActivity {
 
                 if (intent.getAction().equals(AppConstants.SOUND_LISTENING_RESULT)) {
                     displaySpeechRecognizer();
+                }
+
+                if (intent.getAction().equals(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT)) {
+                    Log.d(TAG, "lock state result received");
+                    String message = intent.getStringExtra(AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE);
+                    mLockStateText.setText(message);
                 }
 
 
@@ -182,6 +177,7 @@ public class MainActivity extends WearableActivity {
         filter.addAction(AppConstants.MESSAGE_RECEIVER_RESULT);
         filter.addAction(AppConstants.BEACON_IDENTIFIER_RESULT);
         filter.addAction(AppConstants.SOUND_LISTENING_RESULT);
+        filter.addAction(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT);
 
         LocalBroadcastManager.getInstance(this).registerReceiver((mBroadcastReceiver),
                 filter);
@@ -218,8 +214,6 @@ public class MainActivity extends WearableActivity {
             mContainerWatchStateRL.setBackgroundColor(getResources().getColor(android.R.color.black));
             mClockView.setVisibility(View.VISIBLE);
             mClockView.setText(AMBIENT_DATE_FORMAT.format(new Date()));
-            mBorder.setVisibility(View.GONE);
-            mCloseBtn.setVisibility(View.INVISIBLE);
 
             mHeartRateText.setTextColor(getResources().getColor(R.color.white));
             mStepCountText.setTextColor(getResources().getColor(R.color.white));
@@ -233,11 +227,12 @@ public class MainActivity extends WearableActivity {
             mStepsImg.setImageResource(R.drawable.walking_white);
             mProximityImg.setImageResource(R.drawable.signal_white_1);
 
+            mLockStateText.setTextColor(getResources().getColor(android.R.color.black));
+            mLockstateRelative.setBackgroundColor(getResources().getColor(R.color.white));
+
         } else {
             mContainerView.setBackground(null);
             mContainerWatchStateRL.setBackgroundColor(getResources().getColor(R.color.indigo_500));
-            mBorder.setVisibility(View.VISIBLE);
-            mCloseBtn.setVisibility(View.VISIBLE);
             mClockView.setVisibility(View.GONE);
 
             mHeartRateText.setTextColor(getResources().getColor(R.color.gray_900));
@@ -251,6 +246,9 @@ public class MainActivity extends WearableActivity {
             mHeartRateImg.setImageResource(R.drawable.heartbeat);
             mStepsImg.setImageResource(R.drawable.walking);
             mProximityImg.setImageResource(R.drawable.signal);
+
+            mLockStateText.setTextColor(getResources().getColor(R.color.gray_900));
+            mLockstateRelative.setBackgroundColor(getResources().getColor(R.color.gray_400));
         }
     }
 }

@@ -8,9 +8,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.net.URL;
 import java.util.Arrays;
-import java.util.Iterator;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -19,6 +18,9 @@ import org.json.simple.parser.ParseException;
 
 import com.lmu.tokt.mt.util.AppConstants;
 import com.lmu.tokt.mt.util.Checksum;
+
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 public class TCPServer extends Thread {
 
@@ -160,6 +162,7 @@ public class TCPServer extends Thread {
 						mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_CONNECTED,
 								"Confirmation successful!");
 						sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECT);
+						sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
 					} else {
 						mDataExchangeIsRunning = false;
 						mIsConnectedToWatch = false;
@@ -216,7 +219,7 @@ public class TCPServer extends Thread {
 			float[] values = new float[jsonArray.size()];
 
 			for (int i = 0; i < values.length; i++) {
-				values[i] = ((Long) jsonArray.get(i)).floatValue();
+				values[i] = (float) ((Long) jsonArray.get(i)).doubleValue();
 			}
 
 			if (name.equals(AppConstants.SENSOR_NAME_HEART_RATE)) {
@@ -287,7 +290,7 @@ public class TCPServer extends Thread {
 
 			System.out.println("I/" + TAG + ": last HEART BEAT time ago:" + timeAgo);
 
-			if (timeAgo > 20000) {
+			if (timeAgo > 18000) {
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "NO HEARTBEAT");
 				isHeartBeating = false;
 			}
@@ -349,7 +352,9 @@ public class TCPServer extends Thread {
 			}
 
 			// lock
-			if (isHeartBeating && (isWalking || isFar)) {
+			//TODO: ausbessern
+			//if (isHeartBeating && (isWalking || isFar)) {
+			if (isHeartBeating && isFar) {
 				if (!isLocked) {
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_LOCKED, "locked");
 					isLocked = true;
@@ -362,12 +367,25 @@ public class TCPServer extends Thread {
 			if (isHeartBeating && !isFar) {
 				if (isLocked) {
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_UNLOCKED, "unlocked");
-					isLocked =false;
+					isLocked = false;
+
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SIGNAL_SENDING, "sending");
+					sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
+					playUnlockSound();
 					sendMessage(AppConstants.COMMAND_UNLOCKED);
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SENDING_NONE, "none");
 				}
 			}
 		}
 
+	}
+
+	private void playUnlockSound() {
+		System.out.println(TAG + ": play unlock sound");
+		final URL resource = getClass().getResource("back.mp3");
+		Media hit = new Media(resource.toString());
+		MediaPlayer mediaPlayer = new MediaPlayer(hit);
+		mediaPlayer.play();
 	}
 
 	// Send a mesage to the client

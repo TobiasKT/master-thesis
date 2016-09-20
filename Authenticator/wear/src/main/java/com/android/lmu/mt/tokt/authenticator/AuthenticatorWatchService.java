@@ -108,7 +108,13 @@ public class AuthenticatorWatchService extends Service
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
 
+
         int type = sensorEvent.sensor.getType();
+
+/*
+        if (mWatchClient.isAuthenticated() &&
+                (type == AppConstants.SENSOR_TYPE_HEART_RATE || type == AppConstants.SENSOR_TYPE_STEP_COUNTER)) {
+*/
         //update Watch UI
         switch (type) {
             case AppConstants.SENSOR_TYPE_HEART_RATE:
@@ -125,6 +131,14 @@ public class AuthenticatorWatchService extends Service
         mWatchClient.sendSensorData(sensorEvent.sensor.getType(), sensorEvent.accuracy,
                 sensorEvent.timestamp, sensorEvent.values);
         Log.d(TAG, "type: " + sensorEvent.sensor.getType() + ", values: " + Arrays.toString(sensorEvent.values));
+
+/*
+        if (!mWatchClient.isAuthenticated() && (type == AppConstants.SENSOR_TYPE_ACCELEROMETER
+                || type == AppConstants.SENSOR_TYPE_GRAVITY)) {
+            mWatchClient.sendSensorData(sensorEvent.sensor.getType(), sensorEvent.accuracy,
+                    sensorEvent.timestamp, sensorEvent.values);
+            Log.d(TAG, "type: " + sensorEvent.sensor.getType() + ", values: " + Arrays.toString(sensorEvent.values));
+        }*/
 
     }
 
@@ -155,7 +169,7 @@ public class AuthenticatorWatchService extends Service
 
             //Accelerometer
             if (accelerometerSensor != null) {
-                //  mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+                //mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No Accelerometer found");
             }
@@ -246,7 +260,7 @@ public class AuthenticatorWatchService extends Service
 
             //Gravity
             if (gravitySensor != null) {
-                //   mSensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
+                // mSensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No GravitySensor found");
             }
@@ -346,11 +360,13 @@ public class AuthenticatorWatchService extends Service
                     String proximity = getProximityStringByRSSI(beacon.getRssi());
 
                     //TODO: PROXIMITY values als int
-                    mWatchClient.sendSensorData(AppConstants.SENSOR_TYPE_BEACON, beacon.getTxPower(), timestamp, new float[]{beacon.getRssi()});
+                  //  if (mWatchClient.isAuthenticated()) {
+                        mWatchClient.sendSensorData(AppConstants.SENSOR_TYPE_BEACON, beacon.getTxPower(), timestamp, new float[]{beacon.getRssi()});
 
-                    //TODO: only send if data changed
-                    sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, proximity);
-                    sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, beacon.getId1().toString());
+                        //TODO: only send if data changed
+                        sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, proximity);
+                        sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, beacon.getId1().toString());
+                 //   }
                 }
 
 

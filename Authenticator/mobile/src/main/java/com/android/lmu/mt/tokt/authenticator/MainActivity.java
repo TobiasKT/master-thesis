@@ -304,6 +304,8 @@ public class MainActivity extends AppCompatActivity implements
 
                         if (mGoogleApiClient.isConnected()) {
                             startMeasurement();
+                            setUserIsAuthenticatedState(true);
+
                         } else {
                             //Connect to watch and start sensor service
                             connectToWatch();
@@ -311,8 +313,9 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     case AppConstants.STATE_NOT_AUTHENTICATED:
                         addTag("not_authenticated");
+                        setUserIsAuthenticatedState(false);
                         stopMeasurement();
-                        // stopService(new Intent(MainActivity.this, SensorService.class));
+
                         break;
                     case AppConstants.ERROR:
                         addTag("error");
@@ -329,12 +332,13 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     case AppConstants.STATE_LOCKED:
                         addTag("state_locked");
-
+                        sendLockStateToWatch(true);
                         BusProvider.updateTextViewOnMainThread(mLockstateText, "locked");
                         //update MainUI
                         break;
                     case AppConstants.STATE_UNLOCKED:
                         addTag("state_unlocked");
+                        sendLockStateToWatch(false);
                         BusProvider.updateTextViewOnMainThread(mLockstateText, "unlocked");
                         break;
                     case AppConstants.SET_USERNAME:
@@ -343,6 +347,9 @@ public class MainActivity extends AppCompatActivity implements
                             username = msg.obj.toString();
                         }
                         BusProvider.updateTextViewOnMainThread(mUsernameText, username);
+                        break;
+                    case AppConstants.STATE_SEND_TYPING_VALUES:
+                        //startMeasurement();
                         break;
 
                 }
@@ -408,9 +415,9 @@ public class MainActivity extends AppCompatActivity implements
 
         SensorDataPoint dataPoint = new SensorDataPoint(timestamp, accuracy, values);
         sensor.addDataPoint(dataPoint);
-String username = Util.getUsername();
+        String username = Util.getUsername();
         //TODO: new SensorUpdateEvent detected --> refector for authenticator purposes
-        BusProvider.postOnMainThread(new SensorUpdatedEvent(sensor, dataPoint,username));
+        BusProvider.postOnMainThread(new SensorUpdatedEvent(sensor, dataPoint, username));
     }
 
 
@@ -747,6 +754,34 @@ String username = Util.getUsername();
             @Override
             public void run() {
                 sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_LISTEN_TO_SOUND);
+            }
+        });
+    }
+
+    public void setUserIsAuthenticatedState(final boolean isAuthenticated) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (isAuthenticated) {
+                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_USER_AUTHENTICATED);
+                } else {
+                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_USER_NOT_AUTHENTICATED);
+                }
+
+            }
+        });
+    }
+
+
+    public void sendLockStateToWatch(final boolean isLocked) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                if (isLocked) {
+                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_LOCKED);
+                } else {
+                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_UNLOCKED);
+                }
             }
         });
     }

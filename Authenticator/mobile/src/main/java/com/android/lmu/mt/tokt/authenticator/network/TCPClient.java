@@ -185,6 +185,13 @@ public class TCPClient {
                     mHandler.sendMessage(completeMessage);
                 }
 
+                if(mIncomingMessage.equals(AppConstants.COMMAND_START_TYPING_SENSORS)){
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_SEND_TYPING_VALUES,
+                                    "Start Typing Sensors");
+                    mHandler.sendMessage(completeMessage);
+                }
+
                 if (mIncomingMessage.contains(AppConstants.COMMAND_USERNAME)) {
                     String username = mIncomingMessage.split("::")[1];
                     Util.setUsername(username);

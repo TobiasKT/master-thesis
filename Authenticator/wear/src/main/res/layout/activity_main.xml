@@ -134,29 +134,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:gravity="center"
         android:layout_marginTop="48dp"
+        android:gravity="center"
         android:textSize="7sp"
         app:layout_box="all" />
 
-    <ImageView
-        android:id="@+id/border_1"
+    <RelativeLayout
+        android:id="@+id/lock_state_relative"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="48dp"
         android:layout_gravity="bottom|center"
-        android:layout_marginBottom="50dp"
-        android:src="#e0e0e0" />
+        android:background="#BDBDBD">
 
-    <Button
-        android:id="@+id/close"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center"
-        android:layout_marginBottom="2dp"
-        android:background="?android:selectableItemBackground"
-        android:paddingBottom="16dp"
-        android:text="stop"
-        android:textColor="@color/indigo_500"
-        android:textSize="12sp" />
+        <TextView
+            android:id="@+id/lock_state_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="-"
+            android:gravity="center"/>
+
+    </RelativeLayout>
+
 
 </android.support.wearable.view.BoxInsetLayout>

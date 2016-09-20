@@ -34,7 +34,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -51,6 +50,8 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -104,14 +105,14 @@ public class LoginController implements Initializable {
 
 	// add user fields
 	@FXML
-	private Label lblRegistrationFailed, lblRegistrationSuccess, lblCancel;
+	private Label lblRegistrationFailed, lblRegistrationSuccess, lblCancel, lblPasswordTypeCount;
 	@FXML
 	private TextField txtUsername;
 	@FXML
-	private PasswordField txtRegisterPassword, txtRegisterPasswordRepeat;
+	private PasswordField txtRegisterPassword, txtRegisterPasswordRepeat, txtTypingPassword;
 	@FXML
-	private ImageView imgUsernameChecked, imgPasswordChecked, imgRepeatPasswordhecked, imgCancelRegister,
-			imgBackRegister;
+	private ImageView imgUsernameChecked, imgPasswordChecked, imgRepeatPasswordhecked, imgTypingPasswordCountSuccess,
+			imgCancelRegister, imgBackRegister;
 	@FXML
 	private Button btnRegister;
 
@@ -177,18 +178,20 @@ public class LoginController implements Initializable {
 		// Backgorund Image
 		BufferedImage bufferedBG = LoginUtil.getInstance().getBackground();
 		Image image = null;
-		if (bufferedBG != null) {
+		/*
+		 * if (bufferedBG != null) {
+		 * 
+		 * // TODO: NOT WORKING image = SwingFXUtils.toFXImage(bufferedBG,
+		 * null); BackgroundImage myBI = new BackgroundImage(image,
+		 * BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT,
+		 * BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
+		 * root.setBackground(new Background(myBI));
+		 * 
+		 * } else { // Error root.
+		 * setStyle("-fx-background-image: url('file://../../../../drawable/wallpaper/background_3.jpg');"
+		 * ); }
+		 */
 
-			// TODO: NOT WORKING
-			image = SwingFXUtils.toFXImage(bufferedBG, null);
-			BackgroundImage myBI = new BackgroundImage(image, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT,
-					BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
-			root.setBackground(new Background(myBI));
-
-		} else {
-			// Error
-			root.setStyle("-fx-background-image: url('file://../../../../drawable/wallpaper/background_3.jpg');");
-		}
 		// Avatar Image
 		bufferedBG = LoginUtil.getInstance().getAvatar();
 		if (bufferedBG != null) {
@@ -337,7 +340,7 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						lblProximityValue.setText(message.toUpperCase());
+						lblProximityValue.setText(message.toLowerCase());
 						imgProximity.setImage(new Image("drawable/icons/signal/signal_white_1.png"));
 					}
 				});
@@ -407,6 +410,25 @@ public class LoginController implements Initializable {
 				break;
 			case AppConstants.STATE_USER_AUTHENTICATED:
 				System.out.println(TAG + ":" + message);
+				break;
+			case AppConstants.STATE_SOUND_SIGNAL_SENDING:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblSoundSignalValue.setText("sending");
+						imgSoundSignal.setImage(new Image("drawable/icons/sound/sound_white_1.png"));
+					}
+				});
+
+				break;
+			case AppConstants.STATE_SOUND_SENDING_NONE:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblSoundSignalValue.setText("none");
+						imgSoundSignal.setImage(new Image("drawable/icons/sound/sound_grey_1.png"));
+					}
+				});
 				break;
 			default:
 				break;
@@ -568,6 +590,9 @@ public class LoginController implements Initializable {
 	}
 
 	private void login(Event event) {
+
+		// TODO stop typing sensors
+
 		try {
 			if (mLoginModel.isValidCredentials(lblUserName.getText(), txtPassword.getText())) {
 
@@ -629,7 +654,6 @@ public class LoginController implements Initializable {
 		checkIsPasswordEqual();
 		if (txtRegisterPassword.getLength() == 0) {
 			imgPasswordChecked.setVisible(false);
-			btnRegister.setVisible(false);
 		} else {
 			imgPasswordChecked.setVisible(true);
 		}
@@ -644,7 +668,40 @@ public class LoginController implements Initializable {
 	private void onAddUserKeyPressed(KeyEvent event) {
 		if (event.getCode() == KeyCode.ENTER) {
 			if (btnRegister.isVisible()) {
-				registerNewUser();
+				// registerNewUser();
+			}
+		}
+	}
+
+	private int mPasswordTypeCount = 0;
+
+	@FXML
+	private void onAddUserTypeCountPasswordKeyPressed(KeyEvent event) {
+
+		if (mPasswordTypeCount == 0) {
+			mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
+		}
+
+		if (event.getCode() == KeyCode.ENTER) {
+			if (txtTypingPassword.getText().equals(txtRegisterPassword.getText())) {
+				mPasswordTypeCount++;
+				lblPasswordTypeCount.setText("" + mPasswordTypeCount);
+				if (mPasswordTypeCount < 5) {
+					txtTypingPassword.selectAll();
+				}
+			} else {
+				Shaker shaker = new Shaker(anchorPaneRegister);
+				shaker.shake();
+				txtTypingPassword.selectAll();
+			}
+			if (mPasswordTypeCount == 5) {
+				mPasswordTypeCount = 0;
+				txtTypingPassword.setEditable(false);
+				imgTypingPasswordCountSuccess.setVisible(true);
+				lblPasswordTypeCount.setVisible(false);
+				btnRegister.setVisible(true);
+				
+				mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
 			}
 		}
 	}
@@ -689,10 +746,12 @@ public class LoginController implements Initializable {
 		if (txtRegisterPasswordRepeat.getLength() > 0 && txtRegisterPassword.getLength() > 0
 				&& txtRegisterPassword.getText().equals(txtRegisterPasswordRepeat.getText())) {
 			imgRepeatPasswordhecked.setVisible(true);
-			btnRegister.setVisible(true);
+			txtRegisterPassword.setEditable(false);
+			txtRegisterPasswordRepeat.setEditable(false);
+			// btnRegister.setVisible(true);
 		} else {
 			imgRepeatPasswordhecked.setVisible(false);
-			btnRegister.setVisible(false);
+			// btnRegister.setVisible(false);
 		}
 	}
 
@@ -897,7 +956,7 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private void onSoundSignalClicked(MouseEvent event) {
-		mTCPServer.sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
+		// mTCPServer.sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
 
 	}
 
