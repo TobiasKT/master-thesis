@@ -20,11 +20,15 @@ public class AppConstants {
     public final static String DEFAULT_SERVER_IP = "192.168.43.108";
     public final static int DEFAULT_SERVER_PORT = 8080;
 
+    //Beacon
+    public final static String DEFAULT_BEACON_UUID = "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0";
+
 
     //Shared Preferences
     public final static String SHARED_PREF_APP_KEY = "com.android.lmu.mt.tokt.authenticator.PREFERENCE_FILE_KEY";
     public final static String SHARED_PREF_SEVER_IP = "server_ip";
     public final static String SHARED_PREF_SEVER_PORT = "server_port";
+    public static final String SHARED_PREF_BEACON_UUID = "beacon_uuid";
 
 
     //SensorTypes
@@ -82,10 +86,11 @@ public class AppConstants {
     public static final String CLIENT_PATH_START_MEASUREMENT = "/start";
     public static final String CLIENT_PATH_STOP_MEASUREMENT = "/stop";
     public static final String CLIENT_PATH_LISTEN_TO_SOUND = "/listen";
-    public static final String  CLIENT_PATH_USER_AUTHENTICATED ="/authenticated";
-    public static final String  CLIENT_PATH_USER_NOT_AUTHENTICATED ="/not_authenticated";
-    public static final String  CLIENT_PATH_LOCKED ="/locked";
-    public static final String  CLIENT_PATH_UNLOCKED ="/unlocked";
+    public static final String CLIENT_PATH_USER_AUTHENTICATED = "/authenticated";
+    public static final String CLIENT_PATH_USER_NOT_AUTHENTICATED = "/not_authenticated";
+    public static final String CLIENT_PATH_LOCKED = "/locked";
+    public static final String CLIENT_PATH_UNLOCKED = "/unlocked";
+    public static final String CLIENT_PATH_BEACON_UUID = "/beacon_uuid";
 
     //ServerPaths
     public static final String SERVER_PATH_SENSOR_DATA = "/sensors/";
@@ -120,7 +125,7 @@ public class AppConstants {
     public static final int STATE_LOCKED = -5001;
     public static final int STATE_UNLOCKED = -5002;
 
-    public static final int  STATE_SEND_TYPING_VALUES =-7001;
+    public static final int STATE_SEND_TYPING_VALUES = -7001;
 
     public static final int SET_USERNAME = -6001;
 
@@ -176,7 +181,10 @@ public class AppConstants {
     public static final String LOG_KEY_Z = "z";
     public static final String LOG_KEY_ACCURACY = "accuracy";
     public static final String LOG_KEY_DATASOURCE = "datasource";
+    public static final String LOG_KEY_SENSORNAME = "sensorname";
     public static final String LOG_KEY_DATATYPE = "datatype";
+
+    public static final String LOG_KEY_EVENT = "tag_event";
 
 
 }

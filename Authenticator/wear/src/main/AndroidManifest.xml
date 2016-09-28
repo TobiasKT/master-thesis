@@ -98,6 +98,14 @@
                     android:pathPrefix="/not_authenticated"
                     android:scheme="wear" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
+                <data
+                    android:host="*"
+                    android:pathPrefix="/beacon_uuid"
+                    android:scheme="wear" />
+            </intent-filter>
         </service>
 
         <service android:name=".AuthenticatorWatchService" />

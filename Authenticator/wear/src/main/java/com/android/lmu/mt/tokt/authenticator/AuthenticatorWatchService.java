@@ -2,7 +2,9 @@ package com.android.lmu.mt.tokt.authenticator;
 
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -52,11 +54,19 @@ public class AuthenticatorWatchService extends Service
 
     //Beacon
     private BeaconManager mBeaconManager;
+    private String mBeaconIdentifier;
+
+    private SharedPreferences mSharedPreferences;
+
+    private boolean mRunning = false;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "create AutenticatorWatch service");
+        mSharedPreferences = getSharedPreferences(
+                AppConstants.SHARED_PREF_APP_KEY, Context.MODE_PRIVATE);
 
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
         mWatchClient = WatchClient.getInstance(this);
@@ -79,22 +89,48 @@ public class AuthenticatorWatchService extends Service
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
         // Start the Beacon Manager
         mBeaconManager.bind(this);
-    }
 
+        mBeaconIdentifier = getBeaconIDFromSharedPrefs();
+        sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, mBeaconIdentifier);
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(TAG, "AuthenticatorWatchService stopped");
+
+        mRunning = false;
 
         //unregister sensor listener
         stopSensorMeasurement();
 
         mBeaconManager.unbind(this);
+        resetMainUIValue();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        mRunning = true;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    private void resetMainUIValue() {
+        sendResult(AppConstants.SENSOR_HEART_RATE_RESULT, AppConstants.SENSOR_HEART_RATE_MESSAGE,
+                "0.0");
+        sendResult(AppConstants.SENSOR_STEP_COUNT_RESULT, AppConstants.SENSOR_STEP_COUNT_MESSAGE,
+                "0.0");
+        sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, "-");
+        sendResult(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT, AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE, "-");
+        sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, "");
+    }
+
+    private String getBeaconIDFromSharedPrefs() {
+        return mSharedPreferences.getString(AppConstants.SHARED_PREF_BEACON_UUID, AppConstants.DEFAULT_BEACON_UUID);
     }
 
 
@@ -169,7 +205,7 @@ public class AuthenticatorWatchService extends Service
 
             //Accelerometer
             if (accelerometerSensor != null) {
-                //mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+               // mSensorManager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No Accelerometer found");
             }
@@ -197,7 +233,7 @@ public class AuthenticatorWatchService extends Service
 
             //Gyro
             if (gyroSensor != null) {
-                //    mSensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_NORMAL);
+               // mSensorManager.registerListener(this, gyroSensor, SensorManager.SENSOR_DELAY_NORMAL);
             } else {
                 Log.w(TAG, "No GyroSensor found");
             }
@@ -313,10 +349,11 @@ public class AuthenticatorWatchService extends Service
 
 
     /*-------------------- Beacon ----------------*/
+
     @Override
     public void onBeaconServiceConnect() {
-        //TODO: consider hardcoding UID of Beacon
-        Identifier identifier = Identifier.parse(AppConstants.BEACON_IDENTIFIER_STRING);
+
+        Identifier identifier = Identifier.parse(mBeaconIdentifier);
         final Region region = new Region("myBeacons", identifier, null, null);
         mBeaconManager.setMonitorNotifier(new MonitorNotifier() {
 
@@ -348,6 +385,7 @@ public class AuthenticatorWatchService extends Service
             }
         });
 
+
         // If the device finds a Beacon fitting the rules, print it in the console
         mBeaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
@@ -360,13 +398,16 @@ public class AuthenticatorWatchService extends Service
                     String proximity = getProximityStringByRSSI(beacon.getRssi());
 
                     //TODO: PROXIMITY values als int
-                  //  if (mWatchClient.isAuthenticated()) {
-                        mWatchClient.sendSensorData(AppConstants.SENSOR_TYPE_BEACON, beacon.getTxPower(), timestamp, new float[]{beacon.getRssi()});
+                    //  if (mWatchClient.isAuthenticated()) {
 
-                        //TODO: only send if data changed
+                    mWatchClient.sendSensorData(AppConstants.SENSOR_TYPE_BEACON, beacon.getTxPower(), timestamp, new float[]{beacon.getRssi()});
+
+
+                    //TODO: only send if data changed
+                    if (mRunning) {
                         sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, proximity);
-                        sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, beacon.getId1().toString());
-                 //   }
+                    }
+                    //   }
                 }
 
 
@@ -391,9 +432,9 @@ public class AuthenticatorWatchService extends Service
 
     public static String getProximityStringByRSSI(int rssi) {
         String proximityString;
-        if (rssi >= -72) {
+        if (rssi >= -74) {
             proximityString = AppConstants.PROXIMITY_IMMEDIATE;
-        } else if (rssi < -79 && rssi >= -80) {
+        } else if (rssi < -74 && rssi >= -84) {
             proximityString = AppConstants.PROXIMITY_NEAR;
         } else {
             proximityString = AppConstants.PROXIMITY_FAR;

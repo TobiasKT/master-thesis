@@ -268,10 +268,10 @@ public class TCPServer extends Thread {
 		String proximityString;
 
 		int rssi = (int) values[0];
-		if (rssi >= -72) {
+		if (rssi >= -79) {
 			proximityString = AppConstants.PROXIMITY_IMMEDIATE;
 			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
-		} else if (rssi < -79 && rssi >= -80) {
+		} else if (rssi < -80 && rssi >= -86) {
 			proximityString = AppConstants.PROXIMITY_NEAR;
 			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
 		} else {

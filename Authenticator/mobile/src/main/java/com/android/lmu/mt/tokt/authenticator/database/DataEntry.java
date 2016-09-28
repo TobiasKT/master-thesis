@@ -20,6 +20,9 @@ public class DataEntry extends RealmObject {
     private String dataSource;
     private long dataType;
 
+
+    private String sensorName;
+
     private String text;
 
     public String getAndroidDevice() {
@@ -101,4 +104,13 @@ public class DataEntry extends RealmObject {
     public void setText(String text) {
         this.text = text;
     }
+
+    public String getSensorName() {
+        return sensorName;
+    }
+
+    public void setSensorName(String sensorName) {
+        this.sensorName = sensorName;
+    }
+
 }

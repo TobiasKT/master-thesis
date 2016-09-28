@@ -1,6 +1,8 @@
 package com.android.lmu.mt.tokt.authenticator;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -10,7 +12,10 @@ import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
 import com.google.android.gms.wearable.MessageEvent;
+import com.google.android.gms.wearable.Node;
 import com.google.android.gms.wearable.WearableListenerService;
+
+import java.nio.charset.Charset;
 
 /**
  * Created by tobiaskeinath on 28.08.16.
@@ -23,6 +28,9 @@ public class MessageReceiverService extends WearableListenerService {
 
     private LocalBroadcastManager mLocalBroadcastManager;
 
+    private SharedPreferences mSharedPreferences;
+
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -30,6 +38,9 @@ public class MessageReceiverService extends WearableListenerService {
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         mWatchClient = WatchClient.getInstance(this);
+
+        mSharedPreferences = getSharedPreferences(
+                AppConstants.SHARED_PREF_APP_KEY, Context.MODE_PRIVATE);
     }
 
     @Override
@@ -47,6 +58,14 @@ public class MessageReceiverService extends WearableListenerService {
 
             }
         }
+    }
+
+    @Override
+    public void onPeerDisconnected(Node node) {
+        super.onPeerDisconnected(node);
+        Log.d(TAG, "Disconnect from Phone");
+
+        stopService(new Intent(this, AuthenticatorWatchService.class));
     }
 
     @Override
@@ -92,6 +111,22 @@ public class MessageReceiverService extends WearableListenerService {
         }
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_USER_NOT_AUTHENTICATED)) {
             mWatchClient.setAuthenticated(false);
+        }
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_BEACON_UUID)) {
+
+            String beaconUUID = new String(messageEvent.getData(), Charset.forName("UTF-8"));
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putString(AppConstants.SHARED_PREF_BEACON_UUID, beaconUUID);
+            editor.commit();
+
+            stopService(new Intent(this, AuthenticatorWatchService.class));
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ie) {
+                Log.e(TAG, "Error restarting service after beacon Id changed. Exception: " + ie.toString());
+            }
+
+            startService(new Intent(this, AuthenticatorWatchService.class));
         }
 
     }

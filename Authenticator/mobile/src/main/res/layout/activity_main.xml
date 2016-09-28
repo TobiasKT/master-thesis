@@ -52,10 +52,10 @@
 
             android:layout_below="@id/username_txt"
             android:layout_marginTop="4dp"
-            android:textSize="12sp"
             android:gravity="center"
             android:text="-"
-            android:textColor="#757575" />
+            android:textColor="#757575"
+            android:textSize="12sp" />
 
     </RelativeLayout>
 
@@ -140,11 +140,13 @@
 
                 <ImageView
                     android:id="@+id/server_ip_img"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="16dp"
                     android:layout_toRightOf="@id/server_ip_edit_text"
+                    android:background="@drawable/round_ripple"
+                    android:padding="4dp"
                     android:src="@android:drawable/ic_menu_edit" />
             </RelativeLayout>
 
@@ -181,10 +183,12 @@
 
                 <ImageView
                     android:id="@+id/server_port_img"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
                     android:layout_centerVertical="true"
                     android:layout_toRightOf="@id/server_port_edit_text"
+                    android:background="@drawable/round_ripple"
+                    android:padding="4dp"
                     android:src="@android:drawable/ic_menu_edit" />
             </RelativeLayout>
 
@@ -195,9 +199,9 @@
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
-                android:visibility="gone"
                 android:paddingRight="16dp"
-                android:paddingTop="8dp">
+                android:paddingTop="8dp"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/server_state_title_text"
@@ -221,14 +225,14 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:visibility="gone"
                 android:id="@+id/server_command_relative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingTop="8dp">
+                android:paddingTop="8dp"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/server_command_title_text"
@@ -263,15 +267,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                android:layout_marginRight="8dp">
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp">
 
                 <Button
                     android:id="@+id/connect_phone_to_server_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="?android:selectableItemBackground"
+                    android:background="@drawable/rectangle_ripple"
                     android:text="Connect"
                     android:textColor="@color/colorPrimary"
                     android:textSize="14sp" />
@@ -331,6 +337,7 @@
                     android:id="@+id/heartbeat_img"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/heartbeat" />
 
                 <TextView
@@ -370,6 +377,7 @@
                     android:id="@+id/steps_img"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/walking" />
 
                 <TextView
@@ -409,6 +417,7 @@
                     android:id="@+id/proximity_img"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
+                    android:layout_centerVertical="true"
                     android:src="@drawable/signal" />
 
                 <TextView
@@ -448,7 +457,8 @@
                     android:id="@+id/sound_img"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/sound_signal" />
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/beacon" />
 
                 <TextView
                     android:id="@+id/sound_title_text"
@@ -458,18 +468,33 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_toRightOf="@id/sound_img"
-                    android:text="Sound"
+                    android:text="Beacon"
                     android:textSize="14sp" />
 
-                <TextView
-                    android:id="@+id/sound_text"
+
+                <ImageView
+                    android:id="@+id/edit_beacon_uuid_img"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="8dp"
+                    android:background="@drawable/round_ripple"
+                    android:padding="4dp"
+                    android:src="@android:drawable/ic_menu_edit"
+                    android:text="Edit" />
+
+                <EditText
+                    android:id="@+id/beacon_uuid_edit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@id/edit_beacon_uuid_img"
                     android:layout_toRightOf="@id/sound_title_text"
-                    android:text="not listening"
+                    android:enabled="false"
+                    android:text="E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"
                     android:textSize="12sp"
-                    android:textStyle="bold" />
+                    android:textStyle="normal" />
 
             </RelativeLayout>
 
@@ -487,15 +512,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/connect_phone_to_watch_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:background="?android:selectableItemBackground"
+                    android:background="@drawable/rectangle_ripple"
                     android:text="Connect"
                     android:textColor="@color/colorPrimary"
                     android:textSize="14sp" />

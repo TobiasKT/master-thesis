@@ -30,6 +30,7 @@ import com.android.lmu.mt.tokt.authenticator.data.SensorDataPoint;
 import com.android.lmu.mt.tokt.authenticator.data.SensorNames;
 import com.android.lmu.mt.tokt.authenticator.data.TagData;
 import com.android.lmu.mt.tokt.authenticator.database.DataEntry;
+import com.android.lmu.mt.tokt.authenticator.database.TagEntry;
 import com.android.lmu.mt.tokt.authenticator.events.BusProvider;
 import com.android.lmu.mt.tokt.authenticator.events.NewSensorEvent;
 import com.android.lmu.mt.tokt.authenticator.events.SensorUpdatedEvent;
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements
     private Button mConnectToServerBtn;
     private TextView mLockstateText;
     private TextView mUsernameText;
+    private ImageView mBeaconEditImg;
+    private EditText mBeaconEditText;
 
 
     @Override
@@ -203,9 +206,19 @@ public class MainActivity extends AppCompatActivity implements
         entry.setAccuracy(event.getDataPoint().getAccuracy());
         entry.setDataSource("Acc");
         entry.setDataType(event.getSensor().getSensorId());
+        entry.setSensorName(mSensorNames.getName((int) event.getSensor().getSensorId()));
         mRealm.commitTransaction();
+    }
 
-
+    @Subscribe
+    public void onTagAddedEvent(TagAddedEvent event) {
+        Log.d(TAG, "Subscribed onTagAddedEvent");
+        mRealm.beginTransaction();
+        TagEntry entry = mRealm.createObject(TagEntry.class);
+        entry.setEvent(event.getTag().getTagName());
+        entry.setUsername(Util.getUsername());
+        entry.setTimestamp(event.getTag().getTimestamp());
+        mRealm.commitTransaction();
     }
 
     @Override
@@ -241,6 +254,8 @@ public class MainActivity extends AppCompatActivity implements
         mServerCommandText = (TextView) findViewById(R.id.server_command_text);
         mLockstateText = (TextView) findViewById(R.id.lock_state_txt);
         mUsernameText = (TextView) findViewById(R.id.username_txt);
+        mBeaconEditImg = (ImageView) findViewById(R.id.edit_beacon_uuid_img);
+        mBeaconEditText = (EditText) findViewById(R.id.beacon_uuid_edit);
 
 
         mServerIpEditText.setText(getSavedServerIP());
@@ -255,6 +270,7 @@ public class MainActivity extends AppCompatActivity implements
         mConnectToServerBtn.setOnClickListener(this);
         mServerIpImage.setOnClickListener(this);
         mServerPortImage.setOnClickListener(this);
+        mBeaconEditImg.setOnClickListener(this);
     }
 
 
@@ -582,7 +598,7 @@ public class MainActivity extends AppCompatActivity implements
     /* ------------- Receive data from connected Watch (DataApi.DataListener) -------------*/
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
-        Log.d(TAG, "onDataChanged: " + dataEvents);
+        Log.d(TAG, "onDataChanged");
 
         //TODO: Daten von Uhr verarbeiten und anzeigen
 
@@ -795,6 +811,16 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    public void sendBeaconUUIDToWatch(final String beaconUUID) {
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                byte[] data = beaconUUID.getBytes(Charset.forName("UTF-8"));
+                sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_BEACON_UUID, data);
+            }
+        });
+    }
+
 
     //TODO only allow ONE node!!!
     private void sendRemoteCommandToWatch(final String path) {
@@ -807,6 +833,26 @@ public class MainActivity extends AppCompatActivity implements
             Log.i(TAG, "add node " + node.getDisplayName());
             Wearable.MessageApi.sendMessage(
                     mGoogleApiClient, node.getId(), path, null
+            ).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
+                @Override
+                public void onResult(MessageApi.SendMessageResult sendMessageResult) {
+                    Log.d(TAG, "sendRemoteCommandToWatch(" + path + "): " + sendMessageResult.getStatus().isSuccess());
+                }
+            });
+        }
+    }
+
+    //TODO only allow ONE node!!!
+    private void sendRemoteCommandToWatch(final String path, byte[] data) {
+
+        List<Node> nodes = Wearable.NodeApi.getConnectedNodes(mGoogleApiClient).await().getNodes();
+
+        Log.d(TAG, "Sending to nodes: " + nodes.size());
+
+        for (Node node : nodes) {
+            Log.i(TAG, "add node " + node.getDisplayName());
+            Wearable.MessageApi.sendMessage(
+                    mGoogleApiClient, node.getId(), path, data
             ).setResultCallback(new ResultCallback<MessageApi.SendMessageResult>() {
                 @Override
                 public void onResult(MessageApi.SendMessageResult sendMessageResult) {
@@ -875,6 +921,9 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.server_port_img:
                 editOrConfirmServerPort();
                 break;
+            case R.id.edit_beacon_uuid_img:
+                editOrConfirmBeaconUUID();
+                break;
             default:
                 Log.d(TAG, "Unkown view clicked");
                 break;
@@ -890,6 +939,7 @@ public class MainActivity extends AppCompatActivity implements
     private void disconnectFromWatch() {
 
         stopMeasurement();
+        resetMainUIValues();
 
         if (!mResolvingError && (mGoogleApiClient != null) && (mGoogleApiClient.isConnected())) {
             Wearable.DataApi.removeListener(mGoogleApiClient, this);
@@ -930,6 +980,32 @@ public class MainActivity extends AppCompatActivity implements
                     Integer.parseInt(mServerPortEditText.getText().toString()));
             editor.commit();
         }
+    }
+
+    private void editOrConfirmBeaconUUID() {
+        if (!mBeaconEditText.isEnabled()) {
+            mBeaconEditText.setEnabled(true);
+            mBeaconEditImg.setImageResource(android.R.drawable.ic_menu_save);
+        } else {
+            mBeaconEditText.setEnabled(false);
+            mBeaconEditImg.setImageResource(android.R.drawable.ic_menu_edit);
+
+            String beaconUUID = mBeaconEditText.getText().toString();
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putString(AppConstants.SHARED_PREF_BEACON_UUID, beaconUUID);
+            editor.commit();
+
+            sendBeaconUUIDToWatch(beaconUUID);
+            mProximityText.setText("-");
+
+        }
+    }
+
+    private void resetMainUIValues() {
+        mHeartrateText.setText("0.0");
+        mStepsText.setText("0.0");
+        mProximityText.setText("-");
+        mLockstateText.setText("-");
     }
 
 

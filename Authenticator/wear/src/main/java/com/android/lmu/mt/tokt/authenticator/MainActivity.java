@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.support.v4.content.LocalBroadcastManager;
@@ -58,6 +59,7 @@ public class MainActivity extends WearableActivity {
     private ImageView mStepsImg;
     private ImageView mProximityImg;
 
+    private SharedPreferences mSharedPreferences;
 
     private BroadcastReceiver mBroadcastReceiver;
 
@@ -66,6 +68,9 @@ public class MainActivity extends WearableActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setAmbientEnabled();
+
+        mSharedPreferences = getSharedPreferences(
+                AppConstants.SHARED_PREF_APP_KEY, Context.MODE_PRIVATE);
 
         mContainerView = (BoxInsetLayout) findViewById(R.id.container);
         mContainerWatchStateRL = (RelativeLayout) findViewById(R.id.container_clock_state_relative);
