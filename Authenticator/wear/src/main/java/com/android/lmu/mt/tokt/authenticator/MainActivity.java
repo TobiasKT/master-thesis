@@ -93,6 +93,7 @@ public class MainActivity extends WearableActivity {
         mLockStateText = (TextView) findViewById(R.id.lock_state_text);
         mLockstateRelative = (RelativeLayout) findViewById(R.id.lock_state_relative);
 
+
         mBroadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -137,10 +138,9 @@ public class MainActivity extends WearableActivity {
                     String message = intent.getStringExtra(AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE);
                     mLockStateText.setText(message);
                 }
-
-
             }
         };
+
 
     }
 

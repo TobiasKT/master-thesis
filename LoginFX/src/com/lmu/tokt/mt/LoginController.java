@@ -31,10 +31,15 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -42,20 +47,17 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
+import javafx.util.Pair;
 
 public class LoginController implements Initializable {
 
@@ -430,6 +432,30 @@ public class LoginController implements Initializable {
 					}
 				});
 				break;
+			case AppConstants.DIALOG_EVENT_TYPE_LOCK:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						showDialog(message, AppConstants.DIALOG_EVENT_TYPE_LOCK);
+					}
+				});
+				break;
+			case AppConstants.DIALOG_EVENT_TYPE_UNLOCK:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						showDialog(message, AppConstants.DIALOG_EVENT_TYPE_UNLOCK);
+					}
+				});
+				break;
+			case AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						showDialog(message, AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED);
+					}
+				});
+				break;
 			default:
 				break;
 			}
@@ -445,6 +471,7 @@ public class LoginController implements Initializable {
 			stage.setFullScreen(true);
 		} else {
 			stage.setFullScreen(false);
+			stage.toBack();
 		}
 	}
 
@@ -569,10 +596,16 @@ public class LoginController implements Initializable {
 				"Connecting (" + checksum + ") ...", false, true, false);
 	}
 
+	private boolean mKeyDetectorstarted = false;
+
 	@FXML
 	private void onPasswordFieldKeyPressed(KeyEvent event) {
 
 		if (event.getCode() == KeyCode.ENTER) {
+			mKeyDetectorstarted = false;
+			mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
+
+			// TODO: call after keypressed detector erfolgreich;
 			login(event);
 		}
 
@@ -580,6 +613,11 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private void onPasswordFieldKeyReleased(KeyEvent event) {
+
+		if (txtPassword.getLength() > 0 && !mKeyDetectorstarted && event.getCode() != KeyCode.ENTER) {
+			mKeyDetectorstarted = true;
+			mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
+		}
 
 		if (txtPassword.getLength() == 0) {
 			btnLogin.setDisable(true);
@@ -700,7 +738,7 @@ public class LoginController implements Initializable {
 				imgTypingPasswordCountSuccess.setVisible(true);
 				lblPasswordTypeCount.setVisible(false);
 				btnRegister.setVisible(true);
-				
+
 				mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
 			}
 		}
@@ -957,6 +995,136 @@ public class LoginController implements Initializable {
 	@FXML
 	private void onSoundSignalClicked(MouseEvent event) {
 		// mTCPServer.sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
+	}
+
+	private boolean agree = false;
+	private boolean disagree = false;
+	private boolean unsure = false;
+	private String comment = "";
+
+	private void showDialog(String headerText, int dialogEventType) {
+
+		// Create the custom dialog.
+		Dialog<Pair<String, String>> dialog = new Dialog<>();
+		dialog.setTitle("Question?");
+		dialog.setHeaderText(headerText);
+
+		ButtonType loginButtonType = new ButtonType("Send", ButtonData.OK_DONE);
+		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		RadioButton radioAgreeBtn = new RadioButton();
+		radioAgreeBtn.setText("Yes");
+		radioAgreeBtn.setSelected(true);
+		grid.add(radioAgreeBtn, 0, 0);
+
+		RadioButton radioDisagreeBtn = new RadioButton();
+		radioDisagreeBtn.setText("No");
+		grid.add(radioDisagreeBtn, 0, 1);
+
+		RadioButton radioUnsureBtn = new RadioButton();
+		radioUnsureBtn.setText("I do not know");
+		grid.add(radioUnsureBtn, 0, 2);
+
+		TextField usernote = new TextField();
+		usernote.setPromptText("Add a comment");
+		grid.add(usernote, 0, 3);
+
+		usernote.textProperty().addListener((observable, oldValue, newValue) -> {
+			System.out.println(newValue);
+			comment = newValue;
+
+		});
+
+		radioAgreeBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				radioDisagreeBtn.setSelected(false);
+				radioUnsureBtn.setSelected(false);
+				agree = true;
+				disagree = false;
+				unsure = false;
+			}
+
+		});
+
+		radioAgreeBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				radioAgreeBtn.setSelected(false);
+				radioUnsureBtn.setSelected(false);
+				agree = false;
+				disagree = true;
+				unsure = false;
+			}
+
+		});
+
+		radioUnsureBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+
+			@Override
+			public void handle(MouseEvent event) {
+				radioAgreeBtn.setSelected(false);
+				radioDisagreeBtn.setSelected(false);
+				agree = false;
+				disagree = false;
+				unsure = true;
+			}
+
+		});
+
+		dialog.getDialogPane().setContent(grid);
+
+		Platform.runLater(() -> radioAgreeBtn.requestFocus());
+
+		dialog.setResultConverter(dialogButton -> {
+
+			String comment = usernote.getText();
+			if (comment.isEmpty()) {
+				comment = "none";
+			}
+			int radioBtnValue = 0;
+			if (radioAgreeBtn.isSelected()) {
+				radioBtnValue = 1;
+			}
+			if (radioDisagreeBtn.isSelected()) {
+				radioBtnValue = 2;
+			}
+			if (radioUnsureBtn.isSelected()) {
+				radioBtnValue = 3;
+			}
+
+			if (dialogButton == loginButtonType) {
+				switch (dialogEventType) {
+				case AppConstants.DIALOG_EVENT_TYPE_LOCK:
+					mTCPServer.sendMessage(
+							AppConstants.COMMAND_SAVE_DIALOG_EVENT_LOCK + "::" + radioBtnValue + "::" + comment);
+					break;
+				case AppConstants.DIALOG_EVENT_TYPE_UNLOCK:
+					mTCPServer.sendMessage(
+							AppConstants.COMMAND_SAVE_DIALOG_EVENT_UNLOCK + "::" + radioBtnValue + "::" + comment);
+					break;
+				case AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED:
+					mTCPServer.sendMessage(AppConstants.COMMAND_SAVE_DIALOG_EVENT_NOT_AUTHENTICATED + "::"
+							+ radioBtnValue + "::" + comment);
+					break;
+
+				default:
+					break;
+				}
+
+			}
+			return null;
+		});
+
+		//dialog.initStyle(StageStyle.UNDECORATED);
+		dialog.showAndWait();
 
 	}
 

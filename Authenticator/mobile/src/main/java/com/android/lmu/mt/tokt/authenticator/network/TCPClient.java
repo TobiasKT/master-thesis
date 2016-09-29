@@ -1,9 +1,11 @@
 package com.android.lmu.mt.tokt.authenticator.network;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.android.lmu.mt.tokt.authenticator.database.EventEntry;
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
 import com.android.lmu.mt.tokt.authenticator.util.Util;
 
@@ -14,6 +16,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+
+import io.realm.Realm;
+import io.realm.exceptions.RealmMigrationNeededException;
 
 /**
  * Created by tobiaskeinath on 30.08.16.
@@ -38,17 +43,32 @@ public class TCPClient {
 
     private boolean mRun = false;
 
+    private Realm mRealm;
+
     private boolean mIsConnected = false;
 
 
-    public TCPClient(Handler handler, MessageCallBack listener) {
+    public TCPClient(Context context, Handler handler, MessageCallBack listener) {
         mHandler = handler;
         mMessageListener = listener;
+
+
+        try {
+            mRealm = Realm.getInstance(context);
+        } catch (RealmMigrationNeededException e) {
+            try {
+                Realm.deleteRealmFile(context);
+                mRealm = Realm.getInstance(context);
+            } catch (Exception ex) {
+                throw ex;
+                //No Realm file to remove.
+            }
+        }
     }
 
 
-    public TCPClient(String ipAddress, int port, Handler handler, MessageCallBack listener) {
-        this(handler, listener);
+    public TCPClient(String ipAddress, int port, Context context, Handler handler, MessageCallBack listener) {
+        this(context, handler, listener);
         SERVER_IP = ipAddress;
         SERVER_PORT = port;
     }
@@ -185,10 +205,17 @@ public class TCPClient {
                     mHandler.sendMessage(completeMessage);
                 }
 
-                if(mIncomingMessage.equals(AppConstants.COMMAND_START_TYPING_SENSORS)){
+                if (mIncomingMessage.equals(AppConstants.COMMAND_START_TYPING_SENSORS)) {
                     Message completeMessage =
                             mHandler.obtainMessage(AppConstants.STATE_SEND_TYPING_VALUES,
                                     "Start Typing Sensors");
+                    mHandler.sendMessage(completeMessage);
+                }
+
+                if (mIncomingMessage.equals(AppConstants.COMMAND_STOP_TYPING_SENSORS)) {
+                    Message completeMessage =
+                            mHandler.obtainMessage(AppConstants.STATE_STOP_SENDING_TYPING_VALUES,
+                                    "Stop Typing Sensors");
                     mHandler.sendMessage(completeMessage);
                 }
 
@@ -199,6 +226,15 @@ public class TCPClient {
                             mHandler.obtainMessage(AppConstants.SET_USERNAME,
                                     username);
                     mHandler.sendMessage(completeMessage);
+                }
+                if (mIncomingMessage.contains(AppConstants.COMMAND_SAVE_DIALOG_EVENT_LOCK)) {
+                    saveEventToDB(mIncomingMessage, "lock");
+                }
+                if (mIncomingMessage.contains(AppConstants.COMMAND_SAVE_DIALOG_EVENT_UNLOCK)) {
+                    saveEventToDB(mIncomingMessage, "unlock");
+                }
+                if (mIncomingMessage.contains(AppConstants.COMMAND_SAVE_DIALOG_EVENT_NOT_AUTHENTICATED)) {
+                    saveEventToDB(mIncomingMessage, "logged_out");
                 }
 
 
@@ -237,6 +273,23 @@ public class TCPClient {
 
     public boolean isRunning() {
         return mRun;
+    }
+
+    private void saveEventToDB(String message, String eventName) {
+        Log.d(TAG, "save event to DB");
+
+        String[] values = message.split("::");
+        int state = Integer.parseInt(values[1]);
+        String usernote = values[2];
+
+        mRealm.beginTransaction();
+        EventEntry entry = mRealm.createObject(EventEntry.class);
+        entry.setEventName(eventName);
+        entry.setUsername(Util.getUsername());
+        entry.setState(state);
+        entry.setUsernote(usernote);
+        entry.setTimeStamp(System.currentTimeMillis());
+        mRealm.commitTransaction();
     }
 
 

@@ -91,6 +91,8 @@ public class AppConstants {
     public static final String CLIENT_PATH_LOCKED = "/locked";
     public static final String CLIENT_PATH_UNLOCKED = "/unlocked";
     public static final String CLIENT_PATH_BEACON_UUID = "/beacon_uuid";
+    public static final String CLIENT_PATH_START_KEYPRESS_DETECTOR = "/start_key_detector";
+    public static final String CLIENT_PATH_STOP_KEYPRESS_DETECTOR = "/stop_key_detector";
 
     //ServerPaths
     public static final String SERVER_PATH_SENSOR_DATA = "/sensors/";
@@ -109,6 +111,10 @@ public class AppConstants {
     public static final String COMMAND_LOCKED = "LOCKED";
     public static final String COMMAND_USERNAME = "USERNAME";
     public static final String COMMAND_START_TYPING_SENSORS = "START_TYPING_SENSORS";
+    public static final String COMMAND_STOP_TYPING_SENSORS = "STOP_TYPING_SENSORS";
+    public static final String COMMAND_SAVE_DIALOG_EVENT_LOCK = "SAVE_DIALOG_EVENT_LOCK";
+    public static final String COMMAND_SAVE_DIALOG_EVENT_UNLOCK = "SAVE_DIALOG_EVENT_UNLOCK";
+    public static final String COMMAND_SAVE_DIALOG_EVENT_NOT_AUTHENTICATED = "SAVE_DIALOG_EVENT_NOT_AUTHENTICATED";
     //
     public static final int START_LISTEN_TO_SOUND = -5000;
 
@@ -126,6 +132,7 @@ public class AppConstants {
     public static final int STATE_UNLOCKED = -5002;
 
     public static final int STATE_SEND_TYPING_VALUES = -7001;
+    public static final int STATE_STOP_SENDING_TYPING_VALUES = -7002;
 
     public static final int SET_USERNAME = -6001;
 
@@ -184,7 +191,10 @@ public class AppConstants {
     public static final String LOG_KEY_SENSORNAME = "sensorname";
     public static final String LOG_KEY_DATATYPE = "datatype";
 
-    public static final String LOG_KEY_EVENT = "tag_event";
+    public static final String LOG_KEY_TAG_EVENT = "tag_event";
+    public static final String LOG_KEY_APP_EVENT = "app_event";
+    public static final String LOG_KEY_STATE = "state";
+    public static final String LOG_KEY_USERNOTE = "usernote";
 
 
 }

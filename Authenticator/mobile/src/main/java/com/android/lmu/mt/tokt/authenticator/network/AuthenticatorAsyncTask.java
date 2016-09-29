@@ -51,7 +51,7 @@ public class AuthenticatorAsyncTask extends AsyncTask<String, String, TCPClient>
             String ip = getSavedServerIP();
             int port = getSavedServerPort();
 
-            mTcpClient = new TCPClient(ip, port, mHandler, new TCPClient.MessageCallBack() {
+            mTcpClient = new TCPClient(ip, port, mContext, mHandler, new TCPClient.MessageCallBack() {
 
                 @Override
                 public void callbackMessageReceiver(String message) {

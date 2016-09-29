@@ -146,15 +146,15 @@
         android:layout_gravity="bottom|center"
         android:background="#BDBDBD">
 
+
         <TextView
             android:id="@+id/lock_state_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="-"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:text="-" />
 
     </RelativeLayout>
-
 
 </android.support.wearable.view.BoxInsetLayout>

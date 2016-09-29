@@ -19,8 +19,19 @@ import org.json.simple.parser.ParseException;
 import com.lmu.tokt.mt.util.AppConstants;
 import com.lmu.tokt.mt.util.Checksum;
 
+import javafx.application.Platform;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Pair;
 
 public class TCPServer extends Thread {
 
@@ -162,7 +173,6 @@ public class TCPServer extends Thread {
 						mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_CONNECTED,
 								"Confirmation successful!");
 						sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECT);
-						sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
 					} else {
 						mDataExchangeIsRunning = false;
 						mIsConnectedToWatch = false;
@@ -338,6 +348,10 @@ public class TCPServer extends Thread {
 		return timeAgo;
 	}
 
+	private int mLockCounter = 0;
+	private int mUnlockCounter = 0;
+	private int mNotAuthenticated = 0;
+
 	private void validateAuthenticatorState() {
 
 		if (isAuthenticated) {
@@ -349,16 +363,32 @@ public class TCPServer extends Thread {
 				mLastStepCountTimeStamp = 0;
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED, "");
 				sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
+
+				mNotAuthenticated++;
+				if (mNotAuthenticated == 5) {
+					System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
+					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED,
+							"Was this UNLOGGING event as expected?");
+					mNotAuthenticated = 0;
+				}
 			}
 
 			// lock
-			//TODO: ausbessern
-			//if (isHeartBeating && (isWalking || isFar)) {
-			if (isHeartBeating && isFar) {
+			// TODO: ausbessern
+			if (isHeartBeating && (isWalking || isFar)) {
+				// if (isHeartBeating && isFar) {
 				if (!isLocked) {
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_LOCKED, "locked");
 					isLocked = true;
 					sendMessage(AppConstants.COMMAND_LOCKED);
+
+					mLockCounter++;
+					if (mLockCounter == 5) {
+						System.out.println(TAG + ": show LOCK dialog");
+						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_LOCK,
+								"Was this LOCK event as expected?");
+						mLockCounter = 0;
+					}
 				}
 
 			}
@@ -371,9 +401,17 @@ public class TCPServer extends Thread {
 
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SIGNAL_SENDING, "sending");
 					sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
-					playUnlockSound();
+					// playUnlockSound();
 					sendMessage(AppConstants.COMMAND_UNLOCKED);
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SENDING_NONE, "none");
+
+					mUnlockCounter++;
+					if (mUnlockCounter == 2) {
+						System.out.println(TAG + ": show UNLOCK dialog");
+						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_UNLOCK,
+								"Was this UNLOCK event as expected?");
+						mUnlockCounter = 0;
+					}
 				}
 			}
 		}

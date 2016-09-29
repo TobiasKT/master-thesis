@@ -37,7 +37,10 @@ public class AppConstants {
 	public static final String COMMAND_LOCKED = "LOCKED";
 	public static final String COMMAND_USERNAME = "USERNAME";
 	public static final String COMMAND_START_TYPING_SENSORS = "START_TYPING_SENSORS";
-	public static final String COMMAND_STOP_TYPING_SENSORS = "START_TYPING_SENSORS";
+	public static final String COMMAND_STOP_TYPING_SENSORS = "STOP_TYPING_SENSORS";
+	public static final String COMMAND_SAVE_DIALOG_EVENT_LOCK = "SAVE_DIALOG_EVENT_LOCK";
+	public static final String COMMAND_SAVE_DIALOG_EVENT_UNLOCK = "SAVE_DIALOG_EVENT_UNLOCK";
+	public static final String COMMAND_SAVE_DIALOG_EVENT_NOT_AUTHENTICATED = "SAVE_DIALOG_EVENT_NOT_AUTHENTICATED";
 
 	/*------------------------ PHONE/WATCH CONNECTION STATES ------------------------*/
 
@@ -69,6 +72,12 @@ public class AppConstants {
 
 	public static final int STATE_SOUND_SIGNAL_SENDING = -8001;
 	public static final int STATE_SOUND_SENDING_NONE = -8002;
+
+	/*------------------- DIALOG EVENT TYPES ----------------*/
+
+	public static final int DIALOG_EVENT_TYPE_LOCK = 1000001;
+	public static final int DIALOG_EVENT_TYPE_UNLOCK = 2000001;
+	public static final int DIALOG_EVENT_TYPE_NOT_AUTHENTICATED = 3000001;
 
 	/*------------------------ DATABASE ------------------------*/
 	public static final int IMAGE_TYPE_BACKGROUND = 1111;

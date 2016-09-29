@@ -81,8 +81,6 @@ public class MessageReceiverService extends WearableListenerService {
             startIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(startIntent);
 
-            sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "CONNECTED");
-
             //start service
             startService(new Intent(this, AuthenticatorWatchService.class));
         }
@@ -129,6 +127,23 @@ public class MessageReceiverService extends WearableListenerService {
             startService(new Intent(this, AuthenticatorWatchService.class));
         }
 
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_START_KEYPRESS_DETECTOR)) {
+
+
+            sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "CONNECTED");
+            startService(new Intent(this, KeypressDetectorService.class));
+        }
+
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_STOP_KEYPRESS_DETECTOR)) {
+            stopService(new Intent(this, KeypressDetectorService.class));
+        }
+
+    }
+
+    @Override
+    public void onPeerConnected(Node node) {
+        super.onPeerConnected(node);
+        Log.d(TAG, "watch connected to phone");
     }
 
     private void sendResult(String intentAction, String extraName, String message) {

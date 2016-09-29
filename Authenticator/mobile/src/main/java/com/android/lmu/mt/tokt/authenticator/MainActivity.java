@@ -290,6 +290,7 @@ public class MainActivity extends AppCompatActivity implements
                             int cheksum = (int) msg.obj;
                             showConfirmConnectionDialog("Allow Connection? (" + cheksum + ")", cheksum);
                         }
+                        //connectToWatch();
                         break;
                     case AppConstants.STATE_CONNECTED:
                         addTag("connected");
@@ -325,6 +326,7 @@ public class MainActivity extends AppCompatActivity implements
                         } else {
                             //Connect to watch and start sensor service
                             connectToWatch();
+                            startMeasurement();
                         }
                         break;
                     case AppConstants.STATE_NOT_AUTHENTICATED:
@@ -344,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements
                         if (msg.obj != null) {
                             Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
                         }
-                        startListeningToSound();
+                        //startListeningToSound();
                         break;
                     case AppConstants.STATE_LOCKED:
                         addTag("state_locked");
@@ -365,7 +367,10 @@ public class MainActivity extends AppCompatActivity implements
                         BusProvider.updateTextViewOnMainThread(mUsernameText, username);
                         break;
                     case AppConstants.STATE_SEND_TYPING_VALUES:
-                        //startMeasurement();
+                       // startKeyDetectorServiceWatch(true);
+                        break;
+                    case AppConstants.STATE_STOP_SENDING_TYPING_VALUES:
+                       // startKeyDetectorServiceWatch(false);
                         break;
 
                 }
@@ -466,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements
                 mGoogleApiClient, this, Uri.parse("wear://"), CapabilityApi.FILTER_REACHABLE);
 
         //start sensorservice on watch and provide callback fo MainUIThread
-        startMeasurement();
+        //startMeasurement();
     }
 
     @Override
@@ -821,6 +826,18 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    public void startKeyDetectorServiceWatch(final boolean start) {
+        mExecutorService.execute(new Runnable() {
+            @Override
+            public void run() {
+                if (start) {
+                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_START_KEYPRESS_DETECTOR);
+                } else {
+                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_STOP_KEYPRESS_DETECTOR);
+                }
+            }
+        });
+    }
 
     //TODO only allow ONE node!!!
     private void sendRemoteCommandToWatch(final String path) {
