@@ -152,27 +152,27 @@ public class KeypressDetectorService extends Service implements SensorEventListe
         double sdGyroY = calculateStandardDeviation(mAccelerometerY, "GyroY");
         double sdGyroZ = calculateStandardDeviation(mAccelerometerZ, "GyroZ");
 
-        if (sdAccX != 0 && sdAccX > 0.1 && sdAccX < 0.25) {
+        if (sdAccX != 0 && sdAccX > 0.1 && sdAccX < 0.3) {
             inRangeCounter++;
         }
 
-        if (sdAccY != 0 && sdAccY > 0.1 && sdAccY < 0.25) {
+        if (sdAccY != 0 && sdAccY > 0.1 && sdAccY < 0.2) {
             inRangeCounter++;
         }
 
-        if (sdAccZ != 0 && sdAccZ > 0.1 && sdAccZ < 0.25) {
+        if (sdAccZ != 0 && sdAccZ > 0.08 && sdAccZ < 0.15) {
             inRangeCounter++;
         }
 
-        if (sdGyroX != 0 && sdGyroX > 0.1 && sdGyroX < 0.25) {
+        if (sdGyroX != 0 && sdGyroX > 0.1 && sdGyroX < 0.15) {
             inRangeCounter++;
         }
 
-        if (sdGyroY != 0 && sdGyroY > 0.1 && sdGyroY < 0.25) {
+        if (sdGyroY != 0 && sdGyroY > 0.1 && sdGyroY < 0.3) {
             inRangeCounter++;
         }
 
-        if (sdGyroZ != 0 && sdGyroZ > 0.1 && sdGyroZ < 0.25) {
+        if (sdGyroZ != 0 && sdGyroZ > 0.01 && sdGyroZ < 0.05) {
             inRangeCounter++;
         }
 

@@ -85,5 +85,15 @@
 	-fx-border-color: rgba(255.0,255.0,255.0,0.5);
 }
 
+.white-background{
+	 -fx-background-color: rgba(255.0,255.0,255.0,0.8);
+}
+
+.border-bottom-white{
+	-fx-border-width: 0.0 0.0 1.0 0.0; 
+	-fx-border-color: rgba(100.0,100.0,100.0,0.5);
+	 -fx-background-color: rgba(235.0,235.0,235.0,0.8);
+}
+
 
 

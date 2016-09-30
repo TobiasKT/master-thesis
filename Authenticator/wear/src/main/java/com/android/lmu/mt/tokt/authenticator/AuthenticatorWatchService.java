@@ -432,9 +432,9 @@ public class AuthenticatorWatchService extends Service
 
     public static String getProximityStringByRSSI(int rssi) {
         String proximityString;
-        if (rssi >= -74) {
+        if (rssi >= -71) {
             proximityString = AppConstants.PROXIMITY_IMMEDIATE;
-        } else if (rssi < -74 && rssi >= -84) {
+        } else if (rssi < -71 && rssi >= -81) {
             proximityString = AppConstants.PROXIMITY_NEAR;
         } else {
             proximityString = AppConstants.PROXIMITY_FAR;

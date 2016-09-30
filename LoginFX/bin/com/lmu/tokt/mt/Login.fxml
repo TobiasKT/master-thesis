@@ -264,6 +264,47 @@
 								<Insets bottom="8.0" left="16.0" right="8.0" top="32.0" />
 							</padding>
 						</HBox>
+                  <AnchorPane fx:id="anchorNotification" layoutX="489.0" prefHeight="131.0" prefWidth="243.0" styleClass="white-background" visible="false">
+                     <children>
+                        <VBox prefHeight="211.0" prefWidth="246.0">
+                           <children>
+                              <Label fx:id="lblNotificationTitle" prefHeight="17.0" prefWidth="247.0" styleClass="border-bottom-white" text="Was this LOGGOUT event correct?" VBox.vgrow="ALWAYS">
+                                 <padding>
+                                    <Insets bottom="4.0" left="8.0" right="8.0" top="4.0" />
+                                 </padding>
+                              </Label>
+                              <RadioButton fx:id="radioAgree" mnemonicParsing="false" selected="true" text="Yes">
+                                 <VBox.margin>
+                                    <Insets left="8.0" right="8.0" top="16.0" />
+                                 </VBox.margin>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="question" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="radioDisagree" mnemonicParsing="false" text="No" toggleGroup="$question">
+                                 <VBox.margin>
+                                    <Insets left="8.0" right="8.0" top="8.0" />
+                                 </VBox.margin>
+                              </RadioButton>
+                              <RadioButton fx:id="radioUnsure" mnemonicParsing="false" text="I do not know" toggleGroup="$question">
+                                 <VBox.margin>
+                                    <Insets left="8.0" right="8.0" top="8.0" />
+                                 </VBox.margin>
+                              </RadioButton>
+                              <TextField fx:id="textFieldComment" promptText="Add a comment">
+                                 <VBox.margin>
+                                    <Insets left="8.0" right="8.0" top="16.0" />
+                                 </VBox.margin>
+                              </TextField>
+                              <Button fx:id="btnSendFeedback" mnemonicParsing="false" text="SEND" VBox.vgrow="ALWAYS">
+                                 <VBox.margin>
+                                    <Insets left="183.0" right="8.0" top="16.0" />
+                                 </VBox.margin>
+                              </Button>
+                           </children>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
 					</children>
 				</AnchorPane>
 				<AnchorPane fx:id="anchorPaneRegister" disable="true" prefHeight="525.0" prefWidth="600.0" visible="false">

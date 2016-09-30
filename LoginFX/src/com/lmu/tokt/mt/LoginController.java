@@ -53,6 +53,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -130,6 +131,18 @@ public class LoginController implements Initializable {
 	@FXML
 	private ImageView imgBackChange;
 
+	// Notification
+	@FXML
+	private AnchorPane anchorNotification;
+	@FXML
+	private RadioButton radioAgree, radioDisagree, radioUnsure;
+	@FXML
+	private TextField textFieldComment;
+	@FXML
+	private Button btnSendFeedback;
+	@FXML
+	private Label lblNotificationTitle;
+
 	/*---------------- MEMBER FIELDS ----------------*/
 
 	public LoginModel mLoginModel = new LoginModel();
@@ -168,7 +181,6 @@ public class LoginController implements Initializable {
 		// start TCP Server
 		mTCPServer = new TCPServer(mMessageCallback);
 		mTCPServer.start();
-
 	}
 
 	// load user settings
@@ -436,7 +448,9 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						showDialog(message, AppConstants.DIALOG_EVENT_TYPE_LOCK);
+						if (!anchorNotification.isVisible()) {
+							showDialog(message, AppConstants.DIALOG_EVENT_TYPE_LOCK);
+						}
 					}
 				});
 				break;
@@ -444,7 +458,9 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						showDialog(message, AppConstants.DIALOG_EVENT_TYPE_UNLOCK);
+						if (!anchorNotification.isVisible()) {
+							showDialog(message, AppConstants.DIALOG_EVENT_TYPE_UNLOCK);
+						}
 					}
 				});
 				break;
@@ -452,7 +468,9 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						showDialog(message, AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED);
+						if (!anchorNotification.isVisible()) {
+							showDialog(message, AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED);
+						}
 					}
 				});
 				break;
@@ -997,110 +1015,31 @@ public class LoginController implements Initializable {
 		// mTCPServer.sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
 	}
 
-	private boolean agree = false;
-	private boolean disagree = false;
-	private boolean unsure = false;
-	private String comment = "";
-
 	private void showDialog(String headerText, int dialogEventType) {
 
-		// Create the custom dialog.
-		Dialog<Pair<String, String>> dialog = new Dialog<>();
-		dialog.setTitle("Question?");
-		dialog.setHeaderText(headerText);
+		anchorNotification.setVisible(true);
+		lblNotificationTitle.setText(headerText);
 
-		ButtonType loginButtonType = new ButtonType("Send", ButtonData.OK_DONE);
-		dialog.getDialogPane().getButtonTypes().addAll(loginButtonType);
-
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
-
-		RadioButton radioAgreeBtn = new RadioButton();
-		radioAgreeBtn.setText("Yes");
-		radioAgreeBtn.setSelected(true);
-		grid.add(radioAgreeBtn, 0, 0);
-
-		RadioButton radioDisagreeBtn = new RadioButton();
-		radioDisagreeBtn.setText("No");
-		grid.add(radioDisagreeBtn, 0, 1);
-
-		RadioButton radioUnsureBtn = new RadioButton();
-		radioUnsureBtn.setText("I do not know");
-		grid.add(radioUnsureBtn, 0, 2);
-
-		TextField usernote = new TextField();
-		usernote.setPromptText("Add a comment");
-		grid.add(usernote, 0, 3);
-
-		usernote.textProperty().addListener((observable, oldValue, newValue) -> {
-			System.out.println(newValue);
-			comment = newValue;
-
-		});
-
-		radioAgreeBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
+		btnSendFeedback.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
-			public void handle(MouseEvent event) {
-				radioDisagreeBtn.setSelected(false);
-				radioUnsureBtn.setSelected(false);
-				agree = true;
-				disagree = false;
-				unsure = false;
-			}
+			public void handle(ActionEvent event) {
 
-		});
+				String comment = textFieldComment.getText();
+				if (comment.isEmpty()) {
+					comment = "none";
+				}
+				int radioBtnValue = 0;
+				if (radioAgree.isSelected()) {
+					radioBtnValue = 1;
+				}
+				if (radioDisagree.isSelected()) {
+					radioBtnValue = 2;
+				}
+				if (radioUnsure.isSelected()) {
+					radioBtnValue = 3;
+				}
 
-		radioAgreeBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				radioAgreeBtn.setSelected(false);
-				radioUnsureBtn.setSelected(false);
-				agree = false;
-				disagree = true;
-				unsure = false;
-			}
-
-		});
-
-		radioUnsureBtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				radioAgreeBtn.setSelected(false);
-				radioDisagreeBtn.setSelected(false);
-				agree = false;
-				disagree = false;
-				unsure = true;
-			}
-
-		});
-
-		dialog.getDialogPane().setContent(grid);
-
-		Platform.runLater(() -> radioAgreeBtn.requestFocus());
-
-		dialog.setResultConverter(dialogButton -> {
-
-			String comment = usernote.getText();
-			if (comment.isEmpty()) {
-				comment = "none";
-			}
-			int radioBtnValue = 0;
-			if (radioAgreeBtn.isSelected()) {
-				radioBtnValue = 1;
-			}
-			if (radioDisagreeBtn.isSelected()) {
-				radioBtnValue = 2;
-			}
-			if (radioUnsureBtn.isSelected()) {
-				radioBtnValue = 3;
-			}
-
-			if (dialogButton == loginButtonType) {
 				switch (dialogEventType) {
 				case AppConstants.DIALOG_EVENT_TYPE_LOCK:
 					mTCPServer.sendMessage(
@@ -1119,12 +1058,10 @@ public class LoginController implements Initializable {
 					break;
 				}
 
-			}
-			return null;
-		});
+				anchorNotification.setVisible(false);
 
-		//dialog.initStyle(StageStyle.UNDECORATED);
-		dialog.showAndWait();
+			}
+		});
 
 	}
 
