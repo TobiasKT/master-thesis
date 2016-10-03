@@ -75,14 +75,22 @@
 						</HBox>
 						<HBox alignment="TOP_CENTER" layoutX="119.0" layoutY="279.0">
 							<children>
-								<ImageView fx:id="imgTyping" fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" y="10.0">
-									<image>
-										<Image url="@../../../../drawable/icons/keyboard/keyboard_grey_1.png" />
-									</image>
-									<HBox.margin>
-										<Insets right="20.0" top="2.0" />
-									</HBox.margin>
-								</ImageView>
+                        <AnchorPane prefHeight="40.0" prefWidth="28.0">
+                           <children>
+                              <ProgressIndicator fx:id="progressTyping" prefHeight="32.0" prefWidth="32.0" visible="false" />
+      								<ImageView fx:id="imgTyping" fitHeight="28.0" fitWidth="28.0" pickOnBounds="true" x="2.0" y="2.0">
+      									<image>
+      										<Image url="@../../../../drawable/icons/keyboard/keyboard_grey_1.png" />
+      									</image>
+      									<HBox.margin>
+      										<Insets right="20.0" top="2.0" />
+      									</HBox.margin>
+      								</ImageView>
+                           </children>
+                           <HBox.margin>
+                              <Insets right="16.0" />
+                           </HBox.margin>
+                        </AnchorPane>
 								<ImageView fx:id="imgPassword" fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true" x="1.0" y="1.0">
 									<image>
 										<Image url="@../../../../drawable/icons/key/key_grey_1.png" />
@@ -122,81 +130,86 @@
 										</Button>
 									</children>
 								</AnchorPane>
+                        <Label fx:id="lblTyping" textFill="WHITE">
+                           <HBox.margin>
+                              <Insets left="16.0" top="8.0" />
+                           </HBox.margin>
+                        </Label>
 							</children>
 						</HBox>
 						<HBox layoutX="73.0" layoutY="399.0" styleClass="border-top-white">
 							<children>
 								<VBox layoutX="106.0" layoutY="405.0">
 									<children>
-										<HBox layoutX="106.0" layoutY="405.0">
-											<children>
-												<AnchorPane layoutX="106.0" layoutY="405.0">
-													<children>
-														<ProgressIndicator fx:id="progressHeartrateDetection" prefHeight="24.0" prefWidth="24.0" visible="false" />
-														<ImageView fx:id="imgHeartBeat" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
-															<image>
-																<Image url="@../../../../drawable/icons/heart/heart_grey_1.png" />
-															</image>
-														</ImageView>
-													</children>
-													<opaqueInsets>
-														<Insets />
-													</opaqueInsets>
-													<HBox.margin>
-														<Insets right="16.0" />
-													</HBox.margin>
-												</AnchorPane>
-												<HBox>
-													<children>
-														<Label fx:id="lblHeartbeat" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="Heartbeat" textFill="WHITE">
-															<font>
-																<Font name="Helvetica Neue Thin" size="14.0" />
-															</font>
-															<HBox.margin>
-																<Insets right="8.0" />
-															</HBox.margin>
-														</Label>
-														<Label fx:id="lblHeartbeatValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="0.0" textFill="WHITE">
-															<font>
-																<Font name="Helvetica Neue" size="14.0" />
-															</font>
-														</Label>
-													</children>
-												</HBox>
-											</children>
-											<VBox.margin>
-												<Insets bottom="32.0" />
-											</VBox.margin>
-										</HBox>
-										<HBox layoutX="107.0" layoutY="453.0">
-											<children>
-												<ImageView fx:id="imgProximity" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
-													<image>
-														<Image url="@../../../../drawable/icons/signal/signal_grey_1.png" />
-													</image>
-													<HBox.margin>
-														<Insets right="16.0" />
-													</HBox.margin>
-												</ImageView>
-												<HBox layoutX="148.0" layoutY="456.0">
-													<children>
-														<Label fx:id="lblProximity" prefHeight="24.0" prefWidth="70.0" text="Proximity" textFill="WHITE">
-															<font>
-																<Font name="Helvetica Neue Thin" size="14.0" />
-															</font>
-															<HBox.margin>
-																<Insets right="8.0" />
-															</HBox.margin>
-														</Label>
-														<Label fx:id="lblProximityValue" alignment="CENTER" layoutX="221.0" layoutY="456.0" prefHeight="24.0" prefWidth="70.0" text="-" textFill="WHITE">
-															<font>
-																<Font name="Helvetica Neue" size="14.0" />
-															</font>
-														</Label>
-													</children>
-												</HBox>
-											</children>
-										</HBox>
+      										<HBox layoutX="106.0" layoutY="405.0">
+      											<children>
+      												<AnchorPane layoutX="106.0" layoutY="405.0">
+      													<children>
+      														<ProgressIndicator fx:id="progressHeartrateDetection" prefHeight="24.0" prefWidth="24.0" visible="false" />
+      														<ImageView fx:id="imgHeartBeat" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
+      															<image>
+      																<Image url="@../../../../drawable/icons/heart/heart_grey_1.png" />
+      															</image>
+      														</ImageView>
+      													</children>
+      													<opaqueInsets>
+      														<Insets />
+      													</opaqueInsets>
+      													<HBox.margin>
+      														<Insets right="16.0" />
+      													</HBox.margin>
+      												</AnchorPane>
+      												<HBox>
+      													<children>
+      														<Label fx:id="lblHeartbeat" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="Heartbeat" textFill="WHITE">
+      															<font>
+      																<Font name="Helvetica Neue Thin" size="14.0" />
+      															</font>
+      															<HBox.margin>
+      																<Insets right="8.0" />
+      															</HBox.margin>
+      														</Label>
+      														<Label fx:id="lblHeartbeatValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="0.0" textFill="WHITE">
+      															<font>
+      																<Font name="Helvetica Neue" size="14.0" />
+      															</font>
+      														</Label>
+      													</children>
+      												</HBox>
+      											</children>
+      											<VBox.margin>
+      												<Insets bottom="32.0" />
+      											</VBox.margin>
+      										</HBox>
+      										<HBox layoutX="107.0" layoutY="453.0">
+      											<children>
+      												<ImageView fx:id="imgProximity" fitHeight="24.0" fitWidth="24.0" pickOnBounds="true">
+      													<image>
+      														<Image url="@../../../../drawable/icons/signal/signal_grey_1.png" />
+      													</image>
+      													<HBox.margin>
+      														<Insets right="16.0" />
+      													</HBox.margin>
+      												</ImageView>
+      												<HBox layoutX="148.0" layoutY="456.0">
+      													<children>
+      														<Label fx:id="lblProximity" prefHeight="24.0" prefWidth="70.0" text="Proximity" textFill="WHITE">
+      															<font>
+      																<Font name="Helvetica Neue Thin" size="14.0" />
+      															</font>
+      															<HBox.margin>
+      																<Insets right="8.0" />
+      															</HBox.margin>
+      														</Label>
+      														<Label fx:id="lblProximityValue" alignment="CENTER" layoutX="221.0" layoutY="456.0" prefHeight="24.0" prefWidth="70.0" text="-" textFill="WHITE">
+      															<font>
+      																<Font name="Helvetica Neue" size="14.0" />
+      															</font>
+      														</Label>
+      													</children>
+      												</HBox>
+      											</children>
+      										</HBox>
 									</children>
 									<HBox.margin>
 										<Insets right="64.0" />
@@ -204,59 +217,59 @@
 								</VBox>
 								<VBox layoutX="338.0" layoutY="405.0">
 									<children>
-										<HBox layoutX="340.0" layoutY="405.0">
-											<children>
-												<ImageView fx:id="imgUserState" fitHeight="24.0" fitWidth="28.0" pickOnBounds="true">
-													<image>
-														<Image url="@../../../../drawable/icons/user_state/standing_grey.png" />
-													</image>
-													<HBox.margin>
-														<Insets right="12.0" />
-													</HBox.margin>
-												</ImageView>
-												<Label fx:id="lblUserState" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="User State" textFill="WHITE">
-													<font>
-														<Font name="Helvetica Neue Thin" size="14.0" />
-													</font>
-													<HBox.margin>
-														<Insets right="8.0" />
-													</HBox.margin>
-												</Label>
-												<Label fx:id="lblUserStateValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="still" textFill="WHITE">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-												</Label>
-											</children>
-											<VBox.margin>
-												<Insets bottom="32.0" />
-											</VBox.margin>
-										</HBox>
-										<HBox layoutX="338.0" layoutY="453.0">
-											<children>
-												<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" layoutX="338.0" layoutY="453.0" onMouseClicked="#onSoundSignalClicked" pickOnBounds="true" styleClass="hand-cursor">
-													<image>
-														<Image url="@../../../../drawable/icons/sound/sound_grey_1.png" />
-													</image>
-													<HBox.margin>
-														<Insets right="16.0" />
-													</HBox.margin>
-												</ImageView>
-												<Label fx:id="lblSoundSignal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="Signal" textFill="WHITE">
-													<font>
-														<Font name="Helvetica Neue Thin" size="14.0" />
-													</font>
-													<HBox.margin>
-														<Insets right="8.0" />
-													</HBox.margin>
-												</Label>
-												<Label fx:id="lblSoundSignalValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="none" textFill="WHITE">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-												</Label>
-											</children>
-										</HBox>
+      										<HBox layoutX="340.0" layoutY="405.0">
+      											<children>
+      												<ImageView fx:id="imgUserState" fitHeight="24.0" fitWidth="28.0" pickOnBounds="true">
+      													<image>
+      														<Image url="@../../../../drawable/icons/user_state/standing_grey.png" />
+      													</image>
+      													<HBox.margin>
+      														<Insets right="12.0" />
+      													</HBox.margin>
+      												</ImageView>
+      												<Label fx:id="lblUserState" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="User State" textFill="WHITE">
+      													<font>
+      														<Font name="Helvetica Neue Thin" size="14.0" />
+      													</font>
+      													<HBox.margin>
+      														<Insets right="8.0" />
+      													</HBox.margin>
+      												</Label>
+      												<Label fx:id="lblUserStateValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="still" textFill="WHITE">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      												</Label>
+      											</children>
+      											<VBox.margin>
+      												<Insets bottom="32.0" />
+      											</VBox.margin>
+      										</HBox>
+      										<HBox layoutX="338.0" layoutY="453.0" visible="false">
+      											<children>
+      												<ImageView fx:id="imgSoundSignal" fitHeight="24.0" fitWidth="24.0" layoutX="338.0" layoutY="453.0" onMouseClicked="#onSoundSignalClicked" pickOnBounds="true" styleClass="hand-cursor">
+      													<image>
+      														<Image url="@../../../../drawable/icons/sound/sound_grey_1.png" />
+      													</image>
+      													<HBox.margin>
+      														<Insets right="16.0" />
+      													</HBox.margin>
+      												</ImageView>
+      												<Label fx:id="lblSoundSignal" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="Signal" textFill="WHITE">
+      													<font>
+      														<Font name="Helvetica Neue Thin" size="14.0" />
+      													</font>
+      													<HBox.margin>
+      														<Insets right="8.0" />
+      													</HBox.margin>
+      												</Label>
+      												<Label fx:id="lblSoundSignalValue" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="24.0" prefWidth="70.0" text="none" textFill="WHITE">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      												</Label>
+      											</children>
+      										</HBox>
 									</children>
 								</VBox>
 							</children>

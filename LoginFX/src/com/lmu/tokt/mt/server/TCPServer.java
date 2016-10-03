@@ -190,6 +190,17 @@ public class TCPServer extends Thread {
 							"User authenticated");
 				}
 
+				if (mIncomingMessage.equals(AppConstants.COMMAND_USER_TYPING_SUCCESS)) {
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_WAS_TYPING, "Typing detected");
+				}
+
+				if (mIncomingMessage.equals(AppConstants.COMMAND_USER_TYPING_FAILED)) {
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_WAS_NOT_TYPING, "No typing detected");
+				}
+				
+				if(mIncomingMessage.equals(AppConstants.COMMAND_TYPING_SENSORS_STARTED)){
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_TYPING_SENSORS_STARTED, "recognizing typing");
+				}
 				// validate states by timeStamp
 
 				validateHeartRateByTimeStamp();

@@ -41,6 +41,10 @@ public class AppConstants {
 	public static final String COMMAND_SAVE_DIALOG_EVENT_LOCK = "SAVE_DIALOG_EVENT_LOCK";
 	public static final String COMMAND_SAVE_DIALOG_EVENT_UNLOCK = "SAVE_DIALOG_EVENT_UNLOCK";
 	public static final String COMMAND_SAVE_DIALOG_EVENT_NOT_AUTHENTICATED = "SAVE_DIALOG_EVENT_NOT_AUTHENTICATED";
+	public static final String COMMAND_USER_TYPING_SUCCESS = "USER_TYPING_SUCCESS";
+	public static final String COMMAND_USER_TYPING_FAILED = "USER_TYPING_FAILED";
+	
+	public static final String COMMAND_TYPING_SENSORS_STARTED = "TYPING_SENSORS_STARTED";
 
 	/*------------------------ PHONE/WATCH CONNECTION STATES ------------------------*/
 
@@ -66,12 +70,18 @@ public class AppConstants {
 	public static final int STATE_USER_AUTHENTICATED = -7001;
 	public static final int STATE_USER_NOT_AUTHENTICATED = -7002;
 
+	public static final int STATE_USER_WAS_TYPING = 81112;
+	public static final int STATE_USER_WAS_NOT_TYPING = 81113;
+
 	/*------------------------ APP STATES ------------------------*/
 	public static final int STATE_APP_LOCKED = -5001;
 	public static final int STATE_APP_UNLOCKED = -5002;
 
 	public static final int STATE_SOUND_SIGNAL_SENDING = -8001;
 	public static final int STATE_SOUND_SENDING_NONE = -8002;
+
+	public static final int STATE_TYPING_SENSORS_STARTED = -90111;
+	public static final int STATE_TYPING_SENSORS_STOPPED = -90112;
 
 	/*------------------- DIALOG EVENT TYPES ----------------*/
 

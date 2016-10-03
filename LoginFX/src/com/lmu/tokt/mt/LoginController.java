@@ -86,7 +86,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private Circle circProfile;
 	@FXML
-	private Label lblUserName, lblConnectToWatch, lblPassword;
+	private Label lblUserName, lblConnectToWatch, lblPassword, lblTyping;
 	@FXML
 	private ImageView imgWatchConnected, imgPassword, imgTyping, imgConnectedToWatchSuccess, imgCancelConnectToWatch,
 			imgPasswordCorrect;
@@ -95,7 +95,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private PasswordField txtPassword;
 	@FXML
-	private ProgressIndicator progressConnectToWatch;
+	private ProgressIndicator progressConnectToWatch, progressTyping;
 
 	// cues fields
 	@FXML
@@ -298,10 +298,7 @@ public class LoginController implements Initializable {
 						// Successful connection with watch
 						setConnectToWatchFields(new Image("drawable/icons/watch/watch_white_1.png"), true, false,
 								"Connected", true, false, false);
-
-						txtPassword.setDisable(false);
-						txtPassword.setFocusTraversable(true);
-						txtPassword.requestFocus();
+						startKeyPressDetection();
 					}
 				});
 
@@ -474,6 +471,34 @@ public class LoginController implements Initializable {
 					}
 				});
 				break;
+
+			case AppConstants.STATE_TYPING_SENSORS_STARTED:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblTyping.setText("Typing sensors started");
+						keypressDetectorReady();
+					}
+				});
+				break;
+			case AppConstants.STATE_USER_WAS_TYPING:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblTyping.setText("Typing detected");
+						login();
+					}
+				});
+				break;
+			case AppConstants.STATE_USER_WAS_NOT_TYPING:
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						lblTyping.setText("NO typing detected!");
+						startKeyPressDetection();
+					}
+				});
+				break;
 			default:
 				break;
 			}
@@ -599,7 +624,7 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private void btnLoginAction(ActionEvent event) {
-		login(event);
+		login();
 
 	}
 
@@ -624,7 +649,7 @@ public class LoginController implements Initializable {
 			mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
 
 			// TODO: call after keypressed detector erfolgreich;
-			login(event);
+			// login();
 		}
 
 	}
@@ -634,7 +659,9 @@ public class LoginController implements Initializable {
 
 		if (txtPassword.getLength() > 0 && !mKeyDetectorstarted && event.getCode() != KeyCode.ENTER) {
 			mKeyDetectorstarted = true;
-			mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
+			// TODO sending TIMESTAMP of type starting
+			// mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
+			// TODO progressindicator & textfield disablen
 		}
 
 		if (txtPassword.getLength() == 0) {
@@ -645,7 +672,7 @@ public class LoginController implements Initializable {
 
 	}
 
-	private void login(Event event) {
+	private void login() {
 
 		// TODO stop typing sensors
 
@@ -656,7 +683,7 @@ public class LoginController implements Initializable {
 
 				setPasswordFields(new Image("drawable/icons/keyboard/keyboard_white_1.png"),
 						new Image("drawable/icons/key/key_white_1.png"), false, true, false, true, true, false);
-
+				lblPassword.setText("Password correct");
 				setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), true, "Detect...", "0.0");
 
 				// mTCPServer.setAuthenticated(true);
@@ -670,6 +697,7 @@ public class LoginController implements Initializable {
 				Shaker shaker = new Shaker(anchorPaneLogin);
 				shaker.shake();
 				txtPassword.selectAll();
+				startKeyPressDetection();
 			}
 		} catch (SQLException sqle) {
 			System.out.println(TAG + ": SQL ERROR login user. Exception: " + sqle.toString());
@@ -683,6 +711,27 @@ public class LoginController implements Initializable {
 				false, false, true);
 
 		// TODO killserver, stop server
+	}
+
+	private void startKeyPressDetection() {
+		progressTyping.setVisible(true);
+		imgTyping.setVisible(false);
+		txtPassword.setVisible(false);
+		lblPassword.setVisible(true);
+		lblPassword.setText("Starting keypress detection...");
+		mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
+	}
+
+	private void keypressDetectorReady() {
+		txtPassword.setVisible(true);
+		txtPassword.setDisable(false);
+		txtPassword.setFocusTraversable(true);
+		txtPassword.requestFocus();
+
+		progressTyping.setVisible(false);
+		imgTyping.setVisible(true);
+		lblPassword.setVisible(false);
+		lblPassword.setText("");
 	}
 
 	/*----------------ADD USER----------------*/

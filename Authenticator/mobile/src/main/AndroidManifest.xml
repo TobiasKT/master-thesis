@@ -19,7 +19,7 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:parentActivityName=".MainActivity" android:name=".ExportActivity"/>
+        <activity android:parentActivityName=".ui.MainActivity" android:name=".ui.ExportActivity"/>
     </application>
 
 </manifest>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
 
-    tools:context="com.android.lmu.mt.tokt.authenticator.MainActivity">
+    tools:context="com.android.lmu.mt.tokt.authenticator.ui.MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -59,14 +59,46 @@
 
     </RelativeLayout>
 
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <!-- JUST FOR TESTING-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:visibility="gone">
+
+                <Button
+                    android:id="@+id/start_key_detection_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8dp"
+                    android:text="start Key" />
+
+                <Button
+                    android:id="@+id/stop_key_detection_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="32dp"
+                    android:text="stop Key" />
+
+                <Button
+                    android:id="@+id/connect_towatch_test_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="connect Watch" />
+
+
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"

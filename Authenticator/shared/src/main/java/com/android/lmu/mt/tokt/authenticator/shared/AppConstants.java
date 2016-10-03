@@ -83,6 +83,7 @@ public class AppConstants {
     public static final String DATA_MAP_KEY_BEACON_PROXIMITY = "proximity";
 
     //ClientPaths
+    public static final String CLIENT_PATH_START_ACTIVITY = "/start_activity";
     public static final String CLIENT_PATH_START_MEASUREMENT = "/start";
     public static final String CLIENT_PATH_STOP_MEASUREMENT = "/stop";
     public static final String CLIENT_PATH_LISTEN_TO_SOUND = "/listen";
@@ -91,12 +92,15 @@ public class AppConstants {
     public static final String CLIENT_PATH_LOCKED = "/locked";
     public static final String CLIENT_PATH_UNLOCKED = "/unlocked";
     public static final String CLIENT_PATH_BEACON_UUID = "/beacon_uuid";
-    public static final String CLIENT_PATH_START_KEYPRESS_DETECTOR = "/start_key_detector";
-    public static final String CLIENT_PATH_STOP_KEYPRESS_DETECTOR = "/stop_key_detector";
+    public static final String CLIENT_PATH_START_KEYPRESS_DETECTOR = "/start_key";
+    public static final String CLIENT_PATH_STOP_KEYPRESS_DETECTOR = "/stop_key";
 
     //ServerPaths
     public static final String SERVER_PATH_SENSOR_DATA = "/sensors/";
     public static final String SERVER_PATH_BEACON_DATA = "/beacon/";
+    public static final String SERVER_PATH_TYPING_SENSOR_STARTED = "/typing_started";
+    public static final String SERVER_PATH_TYPING_SUCCESS = "/typing_success";
+    public static final String SERVER_PATH_TYPING_FAILED = "/typing_failed";
 
 
     //Commands
@@ -115,6 +119,10 @@ public class AppConstants {
     public static final String COMMAND_SAVE_DIALOG_EVENT_LOCK = "SAVE_DIALOG_EVENT_LOCK";
     public static final String COMMAND_SAVE_DIALOG_EVENT_UNLOCK = "SAVE_DIALOG_EVENT_UNLOCK";
     public static final String COMMAND_SAVE_DIALOG_EVENT_NOT_AUTHENTICATED = "SAVE_DIALOG_EVENT_NOT_AUTHENTICATED";
+    public static final String COMMAND_USER_TYPING_SUCCESS = "USER_TYPING_SUCCESS";
+    public static final String COMMAND_USER_TYPING_FAILED = "USER_TYPING_FAILED";
+    public static final String COMMAND_TYPING_SENSORS_STARTED = "TYPING_SENSORS_STARTED";
+
     //
     public static final int START_LISTEN_TO_SOUND = -5000;
 
@@ -134,7 +142,13 @@ public class AppConstants {
     public static final int STATE_SEND_TYPING_VALUES = -7001;
     public static final int STATE_STOP_SENDING_TYPING_VALUES = -7002;
 
+    public static final int STATE_TYPING_SENSORS_STARTED = -90111;
+    public static final int STATE_TYPING_SENSORS_STOPPED = -90112;
+
     public static final int SET_USERNAME = -6001;
+
+    public static final int STATE_USER_WAS_TYPING = 81112;
+    public static final int STATE_USER_WAS_NOT_TYPING = 81113;
 
     public static final int ERROR = -9999;
 
@@ -176,6 +190,12 @@ public class AppConstants {
     //MessageReceiverServeice locked
     public static final String MESSAGE_RECEIVER_LOCK_RESULT = "com.android.lmu.tokt.authenticator.MessageReceiverService.REQUEST_LOCK_PROCESSED";
     public static final String MESSAGE_RECEIVER_LOCK_MESSAGE = "com.android.lmu.tokt.authenticator.MessageReceiverService.MESSAGE_RECEIVER_LOCK_MESSAGE";
+
+    //KeyDetection Constants
+    public static final String MESSAGE_RECEIVER_START_TYPING_DETECTION_RESULT = "com.android.lmu.tokt.authenticator.MessageReceiverService.REQUEST_START_TYPING_DETECTION_PROCESSED";
+    public static final String MESSAGE_RECEIVER_START_TYPING_DETECTION_MESSAGE = "com.android.lmu.tokt.authenticator.MessageReceiverService.MESSAGE_RECEIVER_START_TYPING_DETECTION_MESSAGE";
+    public static final String MESSAGE_RECEIVER_STOP_TYPING_DETECTION_RESULT = "com.android.lmu.tokt.authenticator.MessageReceiverService.REQUEST_STOP_TYPING_DETECTION_PROCESSED";
+    public static final String MESSAGE_RECEIVER_STOP_TYPING_DETECTION_MESSAGE = "com.android.lmu.tokt.authenticator.MessageReceiverService.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_MESSAGE";
 
 
     //LogKeys

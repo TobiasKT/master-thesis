@@ -55,7 +55,7 @@ public class AuthenticatorAsyncTask extends AsyncTask<String, String, TCPClient>
 
                 @Override
                 public void callbackMessageReceiver(String message) {
-                    publishProgress(message);
+                    //publishProgress(message);
                 }
             });
             mTcpClient.run();
