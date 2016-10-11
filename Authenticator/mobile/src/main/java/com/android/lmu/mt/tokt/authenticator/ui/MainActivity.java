@@ -19,9 +19,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -76,6 +79,7 @@ import io.realm.exceptions.RealmMigrationNeededException;
 
 public class MainActivity extends AppCompatActivity implements
         View.OnClickListener,
+        AdapterView.OnItemSelectedListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
         DataApi.DataListener,
@@ -116,11 +120,10 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mProximityText;
     private EditText mServerIpEditText;
     private EditText mServerPortEditText;
-    private ImageView mServerIpImage;
-    private ImageView mServerPortImage;
+    private Button mServerIpBtn;
+    private Button mServerPortBtn;
     private TextView mServerConnectionStatusText;
     private TextView mServerStateText;
-    private TextView mServerCommandText;
     private Button mConnectToWatchBtn;
     private Button mConnectToServerBtn;
     private TextView mLockstateText;
@@ -128,11 +131,7 @@ public class MainActivity extends AppCompatActivity implements
     private ImageView mBeaconEditImg;
     private EditText mBeaconEditText;
 
-
-    //TESTING
-    private Button mStartKeyDetection;
-    private Button mStopKeyDetection;
-    private Button mConnectToWatchTestBtn;
+    private Spinner mBeaconSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -252,25 +251,25 @@ public class MainActivity extends AppCompatActivity implements
         mStepsText = (TextView) findViewById(R.id.steps_text);
         mProximityText = (TextView) findViewById(R.id.proximity_text);
         mServerIpEditText = (EditText) findViewById(R.id.server_ip_edit_text);
-        mServerIpImage = (ImageView) findViewById(R.id.server_ip_img);
+        mServerIpBtn = (Button) findViewById(R.id.server_ip_btn);
         mServerPortEditText = (EditText) findViewById(R.id.server_port_edit_text);
-        mServerPortImage = (ImageView) findViewById(R.id.server_port_img);
+        mServerPortBtn = (Button) findViewById(R.id.server_port_btn);
         mServerConnectionStatusText = (TextView) findViewById(R.id.server_connection_status_text);
         mServerStateText = (TextView) findViewById(R.id.server_state_text);
-        mServerCommandText = (TextView) findViewById(R.id.server_command_text);
         mLockstateText = (TextView) findViewById(R.id.lock_state_txt);
         mUsernameText = (TextView) findViewById(R.id.username_txt);
         mBeaconEditImg = (ImageView) findViewById(R.id.edit_beacon_uuid_img);
         mBeaconEditText = (EditText) findViewById(R.id.beacon_uuid_edit);
+        mBeaconSpinner = (Spinner) findViewById(R.id.beacon_spinner);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.beacons_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mBeaconSpinner.setAdapter(adapter);
 
 
         mServerIpEditText.setText(getSavedServerIP());
         mServerPortEditText.setText("" + getSavedServerPort());
-
-        //TESTING
-        mStartKeyDetection = (Button) findViewById(R.id.start_key_detection_btn);
-        mStopKeyDetection = (Button) findViewById(R.id.stop_key_detection_btn);
-        mConnectToWatchTestBtn = (Button) findViewById(R.id.connect_towatch_test_btn);
 
     }
 
@@ -279,15 +278,11 @@ public class MainActivity extends AppCompatActivity implements
 
         mConnectToWatchBtn.setOnClickListener(this);
         mConnectToServerBtn.setOnClickListener(this);
-        mServerIpImage.setOnClickListener(this);
-        mServerPortImage.setOnClickListener(this);
+        mServerIpBtn.setOnClickListener(this);
+        mServerPortBtn.setOnClickListener(this);
         mBeaconEditImg.setOnClickListener(this);
 
-        //TESTING
-        mStartKeyDetection.setOnClickListener(this);
-        mStopKeyDetection.setOnClickListener(this);
-        mConnectToWatchTestBtn.setOnClickListener(this);
-
+        mBeaconSpinner.setOnItemSelectedListener(this);
     }
 
 
@@ -862,6 +857,16 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
+    public void sendBeaconBLNameToWatch(final String beaconBLName) {
+        mExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                byte[] data = beaconBLName.getBytes(Charset.forName("UTF-8"));
+                sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_BEACON_BL_NAME, data);
+            }
+        });
+    }
+
     public void startKeyDetectorServiceWatch(final boolean start) {
         mExecutorService.submit(new Runnable() {
             @Override
@@ -968,25 +973,14 @@ public class MainActivity extends AppCompatActivity implements
                     mConnectToServerBtn.setText("CONNECT");
                 }
                 break;
-            case R.id.server_ip_img:
+            case R.id.server_ip_btn:
                 editOrConfirmServerIp();
                 break;
-            case R.id.server_port_img:
+            case R.id.server_port_btn:
                 editOrConfirmServerPort();
                 break;
             case R.id.edit_beacon_uuid_img:
                 editOrConfirmBeaconUUID();
-                break;
-
-            //TESTING
-            case R.id.start_key_detection_btn:
-                startKeyDetectorServiceWatch(true);
-                break;
-            case R.id.stop_key_detection_btn:
-                startKeyDetectorServiceWatch(false);
-                break;
-            case R.id.connect_towatch_test_btn:
-                connectToWatch();
                 break;
             default:
                 Log.d(TAG, "Unkown view clicked");
@@ -1018,10 +1012,10 @@ public class MainActivity extends AppCompatActivity implements
 
         if (!mServerIpEditText.isEnabled()) {
             mServerIpEditText.setEnabled(true);
-            mServerIpImage.setImageResource(android.R.drawable.ic_menu_save);
+            mServerIpBtn.setText(R.string.save);
         } else {
             mServerIpEditText.setEnabled(false);
-            mServerIpImage.setImageResource(android.R.drawable.ic_menu_edit);
+            mServerIpBtn.setText(R.string.edit);
 
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putString(AppConstants.SHARED_PREF_SEVER_IP,
@@ -1034,10 +1028,10 @@ public class MainActivity extends AppCompatActivity implements
 
         if (!mServerPortEditText.isEnabled()) {
             mServerPortEditText.setEnabled(true);
-            mServerPortImage.setImageResource(android.R.drawable.ic_menu_save);
+            mServerPortBtn.setText(R.string.save);
         } else {
             mServerPortEditText.setEnabled(false);
-            mServerPortImage.setImageResource(android.R.drawable.ic_menu_edit);
+            mServerPortBtn.setText(R.string.edit);
 
             SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.putInt(AppConstants.SHARED_PREF_SEVER_PORT,
@@ -1070,6 +1064,43 @@ public class MainActivity extends AppCompatActivity implements
         mStepsText.setText("0.0");
         mProximityText.setText("-");
         mLockstateText.setText("-");
+    }
+
+
+     /* --------------------- ONItemSelectedListener --------------------- */
+
+    public void onItemSelected(AdapterView<?> parent, View view,
+                               int pos, long id) {
+
+        String blName = "";
+        switch (pos) {
+            case 0:
+                Log.d(TAG, "Beacon: " + pos + "selected");
+                blName = AppConstants.BEACON_1_BL_NAME;
+                break;
+            case 1:
+                Log.d(TAG, "Beacon: " + pos + "selected");
+                blName = AppConstants.BEACON_2_BL_NAME;
+                break;
+            case 2:
+                Log.d(TAG, "Beacon: " + pos + "selected");
+                blName = AppConstants.BEACON_3_BL_NAME;
+                break;
+            case 3:
+                Log.d(TAG, "Beacon: " + pos + "selected");
+                blName = AppConstants.BEACON_4_BL_NAME;
+                break;
+            default:
+                blName = AppConstants.BEACON_1_BL_NAME;
+                break;
+        }
+        if (mGoogleApiClient.isConnected()) {
+            sendBeaconBLNameToWatch(blName);
+        }
+    }
+
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
     }
 
 

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<VBox prefWidth="350.0" styleClass="border-bottom" stylesheets="@settings.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lmu.tokt.mt.SettingsController">
+	<children>
+		<AnchorPane prefHeight="48.0" styleClass="header-space">
+			<children>
+				<Label layoutX="16.0" layoutY="14.0" text="Settings" textFill="#424242">
+					<font>
+						<Font name="Helvetica Neue" size="16.0" />
+					</font>
+				</Label>
+			</children>
+		</AnchorPane>
+		<AnchorPane prefHeight="36.0">
+			<children>
+				<Label layoutX="16.0" layoutY="11.0" styleClass="settings-title-color" text="General" textFill="#3a539b">
+					<font>
+						<Font name="Helvetica Neue" size="12.0" />
+					</font>
+				</Label>
+			</children>
+		</AnchorPane>
+		<AnchorPane prefHeight="56.0" styleClass="border-bottom">
+			<children>
+				<Label layoutX="16.0" layoutY="18.0" text="Background">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Label>
+				<ImageView fx:id="imgEditBackground" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="16.0" onMouseClicked="#onEditBackgroundClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+					<image>
+						<Image url="@../../../../drawable/icons/settings/edit_blue.png" />
+					</image>
+				</ImageView>
+			</children>
+		</AnchorPane>
+		<AnchorPane prefHeight="56.0">
+			<children>
+				<Label layoutX="16.0" layoutY="18.0" text="Avatar">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Label>
+				<ImageView fx:id="imgEditAvatar" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="16.0" onMouseClicked="#onEditAvatarClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+					<image>
+						<Image url="@../../../../drawable/icons/settings/edit_blue.png" />
+					</image>
+				</ImageView>
+			</children>
+		</AnchorPane>
+		<AnchorPane prefHeight="4.0" prefWidth="200.0" styleClass="blue-bg" />
+		<AnchorPane prefHeight="36.0">
+			<children>
+				<Label layoutX="16.0" layoutY="11.0" text="Server" textFill="#3a539b">
+					<font>
+						<Font name="Helvetica Neue" size="12.0" />
+					</font>
+				</Label>
+			</children>
+		</AnchorPane>
+		<AnchorPane prefHeight="56.0" styleClass="border-bottom">
+			<children>
+				<Label layoutX="16.0" layoutY="18.0" text="Restart">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Label>
+				<ImageView fx:id="imgRestartServer" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="16.0" onMouseClicked="#onRestartServerClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+					<image>
+						<Image url="@../../../../drawable/icons/settings/refresh_blue.png" />
+					</image>
+				</ImageView>
+			</children>
+		</AnchorPane>
+		<AnchorPane prefHeight="56.0" styleClass="border-bottom">
+			<children>
+				<Label layoutX="16.0" layoutY="18.0" text="Disconnect">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Label>
+				<ImageView fx:id="imgDisconnect" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="19.0" onMouseClicked="#onDisconnectClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+					<image>
+						<Image url="@../../../../drawable/icons/settings/diconnect_blue.png" />
+					</image>
+				</ImageView>
+			</children>
+		</AnchorPane>
+      <AnchorPane prefHeight="56.0" styleClass="border-bottom">
+         <children>
+            <Label layoutX="16.0" layoutY="18.0" prefWidth="115.0" text="Public IP">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblServerIp" layoutX="131.0" layoutY="21.0" text="192.168.72.74">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgReloadServerIp" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="19.0" onMouseClicked="#onReloadServerIpClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+               <image>
+                  <Image url="@../../../../drawable/icons/settings/refresh_blue.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+		<AnchorPane prefHeight="56.0">
+			<children>
+				<Label layoutX="16.0" layoutY="18.0" prefWidth="115.0" text="Server Port">
+					<font>
+						<Font size="16.0" />
+					</font>
+				</Label>
+				<ImageView fx:id="imgEditServerPort" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="16.0" onMouseClicked="#onEditServerPortClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+					<image>
+						<Image url="@../../../../drawable/icons/settings/edit_blue.png" />
+					</image>
+				</ImageView>
+            <TextField fx:id="editServerPort" disable="true" layoutX="131.0" layoutY="12.0" onKeyPressed="#onEditServerPortKeyPressed" prefHeight="28.0" prefWidth="61.0" promptText="Port" styleClass="edit-textfield" text="8888">
+               <font>
+                  <Font name="Helvetica Neue" size="16.0" />
+               </font>
+            </TextField>
+			</children>
+		</AnchorPane>
+		<AnchorPane prefHeight="4.0" prefWidth="200.0" styleClass="blue-bg" />
+      <AnchorPane prefHeight="36.0">
+         <children>
+            <Label layoutX="16.0" layoutY="11.0" text="Application" textFill="#3a539b">
+               <font>
+                  <Font name="Helvetica Neue" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane prefHeight="56.0">
+         <children>
+            <Label layoutX="16.0" layoutY="18.0" text="Restart Tutorial">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgPlayTutorial" fitHeight="24.0" fitWidth="24.0" layoutX="310.0" layoutY="17.0" onMouseClicked="#onPlayTutorialClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor">
+               <image>
+                  <Image url="@../../../../drawable/icons/settings/play.png" />
+               </image>
+            </ImageView>
+         </children>
+      </AnchorPane>
+	</children>
+</VBox>

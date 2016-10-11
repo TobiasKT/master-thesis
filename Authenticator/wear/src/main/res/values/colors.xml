@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="indigo_400">#5C6BC0</color>
     <color name="indigo_500">#3F51B5</color>
     <color name="white">#FFFFFF</color>
     <color name="gray_900">#212121</color>
+    <color name="grey_700">#616161</color>
     <color name="gray_400">#BDBDBD</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_200">#EEEEEE</color>
 
 </resources>

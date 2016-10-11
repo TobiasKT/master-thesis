@@ -2,5 +2,16 @@
     <string name="app_name">Authenticator</string>
     <string name="hello_world">Hello World!</string>
 
+    <string name="placeholder">-</string>
+    <string name="time_placeholder">00:00</string>
+    <string name="zero_value_double">0.0</string>
+    <string name="disconnected">disconnected</string>
+    <string name="connected">connected</string>
+
+    <string name="heartrate">Heart Rate</string>
+    <string name="steps">Steps</string>
+    <string name="proximity">Proximity</string>
+    <string name="typing">Typing...</string>
+
     <string name="default_beacon_uuid">E2C56DB5-DFFB-48D2-B060-D0F5A71096E0</string>
 </resources>

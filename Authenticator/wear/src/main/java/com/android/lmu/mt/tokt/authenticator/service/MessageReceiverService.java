@@ -143,6 +143,23 @@ public class MessageReceiverService extends WearableListenerService {
             startService(mAuthenticatorIntent);
         }
 
+        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_BEACON_BL_NAME)) {
+
+            String beaconBLNAme = new String(messageEvent.getData(), Charset.forName("UTF-8"));
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putString(AppConstants.SHARED_PREF_BEACON_BL_NAME, beaconBLNAme);
+            editor.commit();
+
+            stopService(mAuthenticatorIntent);
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException ie) {
+                Log.e(TAG, "Error restarting service after beacon Id changed. Exception: " + ie.toString());
+            }
+
+            startService(mAuthenticatorIntent);
+        }
+
 
     }
 

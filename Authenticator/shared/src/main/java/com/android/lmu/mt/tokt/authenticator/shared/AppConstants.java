@@ -18,7 +18,7 @@ public class AppConstants {
 
     //Server
     public final static String DEFAULT_SERVER_IP = "192.168.43.108";
-    public final static int DEFAULT_SERVER_PORT = 8080;
+    public final static int DEFAULT_SERVER_PORT = 8888;
 
     //Beacon
     public final static String DEFAULT_BEACON_UUID = "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0";
@@ -29,6 +29,7 @@ public class AppConstants {
     public final static String SHARED_PREF_SEVER_IP = "server_ip";
     public final static String SHARED_PREF_SEVER_PORT = "server_port";
     public static final String SHARED_PREF_BEACON_UUID = "beacon_uuid";
+    public static final String SHARED_PREF_BEACON_BL_NAME = "beacon_bl_name";
 
 
     //SensorTypes
@@ -92,6 +93,7 @@ public class AppConstants {
     public static final String CLIENT_PATH_LOCKED = "/locked";
     public static final String CLIENT_PATH_UNLOCKED = "/unlocked";
     public static final String CLIENT_PATH_BEACON_UUID = "/beacon_uuid";
+    public static final String CLIENT_PATH_BEACON_BL_NAME = "/beacon_blname";
     public static final String CLIENT_PATH_START_KEYPRESS_DETECTOR = "/start_key";
     public static final String CLIENT_PATH_STOP_KEYPRESS_DETECTOR = "/stop_key";
 
@@ -168,7 +170,12 @@ public class AppConstants {
     public static final String BEACON_IDENTIFIER_RESULT = "com.android.lmu.tokt.authenticator.BeaconService.ID_REQUEST_PROCESSED";
     public static final String BEACON_MESSAGE = "com.android.lmu.tokt.authenticator.BeaconService.BEACON_MESSAGE";
     public static final String BEACON_IDENTIFIER_MESSAGE = "com.android.lmu.tokt.authenticator.BeaconService.ID_BEACON_MESSAGE";
+
     public static final String BEACON_IDENTIFIER_STRING = "B0702880-A295-A8AB-F734-031A98A512DE";
+    public static final String BEACON_1_BL_NAME = "MiniBeacon_03193";
+    public static final String BEACON_2_BL_NAME = "MiniBeacon_03175";
+    public static final String BEACON_3_BL_NAME = "MiniBeacon_03123";
+    public static final String BEACON_4_BL_NAME = "MiniBeacon_03010";
 
 
     //Sensor Service Constants

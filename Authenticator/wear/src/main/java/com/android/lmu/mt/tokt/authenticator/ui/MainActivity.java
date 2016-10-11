@@ -308,7 +308,7 @@ public class MainActivity extends WearableActivity {
         } else {
             mContainerView.setBackground(null);
             mContainerWatchStateRL.setBackgroundColor(getResources().getColor(R.color.indigo_500));
-            mClockView.setVisibility(View.GONE);
+            mClockView.setVisibility(View.INVISIBLE);
 
             mHeartRateText.setTextColor(getResources().getColor(R.color.gray_900));
             mStepCountText.setTextColor(getResources().getColor(R.color.gray_900));

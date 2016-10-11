@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0" xmlns:jfx="http://javafx.com" href="LoginFX.jnlp">
+  <information>
+    <title>LoginFX</title>
+    <vendor>tokt</vendor>
+    <description>Authenticator</description>
+    <offline-allowed/>
+  </information>
+  <resources>
+    <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
+    <jar href="LoginFX.jar" size="4689698" download="eager" />
+    <jar href="libs/controlsfx-8.40.12.jar" size="996389" download="eager" />
+    <jar href="libs/json-simple-1.1.1.jar" size="23737" download="eager" />
+    <jar href="libs/sqlite-jdbc-3.8.11.2.jar" size="5575351" download="eager" />
+  </resources>
+  <jfx:javafx-desc  width="0" height="0" main-class="com.lmu.tokt.mt.LoginApp"  name="Authenticator" />
+  <update check="background"/>
+</jnlp>

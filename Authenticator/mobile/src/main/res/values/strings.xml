@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">Authenticator</string>
+
+    <string name="placeholder"> - </string>
+    <string name="server">Server</string>
+    <string name="disconnected">disconnected</string>
+    <string name="connected">connected</string>
+    <string name="server_ip_title">IP</string>
+    <string name="server_ip">192.168.178.96</string>
+    <string name="server_port_title">Port</string>
+    <string name="server_port">8888</string>
+    <string name="edit">edit</string>
+    <string name="save">save</string>
+    <string name="connect">connect</string>
+    <string name="disconnect">disconnect</string>
+    <string name="watch">Smart Watch</string>
+    <string name="heartrate">Heart Rate</string>
+    <string name="zero_value_double">0.0</string>
+    <string name="zero_value">0</string>
+    <string name="steps">Steps</string>
+    <string name="proximity">Proximity</string>
+    <string name="listen_to">Listen to</string>
+
+    <string name="immediate">immediate</string>
+    <string name="near">near</string>
+    <string name="far">far</string>
+
+
+    <string-array name="beacons_array">
+        <item>Beacon 1</item>
+        <item>Beacon 2</item>
+        <item>Beacon 3</item>
+        <item>Beacon 4</item>
+    </string-array>
 </resources>

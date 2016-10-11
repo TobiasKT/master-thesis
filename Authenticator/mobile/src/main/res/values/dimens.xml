@@ -2,4 +2,36 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="item_large_margin">32dp</dimen>
+    <dimen name="item_medium_margin">8dp</dimen>
+    <dimen name="item_small_margin">4dp</dimen>
+
+    <dimen name="item_large_padding">32dp</dimen>
+    <dimen name="activity_padding">16dp</dimen>
+    <dimen name="item_medium_padding">8dp</dimen>
+    <dimen name="item_small_padding">4dp</dimen>
+
+
+    <dimen name="header_profile_height">160dp</dimen>
+    <dimen name="avatar_height">80dp</dimen>
+    <dimen name="avatar_width">80dp</dimen>
+
+    <dimen name="header_height">32dp</dimen>
+    <dimen name="header_img_height">16dp</dimen>
+    <dimen name="header_img_width">16dp</dimen>
+
+    <dimen name="item_description_text_width">65dp</dimen>
+
+    <dimen name="edit_button_height">40dp</dimen>
+    <dimen name="connect_button_height">32dp</dimen>
+    <dimen name="connect_button_width">120dp</dimen>
+
+    <dimen name="cue_img_height">16dp</dimen>
+    <dimen name="cue_img_width">16dp</dimen>
+
+    <dimen name="cue_text_title_width">100dp</dimen>
+    <dimen name="cue_value_width">60dp</dimen>
+    <dimen name="spinner_width">120dp</dimen>
+
+    <dimen name="border_height">1dp</dimen>
 </resources>

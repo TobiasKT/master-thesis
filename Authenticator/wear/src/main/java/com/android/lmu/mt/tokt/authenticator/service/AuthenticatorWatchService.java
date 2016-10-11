@@ -56,6 +56,7 @@ public class AuthenticatorWatchService extends Service
     //Beacon
     private BeaconManager mBeaconManager;
     private String mBeaconIdentifier;
+    private String mBeaconBLName;
 
     private SharedPreferences mSharedPreferences;
 
@@ -93,6 +94,8 @@ public class AuthenticatorWatchService extends Service
 
         mBeaconIdentifier = getBeaconIDFromSharedPrefs();
         sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, mBeaconIdentifier);
+
+        mBeaconBLName = getBeaconBLNameFromSharedPrefs();
     }
 
     @Override
@@ -133,6 +136,10 @@ public class AuthenticatorWatchService extends Service
 
     private String getBeaconIDFromSharedPrefs() {
         return mSharedPreferences.getString(AppConstants.SHARED_PREF_BEACON_UUID, AppConstants.DEFAULT_BEACON_UUID);
+    }
+
+    private String getBeaconBLNameFromSharedPrefs() {
+        return mSharedPreferences.getString(AppConstants.SHARED_PREF_BEACON_BL_NAME, AppConstants.BEACON_1_BL_NAME);
     }
 
 
@@ -383,22 +390,23 @@ public class AuthenticatorWatchService extends Service
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 for (final Beacon beacon : beacons) {
                     //String data = logGenericBeacon(beacon);
+                     if (mBeaconBLName.equals(beacon.getBluetoothName())) {
+                        Log.d(TAG, "Proximity: " + getProximityStringByRSSI(beacon.getRssi()));
+                        long timestamp = System.currentTimeMillis();
+                        String proximity = getProximityStringByRSSI(beacon.getRssi());
 
-                    Log.d(TAG, "Proximity: " + getProximityStringByRSSI(beacon.getRssi()));
-                    long timestamp = System.currentTimeMillis();
-                    String proximity = getProximityStringByRSSI(beacon.getRssi());
+                        //TODO: PROXIMITY values als int
+                        //  if (mWatchClient.isAuthenticated()) {
 
-                    //TODO: PROXIMITY values als int
-                    //  if (mWatchClient.isAuthenticated()) {
-
-                    mWatchClient.sendSensorData(AppConstants.SENSOR_TYPE_BEACON, beacon.getTxPower(), timestamp, new float[]{beacon.getRssi()});
+                        mWatchClient.sendSensorData(AppConstants.SENSOR_TYPE_BEACON, beacon.getTxPower(), timestamp, new float[]{beacon.getRssi()});
 
 
-                    //TODO: only send if data changed
-                    if (mRunning) {
-                        sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, proximity);
+                        //TODO: only send if data changed
+                        if (mRunning) {
+                            sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, proximity);
+                        }
+                        //   }
                     }
-                    //   }
                 }
 
 

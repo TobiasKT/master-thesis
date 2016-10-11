@@ -4,5 +4,11 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="white">#FFFFFF</color>
+
+    <color name="grey_300">#E0E0E0</color>
     <color name="grey_400">#BDBDBD</color>
+    <color name="grey_700">#616161</color>
+
+    <color name="indigo_400">#5C6BC0</color>
 </resources>
