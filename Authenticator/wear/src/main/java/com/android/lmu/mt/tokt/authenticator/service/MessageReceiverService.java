@@ -94,6 +94,12 @@ public class MessageReceiverService extends WearableListenerService {
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_START_MEASUREMENT)) {
+
+            String beaconBLNAme = new String(messageEvent.getData(), Charset.forName("UTF-8"));
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putString(AppConstants.SHARED_PREF_BEACON_BL_NAME, beaconBLNAme);
+            editor.commit();
+
             //start service
             startService(mAuthenticatorIntent);
             //UpdatedUI

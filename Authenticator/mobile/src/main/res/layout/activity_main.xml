@@ -2,10 +2,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/authenticator_linear"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-
     tools:context="com.android.lmu.mt.tokt.authenticator.ui.MainActivity">
 
     <RelativeLayout
@@ -241,7 +241,8 @@
                 android:layout_height="@dimen/border_height"
                 android:paddingLeft="@dimen/activity_padding"
                 android:paddingRight="@dimen/activity_padding"
-                android:src="@color/grey_300" />
+                android:src="@color/grey_300"
+                android:visibility="visible" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

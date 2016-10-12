@@ -25,11 +25,37 @@
     <string name="near">near</string>
     <string name="far">far</string>
 
+    <string name="export_fragment_title">Export Data</string>
+
+    <string name="export_sensor_data">Export sensor data to JSON</string>
+    <string name="export_tags">Export tags to JSON</string>
+    <string name="export_events">Export events to JSON</string>
+
+    <string name="delete_data">Delete stored data</string>
+    <string name="close">Close</string>
+
+    <string name="all_data_deleted">All stored data deleted</string>
+    <string name="no_sensor_data">No sensor data entries</string>
+    <string name="no_tag_entries">No tag entries</string>
+    <string name="no_event_entries">No event entries</string>
+
+    <string name="delete_data_dialog_text">Are you sure you want to delete all stored data?</string>
+    <string name="delete_data_dialog_title">Delete Data</string>
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+
+    <string name="locked">locked</string>
+    <string name="unlocked">unlocked</string>
+
+    <string name="allow_connection">Allow Connection?</string>
+
 
     <string-array name="beacons_array">
         <item>Beacon 1</item>
         <item>Beacon 2</item>
         <item>Beacon 3</item>
         <item>Beacon 4</item>
+        <item>Beacon 5</item>
     </string-array>
 </resources>

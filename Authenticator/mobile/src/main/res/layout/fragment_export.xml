@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="@dimen/export_dialog_width"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/activity_padding"
+        android:paddingRight="@dimen/activity_padding">
+
+        <Button
+            android:id="@+id/exportButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/item_large_margin"
+            android:background="@drawable/export_ripple"
+            android:fontFamily="sans-serif"
+            android:text="@string/export_sensor_data"
+            android:textColor="@color/white" />
+
+        <ProgressBar
+            android:id="@+id/export_progress"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/progress_bar_height"
+            android:layout_marginBottom="@dimen/item_medium_margin"
+            android:layout_marginTop="@dimen/item_medium_margin"
+            android:visibility="gone" />
+
+
+        <Button
+            android:id="@+id/exportTagsButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/export_ripple"
+            android:fontFamily="sans-serif"
+            android:text="@string/export_tags"
+            android:textColor="@color/white" />
+
+        <ProgressBar
+            android:id="@+id/export_progress_tag"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/progress_bar_height"
+            android:layout_marginBottom="@dimen/item_medium_margin"
+            android:layout_marginTop="@dimen/item_medium_margin"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/exportEventsButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:background="@drawable/export_ripple"
+            android:fontFamily="sans-serif"
+            android:text="@string/export_events"
+            android:textColor="@color/white" />
+
+        <ProgressBar
+            android:id="@+id/export_progress_event"
+            style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/progress_bar_height"
+            android:layout_marginBottom="@dimen/item_medium_margin"
+            android:layout_marginTop="@dimen/item_medium_margin"
+            android:visibility="gone" />
+
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/item_semi_large_margin"
+            android:background="@drawable/delete_ripple"
+            android:fontFamily="sans-serif"
+            android:text="@string/delete_data"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/border_height"
+        android:layout_marginTop="@dimen/item_large_margin"
+        android:src="@color/grey_300" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/grey_200"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/close_dialog"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fontFamily="sans-serif"
+            android:text="@string/close"
+            android:textColor="@color/grey_700" />
+
+    </LinearLayout>
+</LinearLayout>

@@ -32,7 +32,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:parentActivityName=".ui.MainActivity" android:name=".ui.ExportActivity"/>
     </application>
 
 </manifest>

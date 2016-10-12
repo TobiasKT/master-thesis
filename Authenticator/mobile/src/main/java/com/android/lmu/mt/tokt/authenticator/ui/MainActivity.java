@@ -3,7 +3,6 @@ package com.android.lmu.mt.tokt.authenticator.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -12,6 +11,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -242,6 +242,16 @@ public class MainActivity extends AppCompatActivity implements
                 AppConstants.DEFAULT_SERVER_PORT);
     }
 
+    private int getSavedSelectedBeacon() {
+        return mSharedPreferences.getInt(AppConstants.SHARED_PREF_BEACON_SELECTED_POS,
+                AppConstants.DEFAULT_SELECTED_BEACON_POS);
+    }
+
+    private String getSavedBeaconBLName() {
+        return mSharedPreferences.getString(AppConstants.SHARED_PREF_BEACON_BL_NAME,
+                AppConstants.BEACON_1_BL_NAME);
+    }
+
     private void initViews() {
         Log.d(TAG, "init Views...");
         mConnectToWatchBtn = (Button) findViewById(R.id.connect_phone_to_watch_btn);
@@ -266,6 +276,7 @@ public class MainActivity extends AppCompatActivity implements
                 R.array.beacons_array, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mBeaconSpinner.setAdapter(adapter);
+        mBeaconSpinner.setSelection(getSavedSelectedBeacon());
 
 
         mServerIpEditText.setText(getSavedServerIP());
@@ -299,7 +310,14 @@ public class MainActivity extends AppCompatActivity implements
                     case AppConstants.STATE_CONFIRM:
                         if (msg.obj != null) {
                             int cheksum = (int) msg.obj;
-                            showConfirmConnectionDialog("Allow Connection? (" + cheksum + ")", cheksum);
+
+                            StringBuilder sb = new StringBuilder();
+                            sb.append(getResources().getString(R.string.allow_connection));
+                            sb.append(" (");
+                            sb.append(cheksum);
+                            sb.append(")");
+
+                            showConfirmConnectionDialog(sb.toString(), cheksum);
                         }
                         break;
                     case AppConstants.STATE_CONNECTED:
@@ -330,13 +348,12 @@ public class MainActivity extends AppCompatActivity implements
                         }
 
                         if (mGoogleApiClient.isConnected()) {
-                            startMeasurement();
+                            startMeasurement(getSavedBeaconBLName());
                             setUserIsAuthenticatedState(true);
-
                         } else {
                             //Connect to watch and start sensor service
                             connectToWatch();
-                            startMeasurement();
+                            startMeasurement(getSavedBeaconBLName());
                         }
                         break;
                     case AppConstants.STATE_NOT_AUTHENTICATED:
@@ -347,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     case AppConstants.ERROR:
                         addTag("error");
-                        mConnectToServerBtn.setText("CONNECT");
+                        mConnectToServerBtn.setText(getResources().getString(R.string.connect));
                         mAuthenticatorAsyncTask = null;
                         Toast.makeText(MainActivity.this, "ERROR! Network problems!", Toast.LENGTH_SHORT).show();
                         break;
@@ -361,13 +378,15 @@ public class MainActivity extends AppCompatActivity implements
                     case AppConstants.STATE_LOCKED:
                         addTag("state_locked");
                         sendLockStateToWatch(true);
-                        BusProvider.updateTextViewOnMainThread(mLockstateText, "locked");
+                        BusProvider.updateTextViewOnMainThread(mLockstateText,
+                                getResources().getString(R.string.locked));
                         //update MainUI
                         break;
                     case AppConstants.STATE_UNLOCKED:
                         addTag("state_unlocked");
                         sendLockStateToWatch(false);
-                        BusProvider.updateTextViewOnMainThread(mLockstateText, "unlocked");
+                        BusProvider.updateTextViewOnMainThread(mLockstateText,
+                                getResources().getString(R.string.unlocked));
                         break;
                     case AppConstants.SET_USERNAME:
                         String username = "-";
@@ -403,7 +422,10 @@ public class MainActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_export:
-                startActivity(new Intent(MainActivity.this, ExportActivity.class));
+                FragmentManager fm = getSupportFragmentManager();
+                ExportFragmentDialog exportFragment = new ExportFragmentDialog();
+                exportFragment.show(fm, "export");
+                //startActivity(new Intent(MainActivity.this, ExportActivity.class));
                 return true;
             default:
                 return true;
@@ -472,8 +494,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onConnected(Bundle bundle) {
         Log.d(TAG, "Google API Client was connected");
         mResolvingError = false;
-        mConnectToWatchBtn.setText("Disconnect");
-        mWatchConnectionStatusText.setText("CONNECTED");
+        mConnectToWatchBtn.setText(getResources().getString(R.string.disconnect));
+        mWatchConnectionStatusText.setText(getResources().getString(R.string.connected));
 
         Wearable.DataApi.addListener(mGoogleApiClient, this);
         Wearable.MessageApi.addListener(mGoogleApiClient, this);
@@ -508,8 +530,8 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             Log.e(TAG, "Connection to Google API client has failed");
             mResolvingError = false;
-            mConnectToWatchBtn.setText("Connect");
-            mWatchConnectionStatusText.setText("DISCONNECTED");
+            mConnectToWatchBtn.setText(getResources().getString(R.string.connect));
+            mWatchConnectionStatusText.setText(getResources().getString(R.string.disconnected));
             Wearable.DataApi.removeListener(mGoogleApiClient, this);
             Wearable.MessageApi.removeListener(mGoogleApiClient, this);
             Wearable.CapabilityApi.removeListener(mGoogleApiClient, this);
@@ -792,11 +814,12 @@ public class MainActivity extends AppCompatActivity implements
         });
     }
 
-    public void startMeasurement() {
+    public void startMeasurement(final String beaconBLName) {
         mExecutorService.submit(new Runnable() {
             @Override
             public void run() {
-                sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_START_MEASUREMENT);
+                byte[] data = beaconBLName.getBytes(Charset.forName("UTF-8"));
+                sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_START_MEASUREMENT, data);
             }
         });
     }
@@ -956,8 +979,8 @@ public class MainActivity extends AppCompatActivity implements
                     connectToWatch();
                 } else {
                     disconnectFromWatch();
-                    mConnectToWatchBtn.setText("Connect");
-                    mWatchConnectionStatusText.setText("DISCONNECTED");
+                    mConnectToWatchBtn.setText(getResources().getString(R.string.connect));
+                    mWatchConnectionStatusText.setText(getResources().getString(R.string.disconnected));
                 }
                 break;
             case R.id.connect_phone_to_server_btn:
@@ -965,12 +988,12 @@ public class MainActivity extends AppCompatActivity implements
                         !mAuthenticatorAsyncTask.getTCPClient().isRunning()) {
                     mAuthenticatorAsyncTask = new AuthenticatorAsyncTask(MainActivity.this, mHandler);
                     mAuthenticatorAsyncTask.execute();
-                    mConnectToServerBtn.setText("DISCONNECT");
+                    mConnectToServerBtn.setText(getResources().getString(R.string.disconnect));
                 } else {
                     mAuthenticatorAsyncTask.getTCPClient().stopClient();
                     mAuthenticatorAsyncTask.cancel(true);
                     stopMeasurement();
-                    mConnectToServerBtn.setText("CONNECT");
+                    mConnectToServerBtn.setText(getResources().getString(R.string.connect));
                 }
                 break;
             case R.id.server_ip_btn:
@@ -1075,25 +1098,30 @@ public class MainActivity extends AppCompatActivity implements
         String blName = "";
         switch (pos) {
             case 0:
-                Log.d(TAG, "Beacon: " + pos + "selected");
                 blName = AppConstants.BEACON_1_BL_NAME;
                 break;
             case 1:
-                Log.d(TAG, "Beacon: " + pos + "selected");
                 blName = AppConstants.BEACON_2_BL_NAME;
                 break;
             case 2:
-                Log.d(TAG, "Beacon: " + pos + "selected");
                 blName = AppConstants.BEACON_3_BL_NAME;
                 break;
             case 3:
-                Log.d(TAG, "Beacon: " + pos + "selected");
                 blName = AppConstants.BEACON_4_BL_NAME;
+                break;
+            case 4:
+                blName = AppConstants.BEACON_5_BL_NAME;
                 break;
             default:
                 blName = AppConstants.BEACON_1_BL_NAME;
                 break;
         }
+
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+        editor.putString(AppConstants.SHARED_PREF_BEACON_BL_NAME, blName);
+        editor.putInt(AppConstants.SHARED_PREF_BEACON_SELECTED_POS, pos);
+        editor.commit();
+
         if (mGoogleApiClient.isConnected()) {
             sendBeaconBLNameToWatch(blName);
         }
@@ -1123,8 +1151,8 @@ public class MainActivity extends AppCompatActivity implements
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage(message).setPositiveButton("Yes", dialogClickListener)
-                .setNegativeButton("No", dialogClickListener).show();
+        builder.setMessage(message).setPositiveButton(getResources().getString(R.string.confirm), dialogClickListener)
+                .setNegativeButton(getResources().getString(R.string.cancel), dialogClickListener).show();
     }
 
 

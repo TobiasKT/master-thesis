@@ -22,6 +22,7 @@ public class AppConstants {
 
     //Beacon
     public final static String DEFAULT_BEACON_UUID = "E2C56DB5-DFFB-48D2-B060-D0F5A71096E0";
+    public final static int DEFAULT_SELECTED_BEACON_POS = 0;
 
 
     //Shared Preferences
@@ -30,6 +31,7 @@ public class AppConstants {
     public final static String SHARED_PREF_SEVER_PORT = "server_port";
     public static final String SHARED_PREF_BEACON_UUID = "beacon_uuid";
     public static final String SHARED_PREF_BEACON_BL_NAME = "beacon_bl_name";
+    public static final String SHARED_PREF_BEACON_SELECTED_POS = "selceted_beacon_pos";
 
 
     //SensorTypes
@@ -176,6 +178,7 @@ public class AppConstants {
     public static final String BEACON_2_BL_NAME = "MiniBeacon_03175";
     public static final String BEACON_3_BL_NAME = "MiniBeacon_03123";
     public static final String BEACON_4_BL_NAME = "MiniBeacon_03010";
+    public static final String BEACON_5_BL_NAME = "MiniBeacon_03088";
 
 
     //Sensor Service Constants
