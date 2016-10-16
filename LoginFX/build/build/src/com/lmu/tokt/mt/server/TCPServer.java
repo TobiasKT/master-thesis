@@ -96,7 +96,9 @@ public class TCPServer extends Thread {
 			} catch (EOFException eof) {
 				System.out.println(TAG + ": server ENDED the connection ");
 			} finally {
-				closeConnection();
+				if (mServerIsRunning) {
+					closeConnection();
+				}
 			}
 		} catch (IOException ioe) {
 			System.out.println(TAG + ": IO ERROR startRunning(). Exception: " + ioe.toString());
@@ -105,9 +107,11 @@ public class TCPServer extends Thread {
 
 	public void stopRunning() {
 		System.out.println(TAG + ": Server stopped!");
+		closeConnection();
 		mDataExchangeIsRunning = false;
 		mIsConnectedToWatch = false;
 		mServerIsRunning = false;
+
 		/*
 		 * if (mConnection != null) {
 		 * sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT); }
@@ -195,11 +199,13 @@ public class TCPServer extends Thread {
 				}
 
 				if (mIncomingMessage.equals(AppConstants.COMMAND_USER_TYPING_FAILED)) {
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_WAS_NOT_TYPING, "No typing detected");
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_WAS_NOT_TYPING,
+							"No typing detected");
 				}
-				
-				if(mIncomingMessage.equals(AppConstants.COMMAND_TYPING_SENSORS_STARTED)){
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_TYPING_SENSORS_STARTED, "recognizing typing");
+
+				if (mIncomingMessage.equals(AppConstants.COMMAND_TYPING_SENSORS_STARTED)) {
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_TYPING_SENSORS_STARTED,
+							"recognizing typing");
 				}
 				// validate states by timeStamp
 
@@ -374,7 +380,7 @@ public class TCPServer extends Thread {
 				if (getRandomNumber() > 7) {
 					System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
 					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED,
-							"Was this UNLOGGING event as expected?");
+							"logout");
 				}
 			}
 
@@ -389,8 +395,7 @@ public class TCPServer extends Thread {
 
 					if (getRandomNumber() > 7) {
 						System.out.println(TAG + ": show LOCK dialog");
-						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_LOCK,
-								"Was this LOCK event as expected?");
+						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_LOCK, "lock");
 					}
 				}
 
@@ -410,8 +415,7 @@ public class TCPServer extends Thread {
 
 					if (getRandomNumber() > 7) {
 						System.out.println(TAG + ": show UNLOCK dialog");
-						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_UNLOCK,
-								"Was this UNLOCK event as expected?");
+						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_UNLOCK, "unlock");
 					}
 				}
 			}
@@ -440,10 +444,12 @@ public class TCPServer extends Thread {
 
 	private void closeConnection() {
 		try {
-			sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
-			mOutput.close();
-			mInput.close();
-			mConnection.close();
+			if (mDataExchangeIsRunning) {
+				sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
+				mOutput.close();
+				mInput.close();
+				mConnection.close();
+			}
 			System.out.println(TAG + ": Connection closed!");
 		} catch (IOException ioe) {
 			ioe.printStackTrace();

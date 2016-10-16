@@ -1,0 +1,29 @@
+.intro-background{
+	-fx-background-color: #5C6BC0;
+}
+
+.border-top-grey{
+	-fx-border-width: 1.0 0.0 0.0 0.0; 
+	-fx-border-color: #BDBDBD;
+}
+
+.border-bottom-grey{
+	-fx-border-width: 0.0 0.0 1.0 0.0; 
+	-fx-border-color: #BDBDBD;
+}
+
+.light-grey-bg{
+	-fx-background-color: #EEEEEE;
+}
+
+.vbox-skip:hover{
+	-fx-cursor: hand;
+}
+
+.vbox-back:hover{
+	-fx-cursor: hand;
+}
+
+.img-survey:hover{
+	-fx-cursor: hand;
+}

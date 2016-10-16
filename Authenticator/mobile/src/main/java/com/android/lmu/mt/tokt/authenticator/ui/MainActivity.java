@@ -339,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements
                             mAuthenticatorAsyncTask.getTCPClient().stopClient();
                         }
                         mAuthenticatorAsyncTask.cancel(true);
+                        disconnectFromWatch();
                         break;
                     case AppConstants.STATE_AUTHENTICATED:
                         addTag("authenticated");
@@ -1077,16 +1078,16 @@ public class MainActivity extends AppCompatActivity implements
             editor.commit();
 
             sendBeaconUUIDToWatch(beaconUUID);
-            mProximityText.setText("-");
+            mProximityText.setText(getResources().getString(R.string.placeholder));
 
         }
     }
 
     private void resetMainUIValues() {
-        mHeartrateText.setText("0.0");
-        mStepsText.setText("0.0");
-        mProximityText.setText("-");
-        mLockstateText.setText("-");
+        mHeartrateText.setText(getResources().getString(R.string.zero_value_double));
+        mStepsText.setText(getResources().getString(R.string.zero_value_double));
+        mProximityText.setText(getResources().getString(R.string.placeholder));
+        mLockstateText.setText(getResources().getString(R.string.placeholder));
     }
 
 

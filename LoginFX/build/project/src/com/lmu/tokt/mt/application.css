@@ -86,13 +86,53 @@
 }
 
 .white-background{
-	 -fx-background-color: rgba(255.0,255.0,255.0,0.8);
+	 -fx-background-color: rgb(255.0,255.0,255.0);
 }
 
 .border-bottom-white{
 	-fx-border-width: 0.0 0.0 1.0 0.0; 
-	-fx-border-color: rgba(100.0,100.0,100.0,0.5);
-	 -fx-background-color: rgba(235.0,235.0,235.0,0.8);
+	-fx-border-color: #EEEEEE;
+}
+
+.send-btn{
+	-fx-background-color: #EEEEEE;
+	-fx-text-fill: #7986CB;
+	-fx-border-color: #E0E0E0;
+	-fx-border-radius: 0.0;
+	-fx-border-width: 1.0 0.0 0.0 0.0; 
+}
+
+.send-btn:hover{
+	-fx-background-color: #E0E0E0AA;
+	-fx-text-fill: #3F51B5;
+	-fx-cursor: hand;
+}
+
+.blue-radio-button .dot {
+  -fx-mark-color: #3F51B5;
+  -fx-background-radius: 15.0px;
+  -fx-padding: 5.0px;
+}
+
+.blue-radio-button .radio {
+    -fx-border-width: 1.0px;
+    -fx-border-color: #5C6BC0;
+    -fx-background-color: white;
+    -fx-background-image: null;
+    -fx-border-radius: 15.0px;
+    -fx-padding: 4.0px;
+}
+
+.blue-radio-button:hover{
+  -fx-cursor: hand;
+}
+
+.comment-edit-textfield{
+	-fx-background-color: rgba(255.0,255.0,255.0,0.0);
+	-fx-text-fill: black;
+	-fx-prompt-text-fill: rgba(0.0,0.0,0.0,0.5);
+	-fx-border-width: 0.0 0.0 1.0 0.0; 
+	-fx-border-color: #5C6BC0;
 }
 
 

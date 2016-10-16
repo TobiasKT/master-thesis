@@ -3,6 +3,7 @@ package com.lmu.tokt.mt;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
@@ -13,7 +14,10 @@ import java.util.ResourceBundle;
 import com.lmu.tokt.mt.util.AppConstants;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -28,6 +32,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.paint.ImagePattern;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 public class SettingsController implements Initializable {
 
@@ -36,8 +41,8 @@ public class SettingsController implements Initializable {
 	final FileChooser fileChooser = new FileChooser();
 
 	@FXML
-	private ImageView imgEditBackground, imgEditAvatar, imgRestartServer, imgDisconnect, imgReloadServerIp,
-			imgEditServerPort, imgPlayTutorial;
+	private ImageView imgEditBackground, imgEditAvatar, imgDisconnect, imgReloadServerIp, imgEditServerPort,
+			imgPlayTutorial;
 
 	@FXML
 	private Label lblServerPort, lblServerIp;
@@ -84,18 +89,9 @@ public class SettingsController implements Initializable {
 	}
 
 	@FXML
-	private void onRestartServerClicked(MouseEvent event) {
-		LoginController.getInstance().getTCPServer().stopRunning();
-	}
-
-	@FXML
 	private void onDisconnectClicked(MouseEvent event) {
 
-		if (LoginController.getInstance().getTCPServer().isRunning()) {
-			LoginController.getInstance().getTCPServer().stopRunning();
-			LoginController.getInstance().getTCPServer().interrupt();
-			LoginController.getInstance().getTCPServer().startRunning();
-		}
+		LoginController.getInstance().getTCPServer().sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
 
 	}
 
@@ -146,6 +142,16 @@ public class SettingsController implements Initializable {
 
 	@FXML
 	private void onPlayTutorialClicked(MouseEvent event) {
+
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/lmu/tokt/mt/Intro.fxml"));
+			Parent root1 = (Parent) fxmlLoader.load();
+			Stage stage = new Stage();
+			stage.setScene(new Scene(root1));
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 	}
 

@@ -302,4 +302,46 @@ public class LoginModel {
 
 	}
 
+	public boolean updateDidIntroState(int state) throws SQLException {
+
+		PreparedStatement preparedStatement = null;
+		String query = "UPDATE State SET didIntro = ? WHERE id = 1";
+		try {
+			preparedStatement = connection.prepareStatement(query);
+			preparedStatement.setInt(1, state);
+			preparedStatement.executeUpdate();
+			System.out.println(TAG + ": Saving didIntro in DB successful");
+			return true;
+		} catch (SQLException e) {
+			System.out.println(TAG + ": ERROR saving didIntro state in DB. Exception: " + e.toString());
+			return false;
+		} finally {
+			preparedStatement.close();
+		}
+
+	}
+
+	public int getDidIntroState() throws SQLException {
+		ResultSet resultSet = null;
+		PreparedStatement preparedStatement = null;
+		String query = "Select didIntro FROM State WHERE id = 1";
+
+		try {
+			preparedStatement = connection.prepareStatement(query);
+			resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				System.out.println(TAG + ": Getting didIntro state from DB successful");
+				return resultSet.getInt(1);
+			} else {
+				System.out.println(TAG + ": NO saved didIntro state in DB. Return default state (" + 0 + ")");
+				return 0;
+			}
+		} catch (SQLException e) {
+			System.out.println(TAG + ": ERROR getting didIntro state from DB! " + e.toString());
+			return 0;
+		} finally {
+			preparedStatement.close();
+		}
+	}
 }

@@ -99,23 +99,22 @@ public class LoginController implements Initializable {
 
 	// cues fields
 	@FXML
-	private Label lblHeartbeat, lblHeartbeatValue, lblProximity, lblProximityValue, lblUserState, lblUserStateValue,
-			lblSoundSignal, lblSoundSignalValue;
+	private Label lblHeartbeat, lblHeartbeatValue, lblProximity, lblProximityValue, lblUserState, lblUserStateValue;
 	@FXML
-	private ImageView imgHeartBeat, imgProximity, imgUserState, imgSoundSignal;
+	private ImageView imgHeartBeat, imgProximity, imgUserState;
 	@FXML
 	private ProgressIndicator progressHeartrateDetection;
 
 	// add user fields
 	@FXML
-	private Label lblRegistrationFailed, lblRegistrationSuccess, lblCancel, lblPasswordTypeCount;
+	private Label lblRegistrationFailed, lblRegistrationSuccess, lblCancel;
 	@FXML
 	private TextField txtUsername;
 	@FXML
-	private PasswordField txtRegisterPassword, txtRegisterPasswordRepeat, txtTypingPassword;
+	private PasswordField txtRegisterPassword, txtRegisterPasswordRepeat;
 	@FXML
-	private ImageView imgUsernameChecked, imgPasswordChecked, imgRepeatPasswordhecked, imgTypingPasswordCountSuccess,
-			imgCancelRegister, imgBackRegister;
+	private ImageView imgUsernameChecked, imgPasswordChecked, imgRepeatPasswordhecked, imgCancelRegister,
+			imgBackRegister;
 	@FXML
 	private Button btnRegister;
 
@@ -181,6 +180,11 @@ public class LoginController implements Initializable {
 		// start TCP Server
 		mTCPServer = new TCPServer(mMessageCallback);
 		mTCPServer.start();
+
+		if (LoginApp.getInstance().isUserFromIntro()) {
+			showAddUserPane(true);
+		}
+
 	}
 
 	// load user settings
@@ -413,7 +417,6 @@ public class LoginController implements Initializable {
 								"0.0");
 						resetProximityFields();
 						resetUserStateFields();
-						resetSoundSignalFields();
 
 						// stopMeasurement
 					}
@@ -421,25 +424,6 @@ public class LoginController implements Initializable {
 				break;
 			case AppConstants.STATE_USER_AUTHENTICATED:
 				System.out.println(TAG + ":" + message);
-				break;
-			case AppConstants.STATE_SOUND_SIGNAL_SENDING:
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						lblSoundSignalValue.setText("sending");
-						imgSoundSignal.setImage(new Image("drawable/icons/sound/sound_white_1.png"));
-					}
-				});
-
-				break;
-			case AppConstants.STATE_SOUND_SENDING_NONE:
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						lblSoundSignalValue.setText("none");
-						imgSoundSignal.setImage(new Image("drawable/icons/sound/sound_grey_1.png"));
-					}
-				});
 				break;
 			case AppConstants.DIALOG_EVENT_TYPE_LOCK:
 				Platform.runLater(new Runnable() {
@@ -530,7 +514,6 @@ public class LoginController implements Initializable {
 		setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat", "0.0");
 		resetProximityFields();
 		resetUserStateFields();
-		resetSoundSignalFields();
 	}
 
 	private void setLockStateImage(boolean isLocked) {
@@ -612,12 +595,6 @@ public class LoginController implements Initializable {
 		imgUserState.setImage(new Image("drawable/icons/user_state/standing_grey.png"));
 		lblUserState.setText("User State");
 		lblUserStateValue.setText("-");
-	}
-
-	private void resetSoundSignalFields() {
-		imgSoundSignal.setImage(new Image("drawable/icons/sound/sound_grey_1.png"));
-		lblSoundSignal.setText("Sound Signal");
-		lblSoundSignalValue.setText("none");
 	}
 
 	/*----------------LOGIN----------------*/
@@ -773,40 +750,7 @@ public class LoginController implements Initializable {
 	private void onAddUserKeyPressed(KeyEvent event) {
 		if (event.getCode() == KeyCode.ENTER) {
 			if (btnRegister.isVisible()) {
-				// registerNewUser();
-			}
-		}
-	}
-
-	private int mPasswordTypeCount = 0;
-
-	@FXML
-	private void onAddUserTypeCountPasswordKeyPressed(KeyEvent event) {
-
-		if (mPasswordTypeCount == 0) {
-			mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
-		}
-
-		if (event.getCode() == KeyCode.ENTER) {
-			if (txtTypingPassword.getText().equals(txtRegisterPassword.getText())) {
-				mPasswordTypeCount++;
-				lblPasswordTypeCount.setText("" + mPasswordTypeCount);
-				if (mPasswordTypeCount < 5) {
-					txtTypingPassword.selectAll();
-				}
-			} else {
-				Shaker shaker = new Shaker(anchorPaneRegister);
-				shaker.shake();
-				txtTypingPassword.selectAll();
-			}
-			if (mPasswordTypeCount == 5) {
-				mPasswordTypeCount = 0;
-				txtTypingPassword.setEditable(false);
-				imgTypingPasswordCountSuccess.setVisible(true);
-				lblPasswordTypeCount.setVisible(false);
-				btnRegister.setVisible(true);
-
-				mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
+				registerNewUser();
 			}
 		}
 	}
@@ -853,10 +797,10 @@ public class LoginController implements Initializable {
 			imgRepeatPasswordhecked.setVisible(true);
 			txtRegisterPassword.setEditable(false);
 			txtRegisterPasswordRepeat.setEditable(false);
-			// btnRegister.setVisible(true);
+			btnRegister.setVisible(true);
 		} else {
 			imgRepeatPasswordhecked.setVisible(false);
-			// btnRegister.setVisible(false);
+			btnRegister.setVisible(false);
 		}
 	}
 
@@ -1051,17 +995,18 @@ public class LoginController implements Initializable {
 		return mTCPServer;
 	}
 
+	public void setAndStartTCPServer() {
+		// start TCP Server
+		mTCPServer = new TCPServer(mMessageCallback);
+		mTCPServer.start();
+	}
+
 	public Label getPublicIP() {
 		return lblPublicIP;
 	}
 
 	public Label getServerPort() {
 		return lblServerPort;
-	}
-
-	@FXML
-	private void onSoundSignalClicked(MouseEvent event) {
-		// mTCPServer.sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
 	}
 
 	private void showDialog(String headerText, int dialogEventType) {

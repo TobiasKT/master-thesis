@@ -43,7 +43,7 @@ public class AppConstants {
 	public static final String COMMAND_SAVE_DIALOG_EVENT_NOT_AUTHENTICATED = "SAVE_DIALOG_EVENT_NOT_AUTHENTICATED";
 	public static final String COMMAND_USER_TYPING_SUCCESS = "USER_TYPING_SUCCESS";
 	public static final String COMMAND_USER_TYPING_FAILED = "USER_TYPING_FAILED";
-	
+
 	public static final String COMMAND_TYPING_SENSORS_STARTED = "TYPING_SENSORS_STARTED";
 
 	/*------------------------ PHONE/WATCH CONNECTION STATES ------------------------*/
