@@ -142,7 +142,9 @@ public class MainActivity extends WearableActivity {
                     String message = intent.getStringExtra(AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_MESSAGE);
                     mConnectionStateText.setText(message);
 
-                    mKeyPressDetectorTask.stopKeyDetector();
+                    if (mKeyPressDetectorTask != null) {
+                        mKeyPressDetectorTask.stopKeyDetector();
+                    }
                     mTypingContainerRL.setVisibility(View.GONE);
 
                 }
