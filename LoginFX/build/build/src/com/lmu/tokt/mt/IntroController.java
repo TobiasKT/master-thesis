@@ -141,7 +141,7 @@ public class IntroController implements Initializable {
 			anchorPaneIntro5.setVisible(true);
 			anchorPaneIntro6.setVisible(false);
 			setTitlesIntroScreen5();
-			lblSkip.setText("SKIP");
+			lblSkip.setText("NEXT");
 			break;
 
 		default:

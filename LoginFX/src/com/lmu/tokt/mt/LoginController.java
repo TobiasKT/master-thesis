@@ -26,16 +26,11 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
@@ -48,17 +43,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 public class LoginController implements Initializable {
 
@@ -74,7 +64,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private Label lblPublicIP, lblServerPort, lblServerStatus, lblDateTime;
 	@FXML
-	private ImageView imgSettings, imgLockState;
+	private ImageView imgSettings;
 
 	// root bottom fields
 	@FXML
@@ -86,12 +76,12 @@ public class LoginController implements Initializable {
 	@FXML
 	private Circle circProfile;
 	@FXML
-	private Label lblUserName, lblConnectToWatch, lblPassword, lblTyping;
+	private Label lblUserName, lblConnectToWatch, lblPassword, lblTyping, lblLockState, lblLoginState;
 	@FXML
-	private ImageView imgWatchConnected, imgPassword, imgTyping, imgConnectedToWatchSuccess, imgCancelConnectToWatch,
-			imgPasswordCorrect;
+	private ImageView imgLockState, imgWatchConnected, imgPassword, imgTyping, imgConnectedToWatchSuccess,
+			imgStartingKeyDetectorSuccess, imgCancelStartKeyDetection, imgCancelConnectToWatch, imgPasswordCorrect;
 	@FXML
-	private Button btnConnectToWatch, btnLogin;
+	private Button btnConnectToWatch, btnLogin, btnStartTypingDetector;
 	@FXML
 	private PasswordField txtPassword;
 	@FXML
@@ -290,6 +280,7 @@ public class LoginController implements Initializable {
 
 						// Connection to watch stopped
 						lblServerStatus.setText(message);
+						lblLoginState.setText("logged out");
 						resetAllFields();
 					}
 				});
@@ -302,7 +293,7 @@ public class LoginController implements Initializable {
 						// Successful connection with watch
 						setConnectToWatchFields(new Image("drawable/icons/watch/watch_white_1.png"), true, false,
 								"Connected", true, false, false);
-						startKeyPressDetection();
+						btnStartTypingDetector.setDisable(false);
 					}
 				});
 
@@ -314,7 +305,7 @@ public class LoginController implements Initializable {
 
 						// TODO: reset all fields
 						resetAllFields();
-
+						lblLoginState.setText("logged out");
 						setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, true,
 								"Connecting...", false, true, false);
 					}
@@ -368,6 +359,7 @@ public class LoginController implements Initializable {
 
 						setLockStateImage(true);
 						setAppFullscreen(true);
+						lblLockState.setText("locked");
 					}
 				});
 				break;
@@ -380,7 +372,7 @@ public class LoginController implements Initializable {
 
 						setLockStateImage(false);
 						setAppFullscreen(false);
-
+						lblLockState.setText("unlocked");
 						// TODO: createMiniView
 					}
 				});
@@ -417,7 +409,7 @@ public class LoginController implements Initializable {
 								"0.0");
 						resetProximityFields();
 						resetUserStateFields();
-
+						lblLoginState.setText("logged out");
 						// stopMeasurement
 					}
 				});
@@ -514,13 +506,17 @@ public class LoginController implements Initializable {
 		setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat", "0.0");
 		resetProximityFields();
 		resetUserStateFields();
-		
-		//TODO in setPWFields
+
+		// TODO in setPWFields
 		progressTyping.setVisible(false);
 		imgTyping.setVisible(true);
-		lblTyping.setText("");
+		lblTyping.setText("Start Typing-Detector");
+		lblTyping.setDisable(true);
+		btnStartTypingDetector.setVisible(true);
+		btnStartTypingDetector.setDisable(true);
+		imgStartingKeyDetectorSuccess.setVisible(false);
 		
-		
+
 	}
 
 	private void setLockStateImage(boolean isLocked) {
@@ -554,9 +550,6 @@ public class LoginController implements Initializable {
 		if (clear) {
 			txtPassword.clear();
 		}
-		
-		
-		
 
 	}
 
@@ -629,6 +622,16 @@ public class LoginController implements Initializable {
 	private boolean mKeyDetectorstarted = false;
 
 	@FXML
+	private void onStartTypingDetectorAction(ActionEvent event) {
+		startKeyPressDetection();
+	}
+
+	@FXML
+	private void onCancelStartKeyDetectionClicked(MouseEvent event) {
+		mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
+	}
+
+	@FXML
 	private void onPasswordFieldKeyPressed(KeyEvent event) {
 
 		if (event.getCode() == KeyCode.ENTER) {
@@ -675,6 +678,8 @@ public class LoginController implements Initializable {
 
 				// mTCPServer.setAuthenticated(true);
 				// starteService (get Cues: Heartbeat, Proximity, usercontext)
+				lblLoginState.setText("logged in");
+				lblLockState.setText("unlocked");
 				mTCPServer.sendMessage(AppConstants.COMMAND_USERNAME + "::" + LoginUtil.getInstance().getUsername());
 				mTCPServer.sendMessage(AppConstants.COMMAND_UNLOCKED);
 				mTCPServer.sendMessage(AppConstants.COMMAND_START_SENDING_SENSORDATA);
@@ -703,14 +708,13 @@ public class LoginController implements Initializable {
 	private void startKeyPressDetection() {
 		progressTyping.setVisible(true);
 		imgTyping.setVisible(false);
-		txtPassword.setVisible(false);
-		lblPassword.setVisible(true);
-		lblPassword.setText("Starting keypress detection...");
+		lblPassword.setText("Starting...");
+		btnStartTypingDetector.setVisible(false);
+		imgCancelStartKeyDetection.setVisible(true);
 		mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
 	}
 
 	private void keypressDetectorReady() {
-		txtPassword.setVisible(true);
 		txtPassword.setDisable(false);
 		txtPassword.setFocusTraversable(true);
 		txtPassword.requestFocus();
@@ -718,7 +722,10 @@ public class LoginController implements Initializable {
 		progressTyping.setVisible(false);
 		imgTyping.setVisible(true);
 		lblPassword.setVisible(false);
-		lblPassword.setText("");
+		lblPassword.setText("Typing-Detector started");
+		imgStartingKeyDetectorSuccess.setVisible(true);
+		imgCancelStartKeyDetection.setVisible(false);
+
 	}
 
 	/*----------------ADD USER----------------*/

@@ -514,6 +514,13 @@ public class LoginController implements Initializable {
 		setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat", "0.0");
 		resetProximityFields();
 		resetUserStateFields();
+		
+		//TODO in setPWFields
+		progressTyping.setVisible(false);
+		imgTyping.setVisible(true);
+		lblTyping.setText("");
+		
+		
 	}
 
 	private void setLockStateImage(boolean isLocked) {
@@ -547,6 +554,9 @@ public class LoginController implements Initializable {
 		if (clear) {
 			txtPassword.clear();
 		}
+		
+		
+		
 
 	}
 
@@ -817,7 +827,7 @@ public class LoginController implements Initializable {
 
 				imgCancelRegister.setVisible(false);
 				imgBackRegister.setVisible(true);
-				lblCancel.setText("Back");
+				lblCancel.setText("Go to Main Screen");
 
 				lblUserName.setText(txtUsername.getText());
 			} else {

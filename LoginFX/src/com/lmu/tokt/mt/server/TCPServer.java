@@ -402,13 +402,13 @@ public class TCPServer extends Thread {
 			}
 
 			// unlock
-			if (isHeartBeating && !isFar) {
+			if (isHeartBeating && !isWalking && !isFar) {
 				if (isLocked) {
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_UNLOCKED, "unlocked");
 					isLocked = false;
 
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SIGNAL_SENDING, "sending");
-					sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
+					//mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SIGNAL_SENDING, "sending");
+					//sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
 					// playUnlockSound();
 					sendMessage(AppConstants.COMMAND_UNLOCKED);
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SENDING_NONE, "none");

@@ -594,7 +594,7 @@
 				</VBox>
 				<VBox fx:id="vBoxSkip" alignment="CENTER" onMouseClicked="#onSkipClicked" prefHeight="200.0" prefWidth="100.0" styleClass="vbox-skip">
 					<children>
-						<Label fx:id="lblSkip" text="SKIP" textFill="#616161">
+						<Label fx:id="lblSkip" text="NEXT" textFill="#616161">
 							<font>
 								<Font name="Helvetica Neue Light" size="14.0" />
 							</font>
