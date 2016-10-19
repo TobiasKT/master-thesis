@@ -26,16 +26,11 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.ProgressIndicator;
@@ -44,21 +39,17 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
 import javafx.util.Duration;
-import javafx.util.Pair;
 
 public class LoginController implements Initializable {
 
@@ -74,24 +65,27 @@ public class LoginController implements Initializable {
 	@FXML
 	private Label lblPublicIP, lblServerPort, lblServerStatus, lblDateTime;
 	@FXML
-	private ImageView imgSettings, imgLockState;
+	private ImageView imgSettings;
 
 	// root bottom fields
 	@FXML
 	private HBox hboxBottomButtons;
 	@FXML
 	private ImageView imgAddUser, imgChangeUser, imgSleep, imgShutDown;
+	@FXML
+	private Label lblLog;
 
 	// login fields
 	@FXML
 	private Circle circProfile;
 	@FXML
-	private Label lblUserName, lblConnectToWatch, lblPassword, lblTyping;
+	private Label lblUserName, lblConnectToWatch, lblPassword, lblTyping, lblLockState, lblLoginState;
 	@FXML
-	private ImageView imgWatchConnected, imgPassword, imgTyping, imgConnectedToWatchSuccess, imgCancelConnectToWatch,
-			imgPasswordCorrect;
+	private ImageView imgLockState, imgLoginStateState, imgWatchConnected, imgPassword, imgTyping,
+			imgConnectedToWatchSuccess, imgStartingKeyDetectorSuccess, imgCancelStartKeyDetection,
+			imgCancelConnectToWatch, imgPasswordCorrect;
 	@FXML
-	private Button btnConnectToWatch, btnLogin;
+	private Button btnConnectToWatch, btnLogin, btnStartTypingDetector;
 	@FXML
 	private PasswordField txtPassword;
 	@FXML
@@ -281,18 +275,18 @@ public class LoginController implements Initializable {
 					}
 				});
 				break;
-
-			case AppConstants.STATE_SERVER_STOPPED:
-
+			case AppConstants.STATE_PHONE_WATCH_DISCONNECTED:
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-
-						// Connection to watch stopped
-						lblServerStatus.setText(message);
 						resetAllFields();
+						setLockStateFields(true);
+						setLoginStateFields(false);
+						setAppFullscreen(true);
+						lblLog.setText(message);
 					}
 				});
+				System.out.println(TAG + ": ERROR Failing to connect to Smartwatch/Phone");
 				break;
 			case AppConstants.STATE_PHONE_WATCH_CONNECTED:
 				Platform.runLater(new Runnable() {
@@ -300,34 +294,8 @@ public class LoginController implements Initializable {
 					public void run() {
 
 						// Successful connection with watch
-						setConnectToWatchFields(new Image("drawable/icons/watch/watch_white_1.png"), true, false,
-								"Connected", true, false, false);
-						startKeyPressDetection();
-					}
-				});
-
-				break;
-			case AppConstants.STATE_NETWORK_ERROR:
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-
-						// TODO: reset all fields
-						resetAllFields();
-
-						setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, true,
-								"Connecting...", false, true, false);
-					}
-				});
-				System.out.println(TAG + ": ERROR Failing to connect to Smartwatch/Phone");
-				break;
-			case AppConstants.STATE_PHONE_WATCH_CONNECTION_CONFIRMED:
-				System.out.println(TAG + ": STATE CONFIRM callback");
-
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						lblConnectToWatch.setText("Connecting... (" + message + ")");
+						setConnectToWatchFields(mWhiteWatchImg, false, "Connected", true);
+						enableTypingDetectorFields(true);
 					}
 				});
 				break;
@@ -335,8 +303,7 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), false, "Heartbeat",
-								message);
+						setHeartBeatFields(mWhiteHeartImg, false, "Heartbeat", message);
 					}
 				});
 				break;
@@ -345,8 +312,7 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						// reset Heartbeat fields
-						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
-								"0.0");
+						setHeartBeatFields(mGreyHeartImg, false, "Heartbeat", "0.0");
 					}
 				});
 				break;
@@ -355,8 +321,10 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
+
+						// TODO: change icon depending on prox
 						lblProximityValue.setText(message.toLowerCase());
-						imgProximity.setImage(new Image("drawable/icons/signal/signal_white_1.png"));
+						imgProximity.setImage(mWhiteSignalImg);
 					}
 				});
 				break;
@@ -365,8 +333,7 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-
-						setLockStateImage(true);
+						setLockStateFields(true);
 						setAppFullscreen(true);
 					}
 				});
@@ -378,7 +345,7 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 
-						setLockStateImage(false);
+						setLockStateFields(false);
 						setAppFullscreen(false);
 
 						// TODO: createMiniView
@@ -390,7 +357,7 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						imgUserState.setImage(new Image("drawable/icons/user_state/standing_white.png"));
+						imgUserState.setImage(mWhiteStandingImg);
 						lblUserStateValue.setText(message);
 					}
 				});
@@ -400,7 +367,8 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						imgUserState.setImage(new Image("drawable/icons/user_state/walking_white.png"));
+
+						imgUserState.setImage(mWhiteWalkingImg);
 						lblUserStateValue.setText(message);
 					}
 				});
@@ -410,15 +378,18 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
-								new Image("drawable/icons/key/key_grey_1.png"), true, false, true, false, false, true);
 
-						setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat",
-								"0.0");
+						setAppFullscreen(true);
+						setLockStateFields(true);
+						setLoginStateFields(false);
+
+						setPasswordFields(mGreyKeyImg, true, true, false, true);
+						setHeartBeatFields(mGreyHeartImg, false, "Heartbeat", "0.0");
 						resetProximityFields();
 						resetUserStateFields();
 
-						// stopMeasurement
+						setTypingDetectorFields(mGreyKeyboardImg, false, "Typing-Detector off", false, false);
+						enableTypingDetectorFields(true);
 					}
 				});
 				break;
@@ -460,7 +431,6 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						lblTyping.setText("Typing sensors started");
 						keypressDetectorReady();
 					}
 				});
@@ -469,8 +439,11 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						lblTyping.setText("Typing detected");
-						login();
+						if (!onStoppingTypingSensorClicked) {
+							setTypingDetectorFields(mWhiteKeyboardImg, false, "Typing detected", true, false);
+							login();
+						}
+						onStoppingTypingSensorClicked = false;
 					}
 				});
 				break;
@@ -478,8 +451,12 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						lblTyping.setText("NO typing detected!");
-						startKeyPressDetection();
+						if (!onStoppingTypingSensorClicked) {
+							setPasswordFields(mGreyKeyImg, true, true, false, true);
+							setTypingDetectorFields(mGreyKeyboardImg, false, "No typing (start again)", false, false);
+							enableTypingDetectorFields(true);
+						}
+						onStoppingTypingSensorClicked = false;
 					}
 				});
 				break;
@@ -489,6 +466,33 @@ public class LoginController implements Initializable {
 		}
 	};
 
+	/*---------------- SET UI Fields----------------*/
+
+	private Image mLockedImg = new Image("drawable/icons/lock_state/locked.png");
+	private Image mUnlockedImg = new Image("drawable/icons/lock_state/unlocked.png");
+
+	private Image mLoginImg = new Image("drawable/icons/login_state/login.png");
+	private Image mLogoutImg = new Image("drawable/icons/login_state/logout.png");
+
+	private Image mGreyWatchImg = new Image("drawable/icons/watch/watch_grey_1.png");
+	private Image mWhiteWatchImg = new Image("drawable/icons/watch/watch_white_1.png");
+
+	private Image mGreyKeyboardImg = new Image("drawable/icons/keyboard/keyboard_grey_1.png");
+	private Image mWhiteKeyboardImg = new Image("drawable/icons/keyboard/keyboard_white_1.png");
+
+	private Image mGreyKeyImg = new Image("drawable/icons/key/key_grey_1.png");
+	private Image mWhiteKeyImg = new Image("drawable/icons/key/key_white_1.png");
+
+	private Image mGreyHeartImg = new Image("drawable/icons/heart/heart_grey_1.png");
+	private Image mWhiteHeartImg = new Image("drawable/icons/heart/heart_white_1.png");
+
+	private Image mGreySignal = new Image("drawable/icons/signal/signal_grey_1.png");
+	private Image mWhiteSignalImg = new Image("drawable/icons/signal/signal_white_1.png");
+
+	private Image mGreyStandingImg = new Image("drawable/icons/user_state/standing_grey.png");
+	private Image mWhiteStandingImg = new Image("drawable/icons/user_state/standing_white.png");
+	private Image mWhiteWalkingImg = new Image("drawable/icons/user_state/walking_white.png");
+
 	private void setAppFullscreen(boolean fullscreen) {
 
 		Stage stage = (Stage) root.getScene().getWindow();
@@ -496,47 +500,131 @@ public class LoginController implements Initializable {
 		if (fullscreen) {
 			stage.setIconified(false);
 			stage.setFullScreen(true);
+			stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		} else {
 			stage.setFullScreen(false);
-			stage.toBack();
 		}
 	}
 
 	private void resetAllFields() {
-		setLockStateImage(true);
 
-		setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, false, "Not Connected",
-				false, false, true);
+		onStoppingTypingSensorClicked = false;
 
-		setPasswordFields(new Image("drawable/icons/keyboard/keyboard_grey_1.png"),
-				new Image("drawable/icons/key/key_grey_1.png"), true, true, true, false, false, true);
+		setLockStateFields(true);
+		setLoginStateFields(false);
 
-		setHeartBeatFields(new Image("drawable/icons/heart/heart_grey_1.png"), false, "Heartbeat", "0.0");
+		setConnectToWatchFields(mGreyWatchImg, false, "Not Connected", false);
+
+		setTypingDetectorFields(mGreyKeyboardImg, false, "Typing-Detector off", false, false);
+		enableTypingDetectorFields(false);
+
+		setPasswordFields(mGreyKeyImg, true, true, false, true);
+
+		setHeartBeatFields(mGreyHeartImg, false, "Heartbeat", "0.0");
 		resetProximityFields();
 		resetUserStateFields();
-		
-		//TODO in setPWFields
-		progressTyping.setVisible(false);
-		imgTyping.setVisible(true);
-		lblTyping.setText("");
-		
-		
 	}
 
-	private void setLockStateImage(boolean isLocked) {
+	private void setLockStateFields(boolean isLocked) {
 		if (isLocked) {
-			imgLockState.setImage(new Image("drawable/icons/lock_state/locked.png"));
+			lblLockState.setText("locked");
+			imgLockState.setImage(mLockedImg);
 		} else {
-			imgLockState.setImage(new Image("drawable/icons/lock_state/unlocked.png"));
+			lblLockState.setText("unlocked");
+			imgLockState.setImage(mUnlockedImg);
 		}
 	}
 
-	private void setPasswordFields(Image keyboardImage, Image keyImage, boolean showPWInput, boolean disablePWInput,
-			boolean showLoginBtn, boolean showLblPW, boolean pwCorrect, boolean clear) {
+	private void setLoginStateFields(boolean isLoggedIn) {
+		if (isLoggedIn) {
+			lblLoginState.setText("logged In");
+			imgLoginStateState.setImage(mLoginImg);
+		} else {
+			lblLoginState.setText("logged out");
+			imgLoginStateState.setImage(mLogoutImg);
+		}
+	}
 
-		imgTyping.setImage(keyboardImage);
+	private void setConnectToWatchFields(Image img, boolean isInProgress, String connectionState,
+			boolean connectedSuccess) {
+
+		imgWatchConnected.setImage(img);
+		lblConnectToWatch.setText(connectionState);
+
+		if (isInProgress) {
+			progressConnectToWatch.setVisible(true);
+			imgWatchConnected.setVisible(false);
+			btnConnectToWatch.setVisible(false);
+			imgCancelConnectToWatch.setVisible(true);
+		} else {
+			progressConnectToWatch.setVisible(false);
+			imgWatchConnected.setVisible(true);
+			imgCancelConnectToWatch.setVisible(false);
+
+			if (connectedSuccess) {
+				btnConnectToWatch.setVisible(false);
+				imgConnectedToWatchSuccess.setVisible(true);
+			} else {
+				btnConnectToWatch.setVisible(true);
+				imgConnectedToWatchSuccess.setVisible(false);
+			}
+		}
+
+	}
+
+	private void setTypingDetectorFields(Image img, boolean isInProgress, String detectorState, boolean userWasTyping,
+			boolean isCancable) {
+
+		imgTyping.setImage(img);
+		lblTyping.setText(detectorState);
+
+		if (isInProgress) {
+			progressTyping.setVisible(true);
+			imgTyping.setVisible(false);
+			btnStartTypingDetector.setVisible(false);
+			imgCancelStartKeyDetection.setVisible(true);
+		} else {
+			progressTyping.setVisible(false);
+			imgTyping.setVisible(true);
+
+			if (userWasTyping) {
+				btnStartTypingDetector.setVisible(false);
+				imgStartingKeyDetectorSuccess.setVisible(true);
+				imgCancelStartKeyDetection.setVisible(false);
+			} else {
+
+				if (isCancable) {
+					btnStartTypingDetector.setVisible(false);
+					imgStartingKeyDetectorSuccess.setVisible(false);
+					imgCancelStartKeyDetection.setVisible(true);
+				} else {
+
+					btnStartTypingDetector.setVisible(true);
+					imgStartingKeyDetectorSuccess.setVisible(false);
+					imgCancelStartKeyDetection.setVisible(false);
+				}
+
+			}
+
+		}
+	}
+
+	private void enableTypingDetectorFields(boolean enable) {
+		lblTyping.setDisable(!enable);
+		btnStartTypingDetector.setDisable(!enable);
+	}
+
+	private void setPasswordFields(Image keyImage, boolean showPWInput, boolean disablePWInput, boolean pwCorrect,
+			boolean clear) {
+
 		imgPassword.setImage(keyImage);
-		txtPassword.setVisible(showPWInput);
+		if (showPWInput) {
+			txtPassword.setVisible(true);
+			lblPassword.setVisible(false);
+		} else {
+			txtPassword.setVisible(false);
+			lblPassword.setVisible(true);
+		}
 
 		if (disablePWInput) {
 			txtPassword.requestFocus();
@@ -547,16 +635,17 @@ public class LoginController implements Initializable {
 			txtPassword.setDisable(false);
 		}
 
-		btnLogin.setVisible(showLoginBtn);
-		lblPassword.setVisible(showLblPW);
-		imgPasswordCorrect.setVisible(pwCorrect);
+		if (pwCorrect) {
+			btnLogin.setVisible(false);
+			imgPasswordCorrect.setVisible(true);
+		} else {
+			btnLogin.setVisible(true);
+			imgPasswordCorrect.setVisible(false);
+		}
 
 		if (clear) {
 			txtPassword.clear();
 		}
-		
-		
-		
 
 	}
 
@@ -575,36 +664,17 @@ public class LoginController implements Initializable {
 		lblHeartbeatValue.setText(heartbeatValue);
 	}
 
-	private void setConnectToWatchFields(Image img, boolean connectedToWatch, boolean isInProgress,
-			String connectionState, boolean connectedSuccess, boolean cancel, boolean showButton) {
-
-		if (isInProgress) {
-			progressConnectToWatch.setVisible(true);
-			imgWatchConnected.setVisible(false);
-		} else {
-			progressConnectToWatch.setVisible(false);
-			imgWatchConnected.setVisible(true);
-		}
-
-		imgWatchConnected.setImage(img);
-		imgWatchConnected.setVisible(connectedToWatch);
-		lblConnectToWatch.setText(connectionState);
-		imgConnectedToWatchSuccess.setVisible(connectedSuccess);
-		imgCancelConnectToWatch.setVisible(cancel);
-		btnConnectToWatch.setVisible(showButton);
-	}
-
 	private void resetProximityFields() {
-		imgProximity.setImage(new Image("drawable/icons/signal/signal_grey_1.png"));
+		imgProximity.setImage(mGreySignal);
 		lblProximity.setText("Proximity");
 		lblProximityValue.setText("-");
 
 	}
 
 	private void resetUserStateFields() {
-		imgUserState.setImage(new Image("drawable/icons/user_state/standing_grey.png"));
+		imgUserState.setImage(mGreyStandingImg);
 		lblUserState.setText("User State");
-		lblUserStateValue.setText("-");
+		lblUserStateValue.setText("still");
 	}
 
 	/*----------------LOGIN----------------*/
@@ -622,11 +692,28 @@ public class LoginController implements Initializable {
 
 		System.out.println(TAG + ": connecting to watch/phone (checksum:" + checksum + ")");
 
-		setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), false, true,
-				"Connecting (" + checksum + ") ...", false, true, false);
+		setConnectToWatchFields(mGreyWatchImg, true, "Connecting (" + checksum + ") ...", false);
 	}
 
 	private boolean mKeyDetectorstarted = false;
+
+	@FXML
+	private void onStartTypingDetectorAction(ActionEvent event) {
+		startKeyPressDetection();
+	}
+
+	private boolean onStoppingTypingSensorClicked = false;
+
+	@FXML
+	private void onCancelStartKeyDetectionClicked(MouseEvent event) {
+
+		onStoppingTypingSensorClicked = true;
+		setTypingDetectorFields(mGreyKeyboardImg, false, "Typing-Detector off", false, false);
+		enableTypingDetectorFields(true);
+		setPasswordFields(mGreyKeyImg, true, true, false, true);
+
+		mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
+	}
 
 	@FXML
 	private void onPasswordFieldKeyPressed(KeyEvent event) {
@@ -634,9 +721,6 @@ public class LoginController implements Initializable {
 		if (event.getCode() == KeyCode.ENTER) {
 			mKeyDetectorstarted = false;
 			mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
-
-			// TODO: call after keypressed detector erfolgreich;
-			// login();
 		}
 
 	}
@@ -646,9 +730,6 @@ public class LoginController implements Initializable {
 
 		if (txtPassword.getLength() > 0 && !mKeyDetectorstarted && event.getCode() != KeyCode.ENTER) {
 			mKeyDetectorstarted = true;
-			// TODO sending TIMESTAMP of type starting
-			// mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
-			// TODO progressindicator & textfield disablen
 		}
 
 		if (txtPassword.getLength() == 0) {
@@ -661,22 +742,20 @@ public class LoginController implements Initializable {
 
 	private void login() {
 
-		// TODO stop typing sensors
-
 		try {
 			if (mLoginModel.isValidCredentials(lblUserName.getText(), txtPassword.getText())) {
 
 				System.out.println(TAG + ": username and password CORRECT");
+				lblLog.setText("");
 
-				setPasswordFields(new Image("drawable/icons/keyboard/keyboard_white_1.png"),
-						new Image("drawable/icons/key/key_white_1.png"), false, true, false, true, true, false);
+				setPasswordFields(mWhiteKeyImg, false, true, true, true);
+
+				setHeartBeatFields(mWhiteHeartImg, true, "Detect...", "0.0");
+
 				lblPassword.setText("Password correct");
-				setHeartBeatFields(new Image("drawable/icons/heart/heart_white_1.png"), true, "Detect...", "0.0");
 
-				// mTCPServer.setAuthenticated(true);
-				// starteService (get Cues: Heartbeat, Proximity, usercontext)
+				setLoginStateFields(true);
 				mTCPServer.sendMessage(AppConstants.COMMAND_USERNAME + "::" + LoginUtil.getInstance().getUsername());
-				mTCPServer.sendMessage(AppConstants.COMMAND_UNLOCKED);
 				mTCPServer.sendMessage(AppConstants.COMMAND_START_SENDING_SENSORDATA);
 
 			} else {
@@ -693,32 +772,21 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private void onCancelConnectToWatchClicked(MouseEvent event) {
-
-		setConnectToWatchFields(new Image("drawable/icons/watch/watch_grey_1.png"), true, false, "Not conneceted",
-				false, false, true);
-
-		// TODO killserver, stop server
+		setConnectToWatchFields(mGreyWatchImg, false, "Not connected", false);
 	}
 
 	private void startKeyPressDetection() {
-		progressTyping.setVisible(true);
-		imgTyping.setVisible(false);
-		txtPassword.setVisible(false);
-		lblPassword.setVisible(true);
-		lblPassword.setText("Starting keypress detection...");
+		setTypingDetectorFields(mGreyKeyboardImg, true, "Starting...", false, true);
 		mTCPServer.sendMessage(AppConstants.COMMAND_START_TYPING_SENSORS);
 	}
 
 	private void keypressDetectorReady() {
-		txtPassword.setVisible(true);
 		txtPassword.setDisable(false);
 		txtPassword.setFocusTraversable(true);
 		txtPassword.requestFocus();
 
-		progressTyping.setVisible(false);
-		imgTyping.setVisible(true);
-		lblPassword.setVisible(false);
-		lblPassword.setText("");
+		setTypingDetectorFields(mWhiteKeyboardImg, false, "Typing-Detector ON", false, true);
+
 	}
 
 	/*----------------ADD USER----------------*/

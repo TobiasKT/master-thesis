@@ -3,7 +3,6 @@ package com.lmu.tokt.mt;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
@@ -144,6 +143,8 @@ public class SettingsController implements Initializable {
 	private void onPlayTutorialClicked(MouseEvent event) {
 
 		try {
+			LoginController.getInstance().setAppFullscreen(false);
+
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/lmu/tokt/mt/Intro.fxml"));
 			Parent root1 = (Parent) fxmlLoader.load();
 			Stage stage = new Stage();
@@ -167,9 +168,6 @@ public class SettingsController implements Initializable {
 			System.out.println(TAG + ": FILE NOT FOUND ERROR updating background image. Exception: " + e.toString());
 		}
 
-		// LoginController.getInstance().getRoot()
-		// .setStyle("-fx-background-image: url('file://" +
-		// file.getAbsolutePath() + "');");
 	}
 
 	private void setAvatarImage(File file) {

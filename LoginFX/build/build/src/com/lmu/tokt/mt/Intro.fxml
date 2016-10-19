@@ -10,9 +10,9 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@intro.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lmu.tokt.mt.IntroController">
 	<children>
-		<AnchorPane VBox.vgrow="ALWAYS">
-			<children>
-				<VBox prefHeight="698.0" prefWidth="1024.0">
+      <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+         <children>
+				<VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
 					<children>
 						<HBox alignment="CENTER" prefHeight="70.0" styleClass="border-bottom-grey">
 							<children>
@@ -43,511 +43,517 @@
 								</Label>
 							</children>
 						</HBox>
-						<AnchorPane fx:id="anchorPaneIntroContainer" prefHeight="568.0" prefWidth="960.0">
-							<children>
-								<AnchorPane fx:id="anchorPaneIntro1" prefHeight="568.0" prefWidth="960.0">
-									<children>
-										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
-											<children>
-												<Label prefHeight="48.0" prefWidth="960.0" text="Welcome to the Authenticator application. This application simulates the lock screen of your desktop pc and uses a wearable device to implicitly the locking and unlocking process using different sensors (e.g. heart rate, stepcounter etc)." textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="48.0" prefWidth="960.0" text="Before you start using this application I kindly ask you to fill out a survey. It contains some demographic questions and some questions about your locking and unlocking behavior." textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Hyperlink fx:id="hyperlinkSurvey" onAction="#onSurveyAction" text="Survey" underline="true">
-													<VBox.margin>
-														<Insets bottom="16.0" top="32.0" />
-													</VBox.margin>
-													<font>
-														<Font name="Helvetica Neue Medium" size="14.0" />
-													</font>
-												</Hyperlink>
-												<ImageView fx:id="imgSurvey" fitHeight="394.0" fitWidth="582.0" onMouseClicked="#onSurveyImgClicked" pickOnBounds="true" preserveRatio="true" styleClass="img-survey" VBox.vgrow="ALWAYS">
-													<image>
-														<Image url="@../../../../drawable/intro/survey.png" />
-													</image>
-												</ImageView>
-											</children>
-											<padding>
-												<Insets bottom="16.0" top="32.0" />
-											</padding>
-										</VBox>
-									</children>
-								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro2" prefHeight="568.0" prefWidth="960.0" visible="false">
-									<children>
-										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
-											<children>
-												<VBox alignment="CENTER">
-													<children>
-														<Label prefHeight="70.0" text=" To use this application you need an up to date Android phone and a smartwatch with a heart rate monitor. " wrapText="true">
-															<font>
-																<Font size="16.0" />
-															</font>
-															<padding>
-																<Insets left="16.0" right="16.0" />
-															</padding>
-														</Label>
-													</children>
-												</VBox>
-												<Label prefHeight="56.0" prefWidth="960.0" text="Pairing phone and watch" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue Medium" size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-													<VBox.margin>
-														<Insets top="16.0" />
-													</VBox.margin>
-												</Label>
-												<HBox alignment="CENTER_LEFT" prefHeight="40.0">
-													<children>
-														<Label prefHeight="18.0" prefWidth="407.0" text="• Install the &quot;Android Wear - Smartwatch&quot; app on your phone:" textAlignment="JUSTIFY" wrapText="true">
-															<font>
-																<Font name="Helvetica Neue" size="14.0" />
-															</font>
-															<padding>
-																<Insets left="16.0" right="4.0" />
-															</padding>
-														</Label>
-														<Hyperlink fx:id="hyperlinkAndroidWear" onAction="#onAndroidWearAction" prefWidth="550.0" text="Anroid Wear - App" underline="true">
-                                             <font>
-                                                <Font name="Helvetica Neue" size="14.0" />
-                                             </font></Hyperlink>
-													</children>
-												</HBox>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Start the application and follow the instructions to pair phone and smartwatch" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="56.0" prefWidth="960.0" text="Install Authenticator app " textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue Medium" size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-													<VBox.margin>
-														<Insets top="32.0" />
-													</VBox.margin>
-												</Label>
-												<HBox alignment="CENTER_LEFT" prefHeight="40.0">
-													<children>
-														<Label prefHeight="18.0" prefWidth="317.0" text="• Install the &quot;Authenticator&quot; app on your phone:" textAlignment="JUSTIFY" wrapText="true">
-															<font>
-																<Font name="Helvetica Neue" size="14.0" />
-															</font>
-															<padding>
-																<Insets left="16.0" right="4.0" />
-															</padding>
-														</Label>
-														<Hyperlink fx:id="hyperlinkAuthenticator" onAction="#onAuthenticatorAction" prefWidth="550.0" text="Authenticator - App" underline="true">
-                                             <font>
-                                                <Font name="Helvetica Neue" size="14.0" />
-                                             </font></Hyperlink>
-													</children>
-												</HBox>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Be sure phone and smartwatch are paired" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<VBox prefHeight="40.0">
-													<children>
-														<Label text="• If the &quot;Authenticator&quot; app does not appear on your smartwatch, select your paired smartwatch in the &quot;Android Wear - Smartwatch&quot; app under" textAlignment="JUSTIFY" wrapText="true">
-															<font>
-																<Font name="Helvetica Neue" size="14.0" />
-															</font>
-															<padding>
-																<Insets left="16.0" right="16.0" />
-															</padding>
-														</Label>
-														<Label text=" &quot;Device Settings&quot; and select &quot;Resync apps&quot;" textAlignment="JUSTIFY" wrapText="true">
-															<font>
-																<Font name="Helvetica Neue" size="14.0" />
-															</font>
-															<padding>
-																<Insets left="16.0" right="16.0" />
-															</padding>
-														</Label>
-													</children>
-												</VBox>
-											</children>
-											<padding>
-												<Insets bottom="16.0" top="32.0" />
-											</padding>
-										</VBox>
-									</children>
-								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro3" prefHeight="568.0" prefWidth="960.0" visible="false">
-									<children>
-										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
-											<children>
-												<VBox alignment="CENTER">
-													<children>
-														<Label prefHeight="70.0" text="To use the application properly you have to grant some prmissions on your phone as well as on your smartwatch." wrapText="true">
-															<font>
-																<Font size="16.0" />
-															</font>
-															<padding>
-																<Insets left="16.0" right="16.0" />
-															</padding>
-														</Label>
-													</children>
-												</VBox>
-												<Label prefHeight="56.0" prefWidth="960.0" text="Phone" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue Medium" size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Go to &quot;Settings&quot; and select &quot;Apps&quot;" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• In the list look for &quot;Authenticator&quot; and select it" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Select &quot;Permissions&quot; and enable all of them" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="56.0" prefWidth="960.0" text="Smartwatch" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue Medium" size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-													<VBox.margin>
-														<Insets top="32.0" />
-													</VBox.margin>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Go to &quot;Settings&quot; and select &quot;Permissions&quot;" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• In the list look for &quot;Authenticator&quot; and select it" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• enable all permissions" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-											</children>
-											<padding>
-												<Insets bottom="16.0" top="32.0" />
-											</padding>
-										</VBox>
-									</children>
-								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro4" prefHeight="568.0" prefWidth="960.0" visible="false">
-									<children>
-										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
-											<padding>
-												<Insets bottom="16.0" top="32.0" />
-											</padding>
-											<children>
-												<Label prefHeight="56.0" prefWidth="960.0" text="Internet Connection" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue Medium" size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Connect your phone and your desktop pc to the same network (e.g. mobile hotspot, home network)" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Be sure IP address and Port in the desktop application and in the android application are equal" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-													<children>
-														<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-															<children>
-																<ImageView fitHeight="307.0" fitWidth="265.0" pickOnBounds="true" preserveRatio="true">
-																	<image>
-																		<Image url="@../../../../drawable/intro/settings_marked.png" />
-																	</image>
-																</ImageView>
-																<Label text="Desktop">
-																	<padding>
-																		<Insets top="16.0" />
-																	</padding>
-																	<font>
-																		<Font size="14.0" />
-																	</font>
-																</Label>
-															</children>
-															<HBox.margin>
-																<Insets right="128.0" />
-															</HBox.margin>
-														</VBox>
-														<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-															<children>
-																<ImageView fitHeight="307.0" fitWidth="265.0" pickOnBounds="true" preserveRatio="true">
-																	<image>
-																		<Image url="@../../../../drawable/intro/settings_phone_marked.png" />
-																	</image>
-																</ImageView>
-																<Label text="Android">
-																	<padding>
-																		<Insets top="16.0" />
-																	</padding>
-																	<font>
-																		<Font size="14.0" />
-																	</font>
-																</Label>
-															</children>
-														</VBox>
-													</children>
-													<padding>
-														<Insets left="64.0" top="32.0" />
-													</padding>
-												</HBox>
-											</children>
-										</VBox>
-									</children>
-								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro5" prefHeight="568.0" prefWidth="960.0" visible="false">
-									<children>
-										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
-											<children>
-												<Label prefHeight="56.0" prefWidth="960.0" text="Beacon" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue Medium" size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Be sure you slected the right beacon" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-													<children>
-														<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-															<children>
-																<ImageView fitHeight="417.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-																	<image>
-																		<Image url="@../../../../drawable/intro/beacon_settings.png" />
-																	</image>
-																</ImageView>
-																<Label text="Android">
-																	<font>
-																		<Font size="14.0" />
-																	</font>
-																	<padding>
-																		<Insets top="16.0" />
-																	</padding>
-																</Label>
-															</children>
-														</VBox>
-													</children>
-													<padding>
-														<Insets left="64.0" top="32.0" />
-													</padding>
-												</HBox>
-											</children>
-											<padding>
-												<Insets bottom="16.0" top="32.0" />
-											</padding>
-										</VBox>
-									</children>
-								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro6" prefHeight="568.0" prefWidth="960.0" visible="false">
-									<children>
-										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
-											<children>
-												<Label prefHeight="56.0" prefWidth="960.0" text="Connection - Desktop &amp; Phone" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue Medium" size="16.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<Label prefHeight="40.0" prefWidth="960.0" text="• Click on the &quot;connect&quot; icon in the desktop app to connect your phone to the desktop application" textAlignment="JUSTIFY" wrapText="true">
-													<font>
-														<Font name="Helvetica Neue" size="14.0" />
-													</font>
-													<padding>
-														<Insets left="16.0" right="16.0" />
-													</padding>
-												</Label>
-												<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-													<children>
-														<VBox alignment="CENTER">
-															<children>
-																<HBox alignment="CENTER">
-																	<children>
-																		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-																			<children>
-																				<ImageView fitHeight="417.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-																					<image>
-																						<Image url="@../../../../drawable/intro/connect_desktop.png" />
-																					</image>
-																				</ImageView>
-																			</children>
-																		</VBox>
-																		<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-																			<image>
-																				<Image url="@../../../../drawable/intro/arrow_right_2.png" />
-																			</image>
-																			<HBox.margin>
-																				<Insets left="8.0" right="8.0" />
-																			</HBox.margin>
-																		</ImageView>
-																		<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-																			<children>
-																				<ImageView fitHeight="279.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-																					<image>
-																						<Image url="@../../../../drawable/intro/connnect_desktop_2.png" />
-																					</image>
-																				</ImageView>
-																			</children>
-																		</VBox>
-																	</children>
-																</HBox>
-																<Label text="Desktop">
-																	<font>
-																		<Font size="14.0" />
-																	</font>
-																	<padding>
-																		<Insets top="18.0" />
-																	</padding>
-																</Label>
-															</children>
-															<HBox.margin>
-																<Insets right="64.0" />
-															</HBox.margin>
-														</VBox>
-														<VBox alignment="CENTER">
-															<children>
-																<HBox alignment="CENTER">
-																	<children>
-																		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-																			<children>
-																				<ImageView fitHeight="279.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-																					<image>
-																						<Image url="@../../../../drawable/intro/connect_phone.png" />
-																					</image>
-																				</ImageView>
-																			</children>
-																		</VBox>
-																		<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-																			<image>
-																				<Image url="@../../../../drawable/intro/arrow_right_2.png" />
-																			</image>
-																			<HBox.margin>
-																				<Insets left="8.0" right="8.0" />
-																			</HBox.margin>
-																		</ImageView>
-																		<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
-																			<children>
-																				<ImageView fitHeight="279.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-																					<image>
-																						<Image url="@../../../../drawable/intro/connect_phone_2.png" />
-																					</image>
-																				</ImageView>
-																			</children>
-																		</VBox>
-																	</children>
-																</HBox>
-																<Label text="Android">
-																	<font>
-																		<Font size="14.0" />
-																	</font>
-																	<padding>
-																		<Insets top="18.0" />
-																	</padding>
-																</Label>
-															</children>
-														</VBox>
-													</children>
-													<padding>
-														<Insets left="16.0" top="32.0" />
-													</padding>
-												</HBox>
-											</children>
-											<padding>
-												<Insets bottom="16.0" top="32.0" />
-											</padding>
-										</VBox>
-									</children>
-								</AnchorPane>
-							</children>
-						</AnchorPane>
+                  <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+                     <children>
+      						<AnchorPane fx:id="anchorPaneIntroContainer">
+      							<children>
+      								<AnchorPane fx:id="anchorPaneIntro1">
+      									<children>
+      										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
+      											<children>
+      												<Label prefHeight="48.0" prefWidth="960.0" text="Welcome to the Authenticator application. This application simulates the lock screen of your desktop pc and uses a wearable device to implicitly the locking and unlocking process using different sensors (e.g. heart rate, stepcounter etc)." textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="48.0" prefWidth="960.0" text="Before you start using this application I kindly ask you to fill out a survey. It contains some demographic questions and some questions about your locking and unlocking behavior." textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Hyperlink fx:id="hyperlinkSurvey" onAction="#onSurveyAction" text="Survey" underline="true">
+      													<VBox.margin>
+      														<Insets bottom="16.0" top="32.0" />
+      													</VBox.margin>
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="14.0" />
+      													</font>
+      												</Hyperlink>
+      												<ImageView fx:id="imgSurvey" fitHeight="394.0" fitWidth="582.0" onMouseClicked="#onSurveyImgClicked" pickOnBounds="true" preserveRatio="true" styleClass="img-survey" VBox.vgrow="ALWAYS">
+      													<image>
+      														<Image url="@../../../../drawable/intro/survey.png" />
+      													</image>
+      												</ImageView>
+      											</children>
+      											<padding>
+      												<Insets bottom="16.0" top="32.0" />
+      											</padding>
+      										</VBox>
+      									</children>
+      								</AnchorPane>
+      								<AnchorPane fx:id="anchorPaneIntro2" visible="false">
+      									<children>
+      										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
+      											<children>
+      												<VBox alignment="CENTER">
+      													<children>
+      														<Label prefHeight="70.0" text=" To use this application you need an up to date Android phone and a smartwatch with a heart rate monitor. " wrapText="true">
+      															<font>
+      																<Font size="16.0" />
+      															</font>
+      															<padding>
+      																<Insets left="16.0" right="16.0" />
+      															</padding>
+      														</Label>
+      													</children>
+      												</VBox>
+      												<Label prefHeight="56.0" prefWidth="960.0" text="Pairing phone and watch" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      													<VBox.margin>
+      														<Insets top="16.0" />
+      													</VBox.margin>
+      												</Label>
+      												<HBox alignment="CENTER_LEFT" prefHeight="40.0">
+      													<children>
+      														<Label prefHeight="18.0" prefWidth="407.0" text="• Install the &quot;Android Wear - Smartwatch&quot; app on your phone:" textAlignment="JUSTIFY" wrapText="true">
+      															<font>
+      																<Font name="Helvetica Neue" size="14.0" />
+      															</font>
+      															<padding>
+      																<Insets left="16.0" right="4.0" />
+      															</padding>
+      														</Label>
+      														<Hyperlink fx:id="hyperlinkAndroidWear" onAction="#onAndroidWearAction" prefWidth="550.0" text="Anroid Wear - App" underline="true">
+                                                   <font>
+                                                      <Font name="Helvetica Neue" size="14.0" />
+                                                   </font>
+                                                </Hyperlink>
+      													</children>
+      												</HBox>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Start the application and follow the instructions to pair phone and smartwatch" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="56.0" prefWidth="960.0" text="Install Authenticator app " textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      													<VBox.margin>
+      														<Insets top="32.0" />
+      													</VBox.margin>
+      												</Label>
+      												<HBox alignment="CENTER_LEFT" prefHeight="40.0">
+      													<children>
+      														<Label prefHeight="18.0" prefWidth="317.0" text="• Install the &quot;Authenticator&quot; app on your phone:" textAlignment="JUSTIFY" wrapText="true">
+      															<font>
+      																<Font name="Helvetica Neue" size="14.0" />
+      															</font>
+      															<padding>
+      																<Insets left="16.0" right="4.0" />
+      															</padding>
+      														</Label>
+      														<Hyperlink fx:id="hyperlinkAuthenticator" onAction="#onAuthenticatorAction" prefWidth="550.0" text="Authenticator - App" underline="true">
+                                                   <font>
+                                                      <Font name="Helvetica Neue" size="14.0" />
+                                                   </font>
+                                                </Hyperlink>
+      													</children>
+      												</HBox>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Be sure phone and smartwatch are paired" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<VBox prefHeight="40.0">
+      													<children>
+      														<Label text="• If the &quot;Authenticator&quot; app does not appear on your smartwatch, select your paired smartwatch in the &quot;Android Wear - Smartwatch&quot; app under" textAlignment="JUSTIFY" wrapText="true">
+      															<font>
+      																<Font name="Helvetica Neue" size="14.0" />
+      															</font>
+      															<padding>
+      																<Insets left="16.0" right="16.0" />
+      															</padding>
+      														</Label>
+      														<Label text=" &quot;Device Settings&quot; and select &quot;Resync apps&quot;" textAlignment="JUSTIFY" wrapText="true">
+      															<font>
+      																<Font name="Helvetica Neue" size="14.0" />
+      															</font>
+      															<padding>
+      																<Insets left="16.0" right="16.0" />
+      															</padding>
+      														</Label>
+      													</children>
+      												</VBox>
+      											</children>
+      											<padding>
+      												<Insets bottom="16.0" top="32.0" />
+      											</padding>
+      										</VBox>
+      									</children>
+      								</AnchorPane>
+      								<AnchorPane fx:id="anchorPaneIntro3" visible="false">
+      									<children>
+      										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
+      											<children>
+      												<VBox alignment="CENTER">
+      													<children>
+      														<Label prefHeight="70.0" text="To use the application properly you have to grant some prmissions on your phone as well as on your smartwatch." wrapText="true">
+      															<font>
+      																<Font size="16.0" />
+      															</font>
+      															<padding>
+      																<Insets left="16.0" right="16.0" />
+      															</padding>
+      														</Label>
+      													</children>
+      												</VBox>
+      												<Label prefHeight="56.0" prefWidth="960.0" text="Phone" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Go to &quot;Settings&quot; and select &quot;Apps&quot;" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• In the list look for &quot;Authenticator&quot; and select it" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Select &quot;Permissions&quot; and enable all of them" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="56.0" prefWidth="960.0" text="Smartwatch" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      													<VBox.margin>
+      														<Insets top="32.0" />
+      													</VBox.margin>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Go to &quot;Settings&quot; and select &quot;Permissions&quot;" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• In the list look for &quot;Authenticator&quot; and select it" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• enable all permissions" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      											</children>
+      											<padding>
+      												<Insets bottom="16.0" top="32.0" />
+      											</padding>
+      										</VBox>
+      									</children>
+      								</AnchorPane>
+      								<AnchorPane fx:id="anchorPaneIntro4" visible="false">
+      									<children>
+      										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
+      											<padding>
+      												<Insets bottom="16.0" top="32.0" />
+      											</padding>
+      											<children>
+      												<Label prefHeight="56.0" prefWidth="960.0" text="Internet Connection" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Connect your phone and your desktop pc to the same network (e.g. mobile hotspot, home network)" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Be sure IP address and Port in the desktop application and in the android application are equal" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+      													<children>
+      														<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+      															<children>
+      																<ImageView fitHeight="307.0" fitWidth="265.0" pickOnBounds="true" preserveRatio="true">
+      																	<image>
+      																		<Image url="@../../../../drawable/intro/settings_marked.png" />
+      																	</image>
+      																</ImageView>
+      																<Label text="Desktop">
+      																	<padding>
+      																		<Insets top="16.0" />
+      																	</padding>
+      																	<font>
+      																		<Font size="14.0" />
+      																	</font>
+      																</Label>
+      															</children>
+      															<HBox.margin>
+      																<Insets right="128.0" />
+      															</HBox.margin>
+      														</VBox>
+      														<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+      															<children>
+      																<ImageView fitHeight="307.0" fitWidth="265.0" pickOnBounds="true" preserveRatio="true">
+      																	<image>
+      																		<Image url="@../../../../drawable/intro/settings_phone_marked.png" />
+      																	</image>
+      																</ImageView>
+      																<Label text="Android">
+      																	<padding>
+      																		<Insets top="16.0" />
+      																	</padding>
+      																	<font>
+      																		<Font size="14.0" />
+      																	</font>
+      																</Label>
+      															</children>
+      														</VBox>
+      													</children>
+      													<padding>
+      														<Insets left="64.0" top="32.0" />
+      													</padding>
+      												</HBox>
+      											</children>
+      										</VBox>
+      									</children>
+      								</AnchorPane>
+      								<AnchorPane fx:id="anchorPaneIntro5" visible="false">
+      									<children>
+      										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
+      											<children>
+      												<Label prefHeight="56.0" prefWidth="960.0" text="Beacon" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Be sure you slected the right beacon" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+      													<children>
+      														<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+      															<children>
+      																<ImageView fitHeight="417.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+      																	<image>
+      																		<Image url="@../../../../drawable/intro/beacon_settings.png" />
+      																	</image>
+      																</ImageView>
+      																<Label text="Android">
+      																	<font>
+      																		<Font size="14.0" />
+      																	</font>
+      																	<padding>
+      																		<Insets top="16.0" />
+      																	</padding>
+      																</Label>
+      															</children>
+      														</VBox>
+      													</children>
+      													<padding>
+      														<Insets left="64.0" top="32.0" />
+      													</padding>
+      												</HBox>
+      											</children>
+      											<padding>
+      												<Insets bottom="16.0" top="32.0" />
+      											</padding>
+      										</VBox>
+      									</children>
+      								</AnchorPane>
+      								<AnchorPane fx:id="anchorPaneIntro6" visible="false">
+      									<children>
+      										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
+      											<children>
+      												<Label prefHeight="56.0" prefWidth="960.0" text="Connection - Desktop &amp; Phone" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue Medium" size="16.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<Label prefHeight="40.0" prefWidth="960.0" text="• Click on the &quot;connect&quot; icon in the desktop app to connect your phone to the desktop application" textAlignment="JUSTIFY" wrapText="true">
+      													<font>
+      														<Font name="Helvetica Neue" size="14.0" />
+      													</font>
+      													<padding>
+      														<Insets left="16.0" right="16.0" />
+      													</padding>
+      												</Label>
+      												<HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+      													<children>
+      														<VBox alignment="CENTER">
+      															<children>
+      																<HBox alignment="CENTER">
+      																	<children>
+      																		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+      																			<children>
+      																				<ImageView fitHeight="417.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+      																					<image>
+      																						<Image url="@../../../../drawable/intro/connect_desktop.png" />
+      																					</image>
+      																				</ImageView>
+      																			</children>
+      																		</VBox>
+      																		<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+      																			<image>
+      																				<Image url="@../../../../drawable/intro/arrow_right_2.png" />
+      																			</image>
+      																			<HBox.margin>
+      																				<Insets left="8.0" right="8.0" />
+      																			</HBox.margin>
+      																		</ImageView>
+      																		<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+      																			<children>
+      																				<ImageView fitHeight="279.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+      																					<image>
+      																						<Image url="@../../../../drawable/intro/connnect_desktop_2.png" />
+      																					</image>
+      																				</ImageView>
+      																			</children>
+      																		</VBox>
+      																	</children>
+      																</HBox>
+      																<Label text="Desktop">
+      																	<font>
+      																		<Font size="14.0" />
+      																	</font>
+      																	<padding>
+      																		<Insets top="18.0" />
+      																	</padding>
+      																</Label>
+      															</children>
+      															<HBox.margin>
+      																<Insets right="64.0" />
+      															</HBox.margin>
+      														</VBox>
+      														<VBox alignment="CENTER">
+      															<children>
+      																<HBox alignment="CENTER">
+      																	<children>
+      																		<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
+      																			<children>
+      																				<ImageView fitHeight="279.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+      																					<image>
+      																						<Image url="@../../../../drawable/intro/connect_phone.png" />
+      																					</image>
+      																				</ImageView>
+      																			</children>
+      																		</VBox>
+      																		<ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+      																			<image>
+      																				<Image url="@../../../../drawable/intro/arrow_right_2.png" />
+      																			</image>
+      																			<HBox.margin>
+      																				<Insets left="8.0" right="8.0" />
+      																			</HBox.margin>
+      																		</ImageView>
+      																		<VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0">
+      																			<children>
+      																				<ImageView fitHeight="279.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+      																					<image>
+      																						<Image url="@../../../../drawable/intro/connect_phone_2.png" />
+      																					</image>
+      																				</ImageView>
+      																			</children>
+      																		</VBox>
+      																	</children>
+      																</HBox>
+      																<Label text="Android">
+      																	<font>
+      																		<Font size="14.0" />
+      																	</font>
+      																	<padding>
+      																		<Insets top="18.0" />
+      																	</padding>
+      																</Label>
+      															</children>
+      														</VBox>
+      													</children>
+      													<padding>
+      														<Insets left="16.0" top="32.0" />
+      													</padding>
+      												</HBox>
+      											</children>
+      											<padding>
+      												<Insets bottom="16.0" top="32.0" />
+      											</padding>
+      										</VBox>
+      									</children>
+      								</AnchorPane>
+      							</children>
+      						</AnchorPane>
+                     </children>
+                  </VBox>
 					</children>
 					<padding>
 						<Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
 					</padding>
 				</VBox>
-			</children>
-		</AnchorPane>
+         </children>
+      </VBox>
 		<HBox alignment="CENTER" prefHeight="70.0">
 			<children>
 				<VBox fx:id="vBoxBack" alignment="CENTER" onMouseClicked="#onBackClicked" prefHeight="200.0" prefWidth="100.0" styleClass="vbox-back">

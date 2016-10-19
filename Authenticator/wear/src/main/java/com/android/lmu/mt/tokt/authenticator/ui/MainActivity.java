@@ -131,6 +131,7 @@ public class MainActivity extends WearableActivity {
                     Log.d(TAG, "Start typing detection result received");
                     String message = intent.getStringExtra(AppConstants.MESSAGE_RECEIVER_START_TYPING_DETECTION_MESSAGE);
                     mConnectionStateText.setText(message);
+                    mCuesContainerRL.setVisibility(View.GONE);
                     mTypingContainerRL.setVisibility(View.VISIBLE);
                     mKeyPressDetectorTask = new KeypressDetectorTask(MainActivity.this, mHandler);
                     mKeyPressDetectorTask.execute();
@@ -146,6 +147,7 @@ public class MainActivity extends WearableActivity {
                         mKeyPressDetectorTask.stopKeyDetector();
                     }
                     mTypingContainerRL.setVisibility(View.GONE);
+                    mCuesContainerRL.setVisibility(View.VISIBLE);
 
                 }
 

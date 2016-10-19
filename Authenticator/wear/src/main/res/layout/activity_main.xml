@@ -48,7 +48,7 @@
         android:layout_marginTop="@dimen/item_medium_margin"
         android:gravity="center"
         android:padding="@dimen/item_medium_padding"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <LinearLayout
             android:id="@+id/heart_rate_linear"

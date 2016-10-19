@@ -13,9 +13,9 @@ public final class Util {
 
     public static String getProximityStringByRSSI(int rssi) {
         String proximityString;
-        if (rssi >= -72) {
+        if (rssi >= -71) {
             proximityString = AppConstants.PROXIMITY_IMMEDIATE;
-        } else if (rssi < -79 && rssi >= -80) {
+        } else if (rssi < -71 && rssi >= -88) {
             proximityString = AppConstants.PROXIMITY_NEAR;
         } else {
             proximityString = AppConstants.PROXIMITY_FAR;

@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Random;
 
@@ -19,9 +18,6 @@ import org.json.simple.parser.ParseException;
 
 import com.lmu.tokt.mt.util.AppConstants;
 import com.lmu.tokt.mt.util.Checksum;
-
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 
 public class TCPServer extends Thread {
 
@@ -48,7 +44,7 @@ public class TCPServer extends Thread {
 
 	private boolean isHeartBeating = false;
 	private boolean isWalking = false;
-	private boolean isFar = false;
+	private boolean isFar = true;
 
 	private long mLastHeartrateTimestamp = 0;
 	private long mLastStepCountTimeStamp = 0;
@@ -57,7 +53,7 @@ public class TCPServer extends Thread {
 	private float mLastStepCount = 0;
 
 	private boolean isAuthenticated = false;
-	private boolean isLocked = false;
+	private boolean isLocked = true;
 
 	/* ------ Constructors ------- */
 
@@ -112,14 +108,6 @@ public class TCPServer extends Thread {
 		mIsConnectedToWatch = false;
 		mServerIsRunning = false;
 
-		/*
-		 * if (mConnection != null) {
-		 * sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT); }
-		 * mMessageListener.callbackMessageReceiver(AppConstants.
-		 * STATE_SERVER_STOPPED, "(Server stopped)"); try { mOutput.close();
-		 * mInput.close(); } catch (IOException e) { System.out.println(TAG +
-		 * ": Error stopping server. Exception " + e.toString()); }
-		 */
 	}
 
 	private void waitForConnection() {
@@ -155,11 +143,14 @@ public class TCPServer extends Thread {
 		}
 
 		while (mDataExchangeIsRunning) {
+
 			mIncomingMessage = mInput.readLine();
+
 			if (mIncomingMessage != null && mMessageListener != null) {
 
 				// confirm connection
 				if (mIncomingMessage.contains(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM)) {
+					System.out.println(TAG + ":message COMMAND_PHONE_WATCH_CONNECTION_CONFIRM");
 
 					int receivedChecksum = Integer.parseInt(mIncomingMessage.split(":")[1]);
 					if (receivedChecksum == mChecksum.getChecksum()) {
@@ -168,19 +159,25 @@ public class TCPServer extends Thread {
 								"Confirmation successful!");
 						sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECT);
 					} else {
-						mDataExchangeIsRunning = false;
-						mIsConnectedToWatch = false;
-						mMessageListener.callbackMessageReceiver(AppConstants.STATE_NETWORK_ERROR,
+						resetValues(true);
+						mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED,
 								"Confirmation failed!");
 						sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
 					}
 
 				}
 
+				if (mIncomingMessage.contains(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_DENY)) {
+					System.out.println(TAG + ":message COMMAND_PHONE_WATCH_CONNECTION_DENY");
+					resetValues(true);
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED,
+							"Confirmation denied!");
+				}
+
 				if (mIncomingMessage.equals(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT)) {
-					mDataExchangeIsRunning = false;
-					mIsConnectedToWatch = false;
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_NETWORK_ERROR, "Client disconnected!");
+					resetValues(true);
+					mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED,
+							"Client disconnected!");
 				}
 
 				if (mIncomingMessage.contains(AppConstants.SENSORDATA)) {
@@ -207,20 +204,48 @@ public class TCPServer extends Thread {
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_TYPING_SENSORS_STARTED,
 							"recognizing typing");
 				}
+
 				// validate states by timeStamp
+				if (isAuthenticated) {
+					validateHeartRateByTimeStamp();
+					validateUserStateByTimeStamp();
+					validateProximityByTimeStamp();
 
-				validateHeartRateByTimeStamp();
-				validateUserStateByTimeStamp();
-				validateProximityByTimeStamp();
+					validateAuthenticatorState();
+				}
 
-				validateAuthenticatorState();
-
-				// mMessageListener.callbackMessageReceiver(mIncomingMessage);
 			}
+
 			mIncomingMessage = null;
 		}
+
 		System.out.println(TAG + ": Data exchange stopped!");
 
+	}
+
+	// Send a mesage to the client
+	public void sendMessage(String message) {
+		try {
+			mOutput.write(message);
+			mOutput.newLine();
+			mOutput.flush();
+		} catch (IOException ioException) {
+			System.err.println(TAG + ": IO ERROR: Cannot send message, please retry! " + ioException.toString());
+		}
+	}
+
+	private void closeConnection() {
+		try {
+			if (mDataExchangeIsRunning) {
+				sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
+				mOutput.close();
+				mInput.close();
+				mConnection.close();
+			}
+			System.out.println(TAG + ": Connection closed!");
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
 	}
 
 	private void unpackSensorData(String data) {
@@ -258,7 +283,7 @@ public class TCPServer extends Thread {
 		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
 
 		float heartrate = values[0];
-		if (heartrate > 0) {
+		if (heartrate > 30 && heartrate < 200) {
 			System.out.println("E/" + TAG + ": New HEARTRATE [" + heartrate + "]");
 			mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING, "" + heartrate);
 			mLastHeartrateTimestamp = System.currentTimeMillis();
@@ -271,10 +296,16 @@ public class TCPServer extends Thread {
 		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
 
 		float stepCount = values[0];
+		double stepCountGap = stepCount - mLastStepCount;
+
+		System.out.println(TAG + ": stepgap " + stepCountGap);
+
 		if (stepCount > mLastStepCount) {
 			System.out.println("E/" + TAG + ": New step count [" + stepCount + "]");
 			mLastStepCount = stepCount;
-			mLastStepCountTimeStamp = System.currentTimeMillis();
+			if (stepCountGap <= 3) {
+				mLastStepCountTimeStamp = System.currentTimeMillis();
+			}
 		}
 	}
 
@@ -288,7 +319,7 @@ public class TCPServer extends Thread {
 		if (rssi >= -71) {
 			proximityString = AppConstants.PROXIMITY_IMMEDIATE;
 			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
-		} else if (rssi < -71 && rssi >= -81) {
+		} else if (rssi < -71 && rssi >= -88) {
 			proximityString = AppConstants.PROXIMITY_NEAR;
 			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
 		} else {
@@ -315,6 +346,8 @@ public class TCPServer extends Thread {
 
 	}
 
+	private long mNEWUserStateTimeStamp = 0;
+
 	private void validateUserStateByTimeStamp() {
 
 		if (mLastStepCountTimeStamp != 0) {
@@ -323,12 +356,27 @@ public class TCPServer extends Thread {
 
 			System.out.println("I/ " + TAG + ": last STEP COUNT time ago:" + timeAgo);
 
-			if (timeAgo > 3000) {
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_STILL, "still");
+			if (timeAgo > 2000) {
+
 				isWalking = false;
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_STILL, "still");
+				mNEWUserStateTimeStamp = System.currentTimeMillis();
+
 			} else {
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_WALKING, "walking");
+
+				if (mNEWUserStateTimeStamp != 0) {
+					long lastUserstate = getTimeAgo(mNEWUserStateTimeStamp);
+
+					if (lastUserstate < 2500) {
+						System.out.println(TAG + ": LAST USER STATE (walking): " + lastUserstate);
+						return;
+					}
+				}
+
 				isWalking = true;
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_WALKING, "walking");
+				mNEWUserStateTimeStamp = System.currentTimeMillis();
+
 			}
 		}
 	}
@@ -338,9 +386,9 @@ public class TCPServer extends Thread {
 		if (mLastProximityImmediateNearTimestamp != 0) {
 
 			long timeAgo = getTimeAgo(mLastProximityImmediateNearTimestamp);
-			System.out.println("I/ " + TAG + ": last PROXIMTIY IMMEDIATE/NEAR time ago:" + timeAgo);
+			System.out.println("I/ " + TAG + ": last PROXIMTIY IMMEDIATE/NEARtime ago:" + timeAgo);
 
-			if (timeAgo > 3500) {
+			if (timeAgo > 3000) {
 				isFar = true;
 			} else {
 				isFar = false;
@@ -367,93 +415,72 @@ public class TCPServer extends Thread {
 
 	private void validateAuthenticatorState() {
 
-		if (isAuthenticated) {
-			// autenticate again, re enter password
-			if (!isHeartBeating && mLastHeartrateTimestamp != 0) {
-				isAuthenticated = false;
-				mLastHeartrateTimestamp = 0;
-				mLastProximityImmediateNearTimestamp = 0;
-				mLastStepCountTimeStamp = 0;
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED, "");
-				sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
+		// autenticate again, re enter password
+		if (!isHeartBeating && mLastHeartrateTimestamp != 0) {
+			System.out.println(TAG + ": LOGOUT user & lock screen");
+			mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED, "No Heartrate");
+			sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
+			resetValues(true);
+			// mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED,"");
+			// resetValues(false);
+			// sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
+
+			if (getRandomNumber() > 7) {
+				System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
+				mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED, "logout");
+			}
+		}
+
+		// lock
+		if (isHeartBeating && (isWalking || isFar)) {
+			if (!isLocked) {
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_LOCKED, "locked");
+				isLocked = true;
+				System.out.println(TAG + ": LOCK screen");
+				sendMessage(AppConstants.COMMAND_LOCKED);
 
 				if (getRandomNumber() > 7) {
-					System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
-					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED,
-							"logout");
+					System.out.println(TAG + ": show LOCK dialog");
+					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_LOCK, "lock");
 				}
 			}
 
-			// lock
-			// TODO: ausbessern
-			if (isHeartBeating && (isWalking || isFar)) {
-				// if (isHeartBeating && isFar) {
-				if (!isLocked) {
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_LOCKED, "locked");
-					isLocked = true;
-					sendMessage(AppConstants.COMMAND_LOCKED);
+		}
 
-					if (getRandomNumber() > 7) {
-						System.out.println(TAG + ": show LOCK dialog");
-						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_LOCK, "lock");
-					}
-				}
+		// unlock
+		if (isHeartBeating && !isWalking && !isFar) {
+			if (isLocked) {
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_UNLOCKED, "unlocked");
+				isLocked = false;
+				sendMessage(AppConstants.COMMAND_UNLOCKED);
 
-			}
-
-			// unlock
-			if (isHeartBeating && !isFar) {
-				if (isLocked) {
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_UNLOCKED, "unlocked");
-					isLocked = false;
-
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SIGNAL_SENDING, "sending");
-					sendMessage(AppConstants.COMMAND_LISTEN_TO_SOUND);
-					// playUnlockSound();
-					sendMessage(AppConstants.COMMAND_UNLOCKED);
-					mMessageListener.callbackMessageReceiver(AppConstants.STATE_SOUND_SENDING_NONE, "none");
-
-					if (getRandomNumber() > 7) {
-						System.out.println(TAG + ": show UNLOCK dialog");
-						mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_UNLOCK, "unlock");
-					}
+				if (getRandomNumber() > 7) {
+					System.out.println(TAG + ": show UNLOCK dialog");
+					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_UNLOCK, "unlock");
 				}
 			}
 		}
 
 	}
 
-	private void playUnlockSound() {
-		System.out.println(TAG + ": play unlock sound");
-		final URL resource = getClass().getResource("back.mp3");
-		Media hit = new Media(resource.toString());
-		MediaPlayer mediaPlayer = new MediaPlayer(hit);
-		mediaPlayer.play();
-	}
-
-	// Send a mesage to the client
-	public void sendMessage(String message) {
-		try {
-			mOutput.write(message);
-			mOutput.newLine();
-			mOutput.flush();
-		} catch (IOException ioException) {
-			System.err.println(TAG + ": IO ERROR: Cannot send message, please retry! " + ioException.toString());
+	private void resetValues(boolean disconnect) {
+		if (disconnect) {
+			mIsConnectedToWatch = false;
+			mDataExchangeIsRunning = false;
 		}
-	}
+		isAuthenticated = false;
+		isLocked = true;
 
-	private void closeConnection() {
-		try {
-			if (mDataExchangeIsRunning) {
-				sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
-				mOutput.close();
-				mInput.close();
-				mConnection.close();
-			}
-			System.out.println(TAG + ": Connection closed!");
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
+		isHeartBeating = false;
+		isWalking = false;
+		isFar = true;
+
+		mLastHeartrateTimestamp = 0;
+		mLastProximityImmediateNearTimestamp = 0;
+		mLastStepCountTimeStamp = 0;
+		mLastStepCount = 0;
+
+		mNEWUserStateTimeStamp = 0;
 	}
 
 	public boolean isConnected() {

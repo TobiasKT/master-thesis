@@ -29,6 +29,7 @@ public class AppConstants {
 	public static final String COMMAND_PHONE_WATCH_CONNECT = "CONNECT";
 	public static final String COMMAND_PHONE_WATCH_DISCONNECT = "DISCONNECT";
 	public static final String COMMAND_PHONE_WATCH_CONNECTION_CONFIRM = "CONFIRM";
+	public static final String COMMAND_PHONE_WATCH_CONNECTION_DENY="DENY";
 	public static final String COMMAND_START_SENDING_SENSORDATA = "START_SENDING_SENSORDATA";
 	public static final String COMMAND_USER_AUTHENTICATED = "AUTHENTICATED";
 	public static final String COMMAND_USER_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
@@ -45,6 +46,7 @@ public class AppConstants {
 	public static final String COMMAND_USER_TYPING_FAILED = "USER_TYPING_FAILED";
 
 	public static final String COMMAND_TYPING_SENSORS_STARTED = "TYPING_SENSORS_STARTED";
+	
 
 	/*------------------------ PHONE/WATCH CONNECTION STATES ------------------------*/
 
@@ -56,7 +58,6 @@ public class AppConstants {
 
 	public static final int STATE_NETWORK_ERROR = -9999;
 	public static final int STATE_SERVER_RUNNING = 1000;
-	public static final int STATE_SERVER_STOPPED = 1001;
 
 	/*------------------------ USER STATES ------------------------*/
 

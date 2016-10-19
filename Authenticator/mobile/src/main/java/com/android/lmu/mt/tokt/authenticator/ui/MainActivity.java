@@ -991,8 +991,10 @@ public class MainActivity extends AppCompatActivity implements
                     mAuthenticatorAsyncTask.execute();
                     mConnectToServerBtn.setText(getResources().getString(R.string.disconnect));
                 } else {
-                    mAuthenticatorAsyncTask.getTCPClient().stopClient();
-                    mAuthenticatorAsyncTask.cancel(true);
+                    if (mAuthenticatorAsyncTask != null) {
+                        mAuthenticatorAsyncTask.getTCPClient().stopClient();
+                        mAuthenticatorAsyncTask.cancel(true);
+                    }
                     stopMeasurement();
                     mConnectToServerBtn.setText(getResources().getString(R.string.connect));
                 }
@@ -1016,6 +1018,13 @@ public class MainActivity extends AppCompatActivity implements
         if (!mResolvingError) {
             mGoogleApiClient.connect();
         }
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        Log.d(TAG, "App finished");
+        disconnectFromWatch();
     }
 
     private void disconnectFromWatch() {
@@ -1144,7 +1153,7 @@ public class MainActivity extends AppCompatActivity implements
                         connectToWatch();
                         break;
                     case DialogInterface.BUTTON_NEGATIVE:
-                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
+                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_DENY);
                         break;
                 }
             }

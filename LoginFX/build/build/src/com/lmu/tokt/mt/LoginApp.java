@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -57,6 +58,7 @@ public class LoginApp extends Application {
 			}
 		} catch (Exception e) {
 			System.out.println(TAG + ": ERROR loading primary stage. Exception: " + e.toString());
+			e.printStackTrace();
 		}
 
 	}
@@ -79,6 +81,8 @@ public class LoginApp extends Application {
 		scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 		mMainAppStage = primaryStage;
 		mMainAppStage.setScene(scene);
+		mMainAppStage.setFullScreen(true);
+		mMainAppStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
 		mMainAppStage.show();
 
 		mMainAppStage.setOnCloseRequest(new EventHandler<WindowEvent>() {

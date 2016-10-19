@@ -8,12 +8,8 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1024.0" stylesheets="@intro.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lmu.tokt.mt.IntroController">
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@intro.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lmu.tokt.mt.IntroController">
 	<children>
-		<AnchorPane VBox.vgrow="ALWAYS">
-			<children>
-				<VBox prefHeight="698.0" prefWidth="1024.0">
-					<children>
 						<HBox alignment="CENTER" prefHeight="70.0" styleClass="border-bottom-grey">
 							<children>
 								<ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
@@ -42,10 +38,15 @@
 									</font>
 								</Label>
 							</children>
+         <padding>
+            <Insets left="32.0" right="32.0" top="16.0" />
+         </padding>
 						</HBox>
-						<AnchorPane fx:id="anchorPaneIntroContainer" prefHeight="568.0" prefWidth="960.0">
+      <VBox alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+         <children>
+						<AnchorPane fx:id="anchorPaneIntroContainer">
 							<children>
-								<AnchorPane fx:id="anchorPaneIntro1" prefHeight="568.0" prefWidth="960.0">
+								<AnchorPane fx:id="anchorPaneIntro1">
 									<children>
 										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
 											<children>
@@ -85,7 +86,7 @@
 										</VBox>
 									</children>
 								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro2" prefHeight="568.0" prefWidth="960.0" visible="false">
+								<AnchorPane fx:id="anchorPaneIntro2" visible="false">
 									<children>
 										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
 											<children>
@@ -123,9 +124,10 @@
 															</padding>
 														</Label>
 														<Hyperlink fx:id="hyperlinkAndroidWear" onAction="#onAndroidWearAction" prefWidth="550.0" text="Anroid Wear - App" underline="true">
-                                             <font>
-                                                <Font name="Helvetica Neue" size="14.0" />
-                                             </font></Hyperlink>
+                                       <font>
+                                          <Font name="Helvetica Neue" size="14.0" />
+                                       </font>
+                                    </Hyperlink>
 													</children>
 												</HBox>
 												<Label prefHeight="40.0" prefWidth="960.0" text="• Start the application and follow the instructions to pair phone and smartwatch" textAlignment="JUSTIFY" wrapText="true">
@@ -158,9 +160,10 @@
 															</padding>
 														</Label>
 														<Hyperlink fx:id="hyperlinkAuthenticator" onAction="#onAuthenticatorAction" prefWidth="550.0" text="Authenticator - App" underline="true">
-                                             <font>
-                                                <Font name="Helvetica Neue" size="14.0" />
-                                             </font></Hyperlink>
+                                       <font>
+                                          <Font name="Helvetica Neue" size="14.0" />
+                                       </font>
+                                    </Hyperlink>
 													</children>
 												</HBox>
 												<Label prefHeight="40.0" prefWidth="960.0" text="• Be sure phone and smartwatch are paired" textAlignment="JUSTIFY" wrapText="true">
@@ -198,7 +201,7 @@
 										</VBox>
 									</children>
 								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro3" prefHeight="568.0" prefWidth="960.0" visible="false">
+								<AnchorPane fx:id="anchorPaneIntro3" visible="false">
 									<children>
 										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
 											<children>
@@ -288,7 +291,7 @@
 										</VBox>
 									</children>
 								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro4" prefHeight="568.0" prefWidth="960.0" visible="false">
+								<AnchorPane fx:id="anchorPaneIntro4" visible="false">
 									<children>
 										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
 											<padding>
@@ -367,7 +370,7 @@
 										</VBox>
 									</children>
 								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro5" prefHeight="568.0" prefWidth="960.0" visible="false">
+								<AnchorPane fx:id="anchorPaneIntro5" visible="false">
 									<children>
 										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
 											<children>
@@ -418,7 +421,7 @@
 										</VBox>
 									</children>
 								</AnchorPane>
-								<AnchorPane fx:id="anchorPaneIntro6" prefHeight="568.0" prefWidth="960.0" visible="false">
+								<AnchorPane fx:id="anchorPaneIntro6" visible="false">
 									<children>
 										<VBox alignment="TOP_CENTER" prefHeight="576.0" prefWidth="970.0">
 											<children>
@@ -541,13 +544,11 @@
 								</AnchorPane>
 							</children>
 						</AnchorPane>
-					</children>
-					<padding>
-						<Insets bottom="32.0" left="32.0" right="32.0" top="32.0" />
-					</padding>
-				</VBox>
-			</children>
-		</AnchorPane>
+         </children>
+         <padding>
+            <Insets right="32.0" />
+         </padding>
+      </VBox>
 		<HBox alignment="CENTER" prefHeight="70.0">
 			<children>
 				<VBox fx:id="vBoxBack" alignment="CENTER" onMouseClicked="#onBackClicked" prefHeight="200.0" prefWidth="100.0" styleClass="vbox-back">

@@ -1,6 +1,9 @@
 .blue-bg{
 	-fx-background-color: rgba(58.0, 83.0, 155.0,0.4);
 }
+.grey-bg{
+	-fx-background-color: #9E9E9EAA;
+}
 
 .list-space{
 	-fx-border-width: 1.0 0.0 1.0 0.0; 
@@ -10,11 +13,17 @@
 
 .header-space{
 	-fx-border-width: 0.0 0.0 1.0 0.0; 
+	-fx-background-color: #E0E0E0;
 	-fx-border-color: #BDBDBD;
 }
 
 .hand-cursor:hover{
 	-fx-cursor: hand;
+}
+
+.list-item:hover{
+	-fx-background-color: #eeeeee;
+	-fx-cursor:hand;
 }
 
 

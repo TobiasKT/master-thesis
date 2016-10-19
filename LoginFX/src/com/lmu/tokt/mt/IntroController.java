@@ -54,7 +54,6 @@ public class IntroController implements Initializable {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-
 		mLoginModel = new LoginModel();
 
 	}
@@ -84,14 +83,11 @@ public class IntroController implements Initializable {
 		try {
 			Desktop.getDesktop().browse(new URL(link).toURI());
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": ERROR open link. Exception: " + e.toString());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": ERROR open link. Exception: " + e.toString());
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(TAG + ": ERROR open link. Exception: " + e.toString());
 		}
 	}
 
@@ -259,9 +255,10 @@ public class IntroController implements Initializable {
 			mLoginModel.updateDidIntroState(1);
 			LoginApp.getInstance().closeIntro();
 			LoginApp.getInstance().openMainApp(LoginApp.getInstance().getStage(), true);
-		} catch (SQLException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (SQLException e) {
+			System.out.println(TAG + ": SQLERROR closing Intro. Exception: " + e.toString());
+		} catch (IOException e) {
+			System.out.println(TAG + ": IOERROR closing Intro. Exception: " + e.toString());
 		}
 
 	}
