@@ -128,12 +128,6 @@ public class MessageReceiverService extends WearableListenerService {
             sendResult(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT, AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE, "unlocked");
         }
 
-        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_USER_AUTHENTICATED)) {
-            mWatchClient.setAuthenticated(true);
-        }
-        if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_USER_NOT_AUTHENTICATED)) {
-            mWatchClient.setAuthenticated(false);
-        }
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_BEACON_UUID)) {
 
             String beaconUUID = new String(messageEvent.getData(), Charset.forName("UTF-8"));

@@ -64,7 +64,7 @@ public class WatchClient {
         long timeAgo = t - lastTimestamp;
 
         if (lastTimestamp != 0) {
-            if (timeAgo < 500) {
+            if (timeAgo < 250) {
                 return;
             }
         }
@@ -154,12 +154,4 @@ public class WatchClient {
         }
     }
 
-    public boolean isAuthenticated() {
-        return isAuthenticated;
-    }
-
-    public void setAuthenticated(boolean authenticated) {
-        Log.d(TAG, "authenticated: " + authenticated);
-        isAuthenticated = authenticated;
-    }
 }

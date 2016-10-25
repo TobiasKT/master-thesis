@@ -1,86 +1,40 @@
-/*  */
- #login-app{
-   -fx-background-image: url("../../../../drawable/wallpaper/background_3.jpg");
+.authenticator-bg{
+	-fx-background-image: url("../../../../drawable/wallpaper/background_3.jpg");
     -fx-background-size: cover;
     -fx-background-position: center center;
 }
 
-#round-login-btn{
-    -fx-background-color: rgba(230.0,230.0,230.0,0.6);
+.round-dark-gray-btn{
+	 -fx-background-color: #424242;
     -fx-background-radius: 100.0;
-    -fx-background-image: url("../../../../drawable/icons/actions/right-arrow.png");
     -fx-background-size: 50.0%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center center;
 }
 
-#round-connect-btn{
-    -fx-background-color: rgba(230.0,230.0,230.0,0.6);
-    -fx-background-radius: 100.0;
-    -fx-background-image: url("../../../../drawable/icons/actions/connect.png");
-    -fx-background-size: 50.0%;
-    -fx-background-insets: 0.0,20.0,0.0,0.0;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center center;
-}
-
-#round-edit-btn{
-    -fx-background-color: rgba(230.0,230.0,230.0,0.6);
-    -fx-background-radius: 100.0;
-    -fx-background-image: url("../../../../drawable/icons/edit.png");
-    -fx-background-size: 50.0%;
-    -fx-background-insets: 0.0,20.0,0.0,0.0;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center center;
-}
-
-#round-start-btn{
-    -fx-background-color: rgba(230.0,230.0,230.0,0.6);
-    -fx-background-radius: 100.0;
-    -fx-background-image: url("../../../../drawable/icons/actions/play_white.png");
-    -fx-background-size: 40.0%;
-    -fx-background-insets: 0.0,25.0,0.0,0.0;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center center;
-}
-
-#round-start-btn:hover{
-	-fx-background-color: rgba(255.0,255.0,255.0,0.7);
+.round-dark-gray-btn:hover{
+	-fx-background-color: #424242CC;
     -fx-cursor: hand;
 }
 
-
-#round-edit-btn:hover{
-	-fx-background-color: rgba(255.0,255.0,255.0,0.7);
-    -fx-cursor: hand;
+.connect-icon{
+	-fx-background-image: url("../../../../drawable/icons/actions/connect.png");
 }
 
-#round-connect-btn:hover{
-	-fx-background-color: rgba(255.0,255.0,255.0,0.7);
-    -fx-cursor: hand;
+.login-icon{
+	 -fx-background-image: url("../../../../drawable/icons/actions/right-arrow.png");
 }
 
-#round-login-btn:hover{
-    -fx-background-color: rgba(255.0,255.0,255.0,0.7);
-    -fx-cursor: hand;
+.edit-icon{
+	 -fx-background-image: url("../../../../drawable/icons/edit.png");
 }
 
-.window-button:hover{
-	-fx-background-color: rgba(230.0,230.0,230.0,0.4);
-    -fx-background-radius: 100.0;
-    -fx-background-size: 50.0%;
-	-fx-cursor: hand;
+.start-icon{
+	 -fx-background-image: url("../../../../drawable/icons/actions/play_white.png");
 }
 
 .hand-cursor:hover{
 	-fx-cursor: hand;
-}
-
-.transparent-textfield{
-	-fx-background-color: rgba(255.0,255.0,255.0,0.6);
-	-fx-text-fill: white;
-	-fx-prompt-text-fill: rgba(255.0,255.0,255.0,0.7);
-	-fx-background-radius: 6.0px;
 }
 
 .white-outline-btn{
@@ -95,6 +49,14 @@
 	 -fx-background-color: rgba(255.0,255.0,255.0,0.3);
 	-fx-cursor: hand;
 }
+
+.transparent-textfield{
+	-fx-background-color: rgba(255.0,255.0,255.0,0.6);
+	-fx-text-fill: white;
+	-fx-prompt-text-fill: rgba(255.0,255.0,255.0,0.7);
+	-fx-background-radius: 6.0px;
+}
+
 
 .border-top-white{
 	-fx-border-width: 1.0 0.0 0.0 0.0; 
@@ -154,6 +116,27 @@
 	-fx-prompt-text-fill: rgba(0.0,0.0,0.0,0.5);
 	-fx-border-width: 0.0 0.0 1.0 0.0; 
 	-fx-border-color: #5C6BC0;
+}
+
+.dropshadow-gray{
+	-fx-effect: dropshadow(gaussian, #bdbdbdaa, 1.0, 0.0, 0.0, 1.0);
+}
+
+.edit-password-textfield{
+	-fx-background-color: rgba(255.0,255.0,255.0,0.0);
+	-fx-text-fill: #616161;
+	-fx-padding: 4.0 , 0.0 ,0.0 , 0.0;
+	-fx-prompt-text-fill: #616161AA;
+	-fx-border-width: 0.0 0.0 1.5 0.0; 
+	-fx-border-color: #616161;
+}
+
+.edit-password-textfield:disabled{
+	-fx-background-color: rgba(255.0,255.0,255.0,0.0);
+	-fx-text-fill: #757575;
+	-fx-opacity: 1.0;
+	-fx-prompt-text-fill: #757575AA;
+	-fx-border-color: #757575AA;
 }
 
 

@@ -144,7 +144,6 @@ public class SettingsController implements Initializable {
 
 		try {
 			LoginController.getInstance().setAppFullscreen(false);
-
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/lmu/tokt/mt/Intro.fxml"));
 			Parent root1 = (Parent) fxmlLoader.load();
 			Stage stage = new Stage();

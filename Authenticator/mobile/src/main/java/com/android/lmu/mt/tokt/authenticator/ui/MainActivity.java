@@ -350,7 +350,6 @@ public class MainActivity extends AppCompatActivity implements
 
                         if (mGoogleApiClient.isConnected()) {
                             startMeasurement(getSavedBeaconBLName());
-                            setUserIsAuthenticatedState(true);
                         } else {
                             //Connect to watch and start sensor service
                             connectToWatch();
@@ -359,7 +358,6 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     case AppConstants.STATE_NOT_AUTHENTICATED:
                         addTag("not_authenticated");
-                        setUserIsAuthenticatedState(false);
                         stopMeasurement();
 
                         break;
@@ -833,21 +831,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
     }
-
-    public void setUserIsAuthenticatedState(final boolean isAuthenticated) {
-        mExecutorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                if (isAuthenticated) {
-                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_USER_AUTHENTICATED);
-                } else {
-                    sendRemoteCommandToWatch(AppConstants.CLIENT_PATH_USER_NOT_AUTHENTICATED);
-                }
-
-            }
-        });
-    }
-
 
     public void sendLockStateToWatch(final boolean isLocked) {
         mExecutorService.submit(new Runnable() {

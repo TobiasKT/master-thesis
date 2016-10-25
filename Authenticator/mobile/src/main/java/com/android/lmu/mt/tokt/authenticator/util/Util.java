@@ -12,12 +12,10 @@ public final class Util {
     private static String mUsername = "";
 
     public static String getProximityStringByRSSI(int rssi) {
-        String proximityString;
-        if (rssi >= -71) {
-            proximityString = AppConstants.PROXIMITY_IMMEDIATE;
-        } else if (rssi < -71 && rssi >= -88) {
+        String proximityString = "undefined";
+        if (rssi >= -85) {
             proximityString = AppConstants.PROXIMITY_NEAR;
-        } else {
+        } else if(rssi < -85){
             proximityString = AppConstants.PROXIMITY_FAR;
         }
         return proximityString;

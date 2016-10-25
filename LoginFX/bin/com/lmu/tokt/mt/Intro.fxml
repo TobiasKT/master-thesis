@@ -46,50 +46,46 @@
          <children>
 						<AnchorPane fx:id="anchorPaneIntroContainer">
 							<children>
-                  <VBox alignment="CENTER">
-                     <children>
-      								<AnchorPane fx:id="anchorPaneIntro1" VBox.vgrow="ALWAYS">
-      									<children>
-      										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
-      											<children>
-      												<Label prefHeight="48.0" prefWidth="960.0" text="Welcome to the Authenticator application. This application simulates the lock screen of your desktop pc and uses a wearable device to implicitly the locking and unlocking process using different sensors (e.g. heart rate, stepcounter etc)." textAlignment="JUSTIFY" wrapText="true">
-      													<font>
-      														<Font size="16.0" />
-      													</font>
-      													<padding>
-      														<Insets left="16.0" right="16.0" />
-      													</padding>
-      												</Label>
-      												<Label prefHeight="48.0" prefWidth="960.0" text="Before you start using this application I kindly ask you to fill out a survey. It contains some demographic questions and some questions about your locking and unlocking behavior." textAlignment="JUSTIFY" wrapText="true">
-      													<font>
-      														<Font size="16.0" />
-      													</font>
-      													<padding>
-      														<Insets left="16.0" right="16.0" />
-      													</padding>
-      												</Label>
-      												<Hyperlink fx:id="hyperlinkSurvey" onAction="#onSurveyAction" text="Survey" underline="true">
-      													<VBox.margin>
-      														<Insets bottom="16.0" top="32.0" />
-      													</VBox.margin>
-      													<font>
-      														<Font name="Helvetica Neue Medium" size="14.0" />
-      													</font>
-      												</Hyperlink>
-      												<ImageView fx:id="imgSurvey" fitHeight="394.0" fitWidth="582.0" onMouseClicked="#onSurveyImgClicked" pickOnBounds="true" preserveRatio="true" styleClass="img-survey" VBox.vgrow="ALWAYS">
-      													<image>
-      														<Image url="@../../../../drawable/intro/survey.png" />
-      													</image>
-      												</ImageView>
-      											</children>
-      											<padding>
-      												<Insets bottom="16.0" top="32.0" />
-      											</padding>
-      										</VBox>
-      									</children>
-      								</AnchorPane>
-                     </children>
-                  </VBox>
+								<AnchorPane fx:id="anchorPaneIntro1">
+									<children>
+										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
+											<children>
+												<Label prefHeight="48.0" prefWidth="960.0" text="Welcome to the Authenticator application. This application simulates the lock screen of your desktop pc and uses a wearable device to implicitly the locking and unlocking process using different sensors (e.g. heart rate, stepcounter etc)." textAlignment="JUSTIFY" wrapText="true">
+													<font>
+														<Font size="16.0" />
+													</font>
+													<padding>
+														<Insets left="16.0" right="16.0" />
+													</padding>
+												</Label>
+												<Label prefHeight="48.0" prefWidth="960.0" text="Before you start using this application I kindly ask you to fill out a survey. It contains some demographic questions and some questions about your locking and unlocking behavior." textAlignment="JUSTIFY" wrapText="true">
+													<font>
+														<Font size="16.0" />
+													</font>
+													<padding>
+														<Insets left="16.0" right="16.0" />
+													</padding>
+												</Label>
+												<Hyperlink fx:id="hyperlinkSurvey" onAction="#onSurveyAction" text="Survey" underline="true">
+													<VBox.margin>
+														<Insets bottom="16.0" top="32.0" />
+													</VBox.margin>
+													<font>
+														<Font name="Helvetica Neue Medium" size="14.0" />
+													</font>
+												</Hyperlink>
+												<ImageView fx:id="imgSurvey" fitHeight="394.0" fitWidth="582.0" onMouseClicked="#onSurveyImgClicked" pickOnBounds="true" preserveRatio="true" styleClass="img-survey" VBox.vgrow="ALWAYS">
+													<image>
+														<Image url="@../../../../drawable/intro/survey.png" />
+													</image>
+												</ImageView>
+											</children>
+											<padding>
+												<Insets bottom="16.0" top="32.0" />
+											</padding>
+										</VBox>
+									</children>
+								</AnchorPane>
 								<AnchorPane fx:id="anchorPaneIntro2" visible="false">
 									<children>
 										<VBox alignment="TOP_CENTER" prefHeight="566.0" prefWidth="960.0">
@@ -549,6 +545,9 @@
 							</children>
 						</AnchorPane>
          </children>
+         <padding>
+            <Insets right="32.0" />
+         </padding>
       </VBox>
 		<HBox alignment="CENTER" prefHeight="70.0">
 			<children>

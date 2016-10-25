@@ -93,11 +93,12 @@ public class LoginController implements Initializable {
 
 	// cues fields
 	@FXML
-	private Label lblHeartbeat, lblHeartbeatValue, lblProximity, lblProximityValue, lblUserState, lblUserStateValue;
+	private Label lblHeartbeat, lblHeartbeatValue, lblProximity, lblProximityValue, lblUserState, lblUserStateValue,
+			lblInformation;
 	@FXML
 	private ImageView imgHeartBeat, imgProximity, imgUserState;
 	@FXML
-	private ProgressIndicator progressHeartrateDetection;
+	private ProgressIndicator progressHeartrateDetection, progressProximity;
 
 	// add user fields
 	@FXML
@@ -271,7 +272,7 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						lblServerStatus.setText(message);
+						lblInformation.setText(message);
 					}
 				});
 				break;
@@ -283,7 +284,7 @@ public class LoginController implements Initializable {
 						setLockStateFields(true);
 						setLoginStateFields(false);
 						setAppFullscreen(true);
-						lblLog.setText(message);
+						lblInformation.setText(message);
 					}
 				});
 				System.out.println(TAG + ": ERROR Failing to connect to Smartwatch/Phone");
@@ -294,8 +295,9 @@ public class LoginController implements Initializable {
 					public void run() {
 
 						// Successful connection with watch
-						setConnectToWatchFields(mWhiteWatchImg, false, "Connected", true);
+						setConnectToWatchFields(mBlackWatchImg, false, "Connected", true);
 						enableTypingDetectorFields(true);
+						lblInformation.setText(message);
 					}
 				});
 				break;
@@ -321,10 +323,7 @@ public class LoginController implements Initializable {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-
-						// TODO: change icon depending on prox
-						lblProximityValue.setText(message.toLowerCase());
-						imgProximity.setImage(mWhiteSignalImg);
+						setProximityFields(mWhiteSignalImg, false, "Proximity", message.toLowerCase());
 					}
 				});
 				break;
@@ -385,11 +384,13 @@ public class LoginController implements Initializable {
 
 						setPasswordFields(mGreyKeyImg, true, true, false, true);
 						setHeartBeatFields(mGreyHeartImg, false, "Heartbeat", "0.0");
-						resetProximityFields();
+						setProximityFields(mGreySignalImg, false, "Proximity", "-");
 						resetUserStateFields();
 
 						setTypingDetectorFields(mGreyKeyboardImg, false, "Typing-Detector off", false, false);
 						enableTypingDetectorFields(true);
+						
+						lblInformation.setText(message);
 					}
 				});
 				break;
@@ -440,7 +441,7 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						if (!onStoppingTypingSensorClicked) {
-							setTypingDetectorFields(mWhiteKeyboardImg, false, "Typing detected", true, false);
+							setTypingDetectorFields(mBlackKeyboardImg, false, "Typing detected", true, false);
 							login();
 						}
 						onStoppingTypingSensorClicked = false;
@@ -455,6 +456,7 @@ public class LoginController implements Initializable {
 							setPasswordFields(mGreyKeyImg, true, true, false, true);
 							setTypingDetectorFields(mGreyKeyboardImg, false, "No typing (start again)", false, false);
 							enableTypingDetectorFields(true);
+							lblInformation.setText("Are you wearing the watch?");
 						}
 						onStoppingTypingSensorClicked = false;
 					}
@@ -475,18 +477,18 @@ public class LoginController implements Initializable {
 	private Image mLogoutImg = new Image("drawable/icons/login_state/logout.png");
 
 	private Image mGreyWatchImg = new Image("drawable/icons/watch/watch_grey_1.png");
-	private Image mWhiteWatchImg = new Image("drawable/icons/watch/watch_white_1.png");
+	private Image mBlackWatchImg = new Image("drawable/icons/watch/wristwatch_black.png");
 
 	private Image mGreyKeyboardImg = new Image("drawable/icons/keyboard/keyboard_grey_1.png");
-	private Image mWhiteKeyboardImg = new Image("drawable/icons/keyboard/keyboard_white_1.png");
+	private Image mBlackKeyboardImg = new Image("drawable/icons/keyboard/keyboard_black.png");
 
 	private Image mGreyKeyImg = new Image("drawable/icons/key/key_grey_1.png");
-	private Image mWhiteKeyImg = new Image("drawable/icons/key/key_white_1.png");
+	private Image mBlackKeyImg = new Image("drawable/icons/key/key_black.png");
 
 	private Image mGreyHeartImg = new Image("drawable/icons/heart/heart_grey_1.png");
 	private Image mWhiteHeartImg = new Image("drawable/icons/heart/heart_white_1.png");
 
-	private Image mGreySignal = new Image("drawable/icons/signal/signal_grey_1.png");
+	private Image mGreySignalImg = new Image("drawable/icons/signal/signal_grey_1.png");
 	private Image mWhiteSignalImg = new Image("drawable/icons/signal/signal_white_1.png");
 
 	private Image mGreyStandingImg = new Image("drawable/icons/user_state/standing_grey.png");
@@ -521,7 +523,7 @@ public class LoginController implements Initializable {
 		setPasswordFields(mGreyKeyImg, true, true, false, true);
 
 		setHeartBeatFields(mGreyHeartImg, false, "Heartbeat", "0.0");
-		resetProximityFields();
+		setProximityFields(mGreySignalImg, false, "Proximity", "-");
 		resetUserStateFields();
 	}
 
@@ -664,11 +666,18 @@ public class LoginController implements Initializable {
 		lblHeartbeatValue.setText(heartbeatValue);
 	}
 
-	private void resetProximityFields() {
-		imgProximity.setImage(mGreySignal);
-		lblProximity.setText("Proximity");
-		lblProximityValue.setText("-");
+	private void setProximityFields(Image img, boolean isInProgress, String proximity, String value) {
+		if (isInProgress) {
+			progressProximity.setVisible(true);
+			imgProximity.setVisible(false);
+		} else {
+			progressProximity.setVisible(false);
+			imgProximity.setVisible(true);
+		}
 
+		imgProximity.setImage(img);
+		lblProximity.setText(proximity);
+		lblProximityValue.setText(value);
 	}
 
 	private void resetUserStateFields() {
@@ -748,11 +757,14 @@ public class LoginController implements Initializable {
 				System.out.println(TAG + ": username and password CORRECT");
 				lblLog.setText("");
 
-				setPasswordFields(mWhiteKeyImg, false, true, true, true);
+				setPasswordFields(mBlackKeyImg, false, true, true, true);
 
 				setHeartBeatFields(mWhiteHeartImg, true, "Detect...", "0.0");
+				setProximityFields(mWhiteSignalImg, true, "Detect", " - ");
+				imgUserState.setImage(mWhiteStandingImg);
 
 				lblPassword.setText("Password correct");
+				lblInformation.setText("Checking...");
 
 				setLoginStateFields(true);
 				mTCPServer.sendMessage(AppConstants.COMMAND_USERNAME + "::" + LoginUtil.getInstance().getUsername());
@@ -785,7 +797,7 @@ public class LoginController implements Initializable {
 		txtPassword.setFocusTraversable(true);
 		txtPassword.requestFocus();
 
-		setTypingDetectorFields(mWhiteKeyboardImg, false, "Typing-Detector ON", false, true);
+		setTypingDetectorFields(mBlackKeyboardImg, false, "Typing-Detector active", false, true);
 
 	}
 

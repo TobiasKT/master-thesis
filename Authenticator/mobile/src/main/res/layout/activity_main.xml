@@ -70,472 +70,501 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="32dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="8dp">
 
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/header_height"
-                android:background="@color/indigo_400">
-
-                <ImageView
-                    android:id="@+id/server_img"
-                    android:layout_width="@dimen/header_img_width"
-                    android:layout_height="@dimen/header_img_height"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/activity_vertical_margin"
-                    android:src="@drawable/server" />
-
-
-                <TextView
-                    android:id="@+id/phone_server_title_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/item_medium_margin"
-                    android:layout_toRightOf="@id/server_img"
-                    android:text="@string/server"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:textColor="@color/white" />
-
-                <TextView
-                    android:id="@+id/server_connection_status_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/disconnected"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    android:textColor="@color/white" />
-            </RelativeLayout>
-
-
-            <RelativeLayout
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/item_medium_padding"
-                android:paddingLeft="@dimen/activity_padding"
-                android:paddingRight="@dimen/activity_padding"
-                android:paddingTop="@dimen/item_medium_padding">
+                app:cardCornerRadius="2dp">
 
-                <TextView
-                    android:id="@+id/server_ip_title_text"
-                    android:layout_width="@dimen/item_description_text_width"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:text="@string/server_ip_title"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/server_ip_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/edit_button_height"
-                    android:layout_alignParentEnd="true"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/edit"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    android:textColor="@color/colorPrimary" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/header_height"
+                        android:background="@color/grey_500">
 
-                <EditText
-                    android:id="@+id/server_ip_edit_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
-                    android:layout_toLeftOf="@id/server_ip_btn"
-                    android:layout_toRightOf="@id/server_ip_title_text"
-                    android:enabled="false"
-                    android:gravity="center"
-                    android:text="@string/server_ip"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                        <ImageView
+                            android:id="@+id/server_img"
+                            android:layout_width="@dimen/header_img_width"
+                            android:layout_height="@dimen/header_img_height"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:src="@drawable/server" />
 
-            </RelativeLayout>
 
-            <RelativeLayout
+                        <TextView
+                            android:id="@+id/phone_server_title_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/item_medium_margin"
+                            android:layout_toRightOf="@id/server_img"
+                            android:text="@string/server"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                            android:textColor="@color/white" />
+
+                        <TextView
+                            android:id="@+id/server_connection_status_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="@string/disconnected"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@color/white" />
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="@dimen/item_medium_padding"
+                        android:paddingLeft="@dimen/activity_padding"
+                        android:paddingRight="@dimen/activity_padding"
+                        android:paddingTop="@dimen/item_medium_padding">
+
+                        <TextView
+                            android:id="@+id/server_ip_title_text"
+                            android:layout_width="@dimen/item_description_text_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:text="@string/server_ip_title"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                        <Button
+                            android:id="@+id/server_ip_btn"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/edit_button_height"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="@string/edit"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@color/grey_700" />
+
+                        <EditText
+                            android:id="@+id/server_ip_edit_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/activity_vertical_margin"
+                            android:layout_toLeftOf="@id/server_ip_btn"
+                            android:layout_toRightOf="@id/server_ip_title_text"
+                            android:enabled="false"
+                            android:gravity="center"
+                            android:text="@string/server_ip"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingBottom="@dimen/activity_padding"
+                        android:paddingLeft="@dimen/activity_padding"
+                        android:paddingRight="@dimen/activity_padding"
+                        android:paddingTop="@dimen/item_medium_padding">
+
+                        <TextView
+                            android:id="@+id/server_port_title_text"
+                            android:layout_width="@dimen/item_description_text_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:text="@string/server_port_title"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                        <Button
+                            android:id="@+id/server_port_btn"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/edit_button_height"
+                            android:layout_alignParentEnd="true"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="@string/edit"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@color/grey_700" />
+
+                        <EditText
+                            android:id="@+id/server_port_edit_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:layout_toLeftOf="@id/server_port_btn"
+                            android:layout_toRightOf="@id/server_port_title_text"
+                            android:enabled="false"
+                            android:gravity="center"
+                            android:inputType="number"
+                            android:text="@string/server_port"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:id="@+id/server_state_relative"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingTop="8dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:id="@+id/server_state_title_text"
+                            android:layout_width="65dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="16dp"
+                            android:text="State"
+                            android:textSize="14sp" />
+
+                        <TextView
+                            android:id="@+id/server_state_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@id/server_state_title_text"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                    </RelativeLayout>
+
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/border_height"
+                        android:paddingLeft="@dimen/item_medium_padding"
+                        android:paddingRight="@dimen/item_medium_padding"
+                        android:src="@color/grey_300"
+                        android:visibility="visible" />
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/item_medium_margin">
+
+                        <Button
+                            android:id="@+id/connect_phone_to_server_btn"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:paddingLeft="@dimen/activity_padding"
+                            android:paddingRight="@dimen/activity_padding"
+                            android:text="@string/connect"
+                            android:textColor="@color/grey_800" />
+
+                    </RelativeLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingBottom="@dimen/item_medium_padding"
-                android:paddingLeft="@dimen/activity_padding"
-                android:paddingRight="@dimen/activity_padding"
-                android:paddingTop="@dimen/item_medium_padding">
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="2dp"
+                app:cardCornerRadius="2dp">
 
-                <TextView
-                    android:id="@+id/server_port_title_text"
-                    android:layout_width="@dimen/item_description_text_width"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:text="@string/server_port_title"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/server_port_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/edit_button_height"
-                    android:layout_alignParentEnd="true"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/edit"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    android:textColor="@color/colorPrimary" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/header_height"
+                        android:background="@color/grey_500">
 
-                <EditText
-                    android:id="@+id/server_port_edit_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:layout_toLeftOf="@id/server_port_btn"
-                    android:layout_toRightOf="@id/server_port_title_text"
-                    android:enabled="false"
-                    android:gravity="center"
-                    android:inputType="number"
-                    android:text="@string/server_port"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-            </RelativeLayout>
+                        <ImageView
+                            android:id="@+id/smartwatch_img"
+                            android:layout_width="@dimen/header_img_width"
+                            android:layout_height="@dimen/header_img_height"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:src="@drawable/watch_white_1" />
 
 
-            <RelativeLayout
-                android:id="@+id/server_state_relative"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="8dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:id="@+id/server_state_title_text"
-                    android:layout_width="65dp"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="16dp"
-                    android:text="State"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:id="@+id/server_state_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/server_state_title_text"
-                    android:text="-"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-            </RelativeLayout>
+                        <TextView
+                            android:id="@+id/phone_watch_title_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/item_medium_margin"
+                            android:layout_toRightOf="@id/smartwatch_img"
+                            android:text="@string/watch"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                            android:textColor="@color/white" />
 
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/border_height"
-                android:paddingLeft="@dimen/activity_padding"
-                android:paddingRight="@dimen/activity_padding"
-                android:src="@color/grey_300"
-                android:visibility="visible" />
+                        <TextView
+                            android:id="@+id/watch_connection_status_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="@string/disconnected"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                            android:textColor="@color/white" />
+                    </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_padding">
+                    <RelativeLayout
+                        android:id="@+id/heart_rate_relative"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/activity_padding">
 
-                <Button
-                    android:id="@+id/connect_phone_to_server_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/connect_button_width"
-                    android:layout_height="@dimen/connect_button_height"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/rectangle_ripple"
-                    android:fontFamily="sans-serif"
-                    android:paddingLeft="@dimen/activity_padding"
-                    android:paddingRight="@dimen/activity_padding"
-                    android:text="@string/connect"
-                    android:textColor="@color/white" />
+                        <ImageView
+                            android:id="@+id/heartbeat_img"
+                            android:layout_width="@dimen/cue_img_height"
+                            android:layout_height="@dimen/cue_img_width"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/heartbeat" />
 
-            </RelativeLayout>
+                        <TextView
+                            android:id="@+id/heart_rate_title_text"
+                            android:layout_width="@dimen/cue_text_title_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:layout_marginRight="@dimen/activity_vertical_margin"
+                            android:layout_toRightOf="@id/heartbeat_img"
+                            android:text="@string/heartrate"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/grey_700" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/header_height"
-                android:layout_marginTop="@dimen/activity_horizontal_margin"
-                android:background="@color/indigo_400">
+                        <TextView
+                            android:id="@+id/heart_rate_text"
+                            android:layout_width="@dimen/cue_value_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@id/heart_rate_title_text"
+                            android:gravity="center"
+                            android:text="@string/zero_value_double"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
-                <ImageView
-                    android:id="@+id/smartwatch_img"
-                    android:layout_width="@dimen/header_img_width"
-                    android:layout_height="@dimen/header_img_height"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/activity_vertical_margin"
-                    android:src="@drawable/watch_white_1" />
+                    </RelativeLayout>
 
+                    <RelativeLayout
+                        android:id="@+id/steps_relative"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/activity_padding">
 
-                <TextView
-                    android:id="@+id/phone_watch_title_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/item_medium_margin"
-                    android:layout_toRightOf="@id/smartwatch_img"
-                    android:text="@string/watch"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    android:textColor="@color/white" />
+                        <ImageView
+                            android:id="@+id/steps_img"
+                            android:layout_width="@dimen/cue_img_width"
+                            android:layout_height="@dimen/cue_img_height"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/walking" />
 
+                        <TextView
+                            android:id="@+id/steps_title_text"
+                            android:layout_width="@dimen/cue_text_title_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:layout_marginRight="@dimen/activity_vertical_margin"
+                            android:layout_toRightOf="@id/steps_img"
+                            android:text="@string/steps"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/grey_700" />
 
-                <TextView
-                    android:id="@+id/watch_connection_status_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="@dimen/activity_horizontal_margin"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="@string/disconnected"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-                    android:textColor="@color/white" />
-            </RelativeLayout>
+                        <TextView
+                            android:id="@+id/steps_text"
+                            android:layout_width="@dimen/cue_value_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@id/steps_title_text"
+                            android:gravity="center"
+                            android:text="@string/zero_value_double"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
-            <RelativeLayout
-                android:id="@+id/heart_rate_relative"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_padding">
+                    </RelativeLayout>
 
-                <ImageView
-                    android:id="@+id/heartbeat_img"
-                    android:layout_width="@dimen/cue_img_height"
-                    android:layout_height="@dimen/cue_img_width"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/heartbeat" />
+                    <RelativeLayout
+                        android:id="@+id/proximity_relative"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/activity_padding">
 
-                <TextView
-                    android:id="@+id/heart_rate_title_text"
-                    android:layout_width="@dimen/cue_text_title_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/activity_vertical_margin"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
-                    android:layout_toRightOf="@id/heartbeat_img"
-                    android:text="@string/heartrate"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/grey_700" />
+                        <ImageView
+                            android:id="@+id/proximity_img"
+                            android:layout_width="@dimen/cue_img_width"
+                            android:layout_height="@dimen/cue_img_height"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/signal" />
 
-                <TextView
-                    android:id="@+id/heart_rate_text"
-                    android:layout_width="@dimen/cue_value_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/heart_rate_title_text"
-                    android:gravity="center"
-                    android:text="@string/zero_value_double"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                        <TextView
+                            android:id="@+id/proximity_title_text"
+                            android:layout_width="@dimen/cue_text_title_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:layout_marginRight="@dimen/activity_vertical_margin"
+                            android:layout_toRightOf="@id/proximity_img"
+                            android:text="@string/proximity"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/grey_700" />
 
-            </RelativeLayout>
+                        <TextView
+                            android:id="@+id/proximity_text"
+                            android:layout_width="@dimen/cue_value_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toRightOf="@id/proximity_title_text"
+                            android:gravity="center"
+                            android:text="@string/placeholder"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
-            <RelativeLayout
-                android:id="@+id/steps_relative"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_padding">
+                    </RelativeLayout>
 
-                <ImageView
-                    android:id="@+id/steps_img"
-                    android:layout_width="@dimen/cue_img_width"
-                    android:layout_height="@dimen/cue_img_height"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/walking" />
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/activity_padding">
 
-                <TextView
-                    android:id="@+id/steps_title_text"
-                    android:layout_width="@dimen/cue_text_title_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/activity_vertical_margin"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
-                    android:layout_toRightOf="@id/steps_img"
-                    android:text="@string/steps"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/grey_700" />
+                        <ImageView
+                            android:id="@+id/beacon_img"
+                            android:layout_width="@dimen/cue_img_width"
+                            android:layout_height="@dimen/cue_img_height"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/beacon" />
 
-                <TextView
-                    android:id="@+id/steps_text"
-                    android:layout_width="@dimen/cue_value_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/steps_title_text"
-                    android:gravity="center"
-                    android:text="@string/zero_value_double"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                        <TextView
+                            android:id="@+id/beacon_title_text"
+                            android:layout_width="@dimen/cue_text_title_width"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="@dimen/activity_vertical_margin"
+                            android:layout_marginRight="@dimen/activity_vertical_margin"
+                            android:layout_toRightOf="@id/beacon_img"
+                            android:text="@string/listen_to"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:textColor="@color/grey_700" />
 
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/proximity_relative"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_padding">
-
-                <ImageView
-                    android:id="@+id/proximity_img"
-                    android:layout_width="@dimen/cue_img_width"
-                    android:layout_height="@dimen/cue_img_height"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/signal" />
-
-                <TextView
-                    android:id="@+id/proximity_title_text"
-                    android:layout_width="@dimen/cue_text_title_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/activity_vertical_margin"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
-                    android:layout_toRightOf="@id/proximity_img"
-                    android:text="@string/proximity"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/grey_700" />
-
-                <TextView
-                    android:id="@+id/proximity_text"
-                    android:layout_width="@dimen/cue_value_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toRightOf="@id/proximity_title_text"
-                    android:gravity="center"
-                    android:text="@string/placeholder"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/activity_padding">
-
-                <ImageView
-                    android:id="@+id/beacon_img"
-                    android:layout_width="@dimen/cue_img_width"
-                    android:layout_height="@dimen/cue_img_height"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/beacon" />
-
-                <TextView
-                    android:id="@+id/beacon_title_text"
-                    android:layout_width="@dimen/cue_text_title_width"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="@dimen/activity_vertical_margin"
-                    android:layout_marginRight="@dimen/activity_vertical_margin"
-                    android:layout_toRightOf="@id/beacon_img"
-                    android:text="@string/listen_to"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                    android:textColor="@color/grey_700" />
-
-                <Spinner
-                    android:id="@+id/beacon_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/beacon_title_text"
-                    android:gravity="center"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
+                        <Spinner
+                            android:id="@+id/beacon_spinner"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@id/beacon_title_text"
+                            android:gravity="center"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
 
-            </RelativeLayout>
+                    </RelativeLayout>
 
-            <RelativeLayout
-                android:id="@+id/sound_relative"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="8dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="8dp"
-                android:visibility="gone">
+                    <RelativeLayout
+                        android:id="@+id/sound_relative"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="8dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:paddingTop="8dp"
+                        android:visibility="gone">
 
-                <ImageView
-                    android:id="@+id/sound_img"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_centerVertical="true"
-                    android:src="@drawable/beacon" />
+                        <ImageView
+                            android:id="@+id/sound_img"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_centerVertical="true"
+                            android:src="@drawable/beacon" />
 
-                <TextView
-                    android:id="@+id/sound_title_text"
-                    android:layout_width="80dp"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginRight="16dp"
-                    android:layout_toRightOf="@id/sound_img"
-                    android:text="Beacon"
-                    android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/sound_title_text"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_toRightOf="@id/sound_img"
+                            android:text="Beacon"
+                            android:textSize="14sp" />
 
 
-                <ImageView
-                    android:id="@+id/edit_beacon_uuid_img"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"
-                    android:background="@drawable/round_ripple"
-                    android:padding="4dp"
-                    android:src="@android:drawable/ic_menu_edit"
-                    android:text="Edit" />
+                        <ImageView
+                            android:id="@+id/edit_beacon_uuid_img"
+                            android:layout_width="28dp"
+                            android:layout_height="28dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="8dp"
+                            android:background="@drawable/round_ripple"
+                            android:padding="4dp"
+                            android:src="@android:drawable/ic_menu_edit"
+                            android:text="Edit" />
 
-                <EditText
-                    android:id="@+id/beacon_uuid_edit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_toLeftOf="@id/edit_beacon_uuid_img"
-                    android:layout_toRightOf="@id/sound_title_text"
-                    android:enabled="false"
-                    android:text="E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"
-                    android:textSize="12sp"
-                    android:textStyle="normal" />
+                        <EditText
+                            android:id="@+id/beacon_uuid_edit"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerVertical="true"
+                            android:layout_toLeftOf="@id/edit_beacon_uuid_img"
+                            android:layout_toRightOf="@id/sound_title_text"
+                            android:enabled="false"
+                            android:text="E2C56DB5-DFFB-48D2-B060-D0F5A71096E0"
+                            android:textSize="12sp"
+                            android:textStyle="normal" />
 
-            </RelativeLayout>
+                    </RelativeLayout>
 
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/border_height"
-                android:paddingLeft="@dimen/activity_padding"
-                android:paddingRight="@dimen/activity_padding"
-                android:src="@color/grey_300" />
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/border_height"
+                        android:paddingLeft="@dimen/activity_padding"
+                        android:paddingRight="@dimen/activity_padding"
+                        android:visibility="gone"
+                        android:src="@color/grey_300" />
 
-            <RelativeLayout
-                android:id="@+id/connection_to_watch_relative"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/activity_horizontal_margin"
-                android:padding="@dimen/activity_padding">
+                    <RelativeLayout
+                        android:id="@+id/connection_to_watch_relative"
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/activity_horizontal_margin"
+                        android:padding="@dimen/activity_padding">
 
-                <Button
-                    android:id="@+id/connect_phone_to_watch_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/connect_button_width"
-                    android:layout_height="@dimen/connect_button_height"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:background="@drawable/rectangle_ripple"
-                    android:fontFamily="sans-serif"
-                    android:paddingLeft="@dimen/activity_padding"
-                    android:paddingRight="@dimen/activity_padding"
-                    android:text="@string/connect"
-                    android:textColor="@color/white" />
+                        <Button
+                            android:id="@+id/connect_phone_to_watch_btn"
+                            style="@style/Widget.AppCompat.Button.Borderless"
+                            android:layout_width="@dimen/connect_button_width"
+                            android:layout_height="@dimen/connect_button_height"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:background="@drawable/rectangle_ripple"
+                            android:fontFamily="sans-serif"
+                            android:paddingLeft="@dimen/activity_padding"
+                            android:paddingRight="@dimen/activity_padding"
+                            android:text="@string/connect"
+                            android:textColor="@color/white" />
 
-            </RelativeLayout>
+                    </RelativeLayout>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

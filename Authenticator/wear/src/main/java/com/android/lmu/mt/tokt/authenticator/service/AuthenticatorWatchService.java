@@ -300,7 +300,7 @@ public class AuthenticatorWatchService extends Service
 
             if (mHeartRateSensor != null) {
                 final int measurementDuration = 8;   // Seconds
-                final int measurementBreak = 2;    // Seconds
+                final int measurementBreak = 1;    // Seconds
 
                 mScheduler = Executors.newScheduledThreadPool(1);
                 mScheduler.scheduleAtFixedRate(
@@ -390,7 +390,7 @@ public class AuthenticatorWatchService extends Service
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 for (final Beacon beacon : beacons) {
                     //String data = logGenericBeacon(beacon);
-                     if (mBeaconBLName.equals(beacon.getBluetoothName())) {
+                    if (mBeaconBLName.equals(beacon.getBluetoothName())) {
                         Log.d(TAG, "Proximity: " + getProximityStringByRSSI(beacon.getRssi()));
                         long timestamp = System.currentTimeMillis();
                         String proximity = getProximityStringByRSSI(beacon.getRssi());
@@ -430,12 +430,10 @@ public class AuthenticatorWatchService extends Service
     }
 
     public static String getProximityStringByRSSI(int rssi) {
-        String proximityString;
-        if (rssi >= -71) {
-            proximityString = AppConstants.PROXIMITY_IMMEDIATE;
-        } else if (rssi < -71 && rssi >= -88) {
+        String proximityString = "undefined";
+        if (rssi >= -85) {
             proximityString = AppConstants.PROXIMITY_NEAR;
-        } else {
+        } else if (rssi < -85) {
             proximityString = AppConstants.PROXIMITY_FAR;
         }
         return proximityString;
