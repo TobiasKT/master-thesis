@@ -505,7 +505,7 @@ public class TCPServer extends Thread {
 
 	}
 
-	private void resetValues(boolean disconnect) {
+	public void resetValues(boolean disconnect) {
 		
 		if (disconnect) {
 			mIsConnectedToWatch = false;
@@ -558,7 +558,6 @@ public class TCPServer extends Thread {
 		return mServer;
 	}
 
-	// show on Screen, use as callback to show if authenticated or not
 	public interface MessageCallback {
 		public void callbackMessageReceiver(String message);
 

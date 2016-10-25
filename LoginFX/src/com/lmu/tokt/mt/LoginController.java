@@ -281,8 +281,8 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						resetAllFields();
-						setLockStateFields(true);
-						setLoginStateFields(false);
+						//setLockStateFields(true);
+						//setLoginStateFields(false);
 						setAppFullscreen(true);
 						lblInformation.setText(message);
 					}
@@ -508,7 +508,7 @@ public class LoginController implements Initializable {
 		}
 	}
 
-	private void resetAllFields() {
+	public void resetAllFields() {
 
 		onStoppingTypingSensorClicked = false;
 
@@ -1097,6 +1097,10 @@ public class LoginController implements Initializable {
 
 	public Label getServerPort() {
 		return lblServerPort;
+	}
+	
+	public Label getInformationLbl(){
+		return lblInformation;
 	}
 
 	private void showDialog(String headerText, int dialogEventType) {
