@@ -303,7 +303,7 @@ public class TCPServer extends Thread {
 		if (stepCount > mLastStepCount) {
 			System.out.println("E/" + TAG + ": New step count [" + stepCount + "]");
 			mLastStepCount = stepCount;
-			if (stepCountGap <= 3) {
+			if (stepCountGap <= 2) {
 				mLastStepCountTimeStamp = System.currentTimeMillis();
 			}
 		}
@@ -348,6 +348,8 @@ public class TCPServer extends Thread {
 
 			System.out.println("I/" + TAG + ": last HEART BEAT time ago:" + timeAgo);
 
+			//Moto sport
+			//if (timeAgo > 30000) {
 			if (timeAgo > 12000) {
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "NO HEARTBEAT");
 				isHeartBeating = false;
@@ -377,7 +379,7 @@ public class TCPServer extends Thread {
 				if (mNEWUserStateTimeStamp != 0) {
 					long lastUserstate = getTimeAgo(mNEWUserStateTimeStamp);
 
-					if (lastUserstate < 3000) {
+					if (lastUserstate < 4500) {
 						System.out.println(TAG + ": LAST USER STATE (walking): " + lastUserstate);
 						return;
 					}
@@ -400,7 +402,7 @@ public class TCPServer extends Thread {
 			long timeAgo = getTimeAgo(mLastProximityImmediateNearTimestamp);
 			System.out.println("I/ " + TAG + ": last PROXIMTIY IMMEDIATE/NEARtime ago:" + timeAgo);
 
-			if (timeAgo > 2000 & mIsFarCounter >= 3) {
+			if (timeAgo > 2000 & mIsFarCounter >= 2) {
 				System.out.println(TAG + ": User is FAR (timeAgo: " + timeAgo + ", counter: " + mIsFarCounter + ")");
 				mIsFarTimeStamp = System.currentTimeMillis();
 				isFar = true;

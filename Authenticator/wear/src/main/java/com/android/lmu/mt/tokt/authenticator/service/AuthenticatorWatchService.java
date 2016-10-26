@@ -78,6 +78,7 @@ public class AuthenticatorWatchService extends Service
         builder.setContentText("Sending data...");
         builder.setSmallIcon(R.mipmap.ic_authenticator_gray_circle);
         startForeground(1, builder.build());
+        stopForeground(true);
 
         //register sensor listener
         startSensorMeasurement();
@@ -110,6 +111,7 @@ public class AuthenticatorWatchService extends Service
 
         mBeaconManager.unbind(this);
         resetMainUIValue();
+        stopForeground(true);
 
     }
 
@@ -299,6 +301,12 @@ public class AuthenticatorWatchService extends Service
             }
 
             if (mHeartRateSensor != null) {
+
+                //moto360 sport
+                //final int measurementDuration = 20;   // Seconds
+                //final int measurementBreak = 2;    // Seconds
+
+                //moto 360
                 final int measurementDuration = 8;   // Seconds
                 final int measurementBreak = 1;    // Seconds
 

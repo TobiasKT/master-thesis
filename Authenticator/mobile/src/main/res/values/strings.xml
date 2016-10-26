@@ -44,6 +44,7 @@
     <string name="delete">Delete</string>
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
+    <string name="ok">OK</string>
 
     <string name="locked">locked</string>
     <string name="unlocked">unlocked</string>

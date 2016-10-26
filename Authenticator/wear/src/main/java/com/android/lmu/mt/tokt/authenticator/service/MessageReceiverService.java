@@ -7,8 +7,8 @@ import android.net.Uri;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.android.lmu.mt.tokt.authenticator.ui.MainActivity;
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
+import com.android.lmu.mt.tokt.authenticator.ui.MainActivity;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.DataItem;
@@ -82,13 +82,14 @@ public class MessageReceiverService extends WearableListenerService {
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_START_KEYPRESS_DETECTOR)) {
             Log.d(TAG, "message from phone received: START KeyDetectorService");
+
+
             sendResult(AppConstants.MESSAGE_RECEIVER_START_TYPING_DETECTION_RESULT,
                     AppConstants.MESSAGE_RECEIVER_START_TYPING_DETECTION_MESSAGE, "START TYPING DETECTION");
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_STOP_KEYPRESS_DETECTOR)) {
             Log.d(TAG, "message from phone received: STOP KeyDetectorService");
-
             sendResult(AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_RESULT,
                     AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_MESSAGE, "STOP TYPING DETECTION");
         }

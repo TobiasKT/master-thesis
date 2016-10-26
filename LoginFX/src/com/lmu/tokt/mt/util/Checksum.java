@@ -33,5 +33,9 @@ public class Checksum {
 	public int getChecksum() {
 		return mChecksum;
 	}
+	
+	public void resetChecksum(){
+		mChecksum = 0;
+	}
 
 }

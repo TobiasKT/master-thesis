@@ -1,8 +1,11 @@
 package com.android.lmu.mt.tokt.authenticator.ui;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -12,6 +15,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -24,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements
     //adb forward tcp:4444 localabstract:/adb-hub
     //adb connect 127.0.0.1:4444
 
+    //uninstall: adb -s 127.0.0.1:4444 uninstall com.android.lmu.mt.tokt.authenticator
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final int REQUEST_RESOLVE_ERROR = 1000;
@@ -130,8 +136,10 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mUsernameText;
     private ImageView mBeaconEditImg;
     private EditText mBeaconEditText;
-
     private Spinner mBeaconSpinner;
+    private ProgressBar mConnectProgress;
+
+    private boolean isPhoneConnectedToServer = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -271,6 +279,7 @@ public class MainActivity extends AppCompatActivity implements
         mBeaconEditImg = (ImageView) findViewById(R.id.edit_beacon_uuid_img);
         mBeaconEditText = (EditText) findViewById(R.id.beacon_uuid_edit);
         mBeaconSpinner = (Spinner) findViewById(R.id.beacon_spinner);
+        mConnectProgress = (ProgressBar) findViewById(R.id.connection_progress);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.beacons_array, android.R.layout.simple_spinner_item);
@@ -309,37 +318,48 @@ public class MainActivity extends AppCompatActivity implements
                 switch (msg.what) {
                     case AppConstants.STATE_CONFIRM:
                         if (msg.obj != null) {
-                            int cheksum = (int) msg.obj;
+                            int checksum = (int) msg.obj;
 
-                            StringBuilder sb = new StringBuilder();
-                            sb.append(getResources().getString(R.string.allow_connection));
-                            sb.append(" (");
-                            sb.append(cheksum);
-                            sb.append(")");
-
-                            showConfirmConnectionDialog(sb.toString(), cheksum);
+                            showConfirmConnectionDialog(checksum);
                         }
                         break;
                     case AppConstants.STATE_CONNECTED:
                         addTag("connected");
                         //starte service
+                        isPhoneConnectedToServer = true;
+
                         if (msg.obj != null) {
                             Log.d(TAG, "connect... " + msg.obj.toString());
                             Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
                         }
 
+                        mConnectToServerBtn.setText(getResources().getString(R.string.disconnect));
+                        mConnectToServerBtn.setEnabled(true);
+                        mServerConnectionStatusText.setText(getResources().getString(R.string.connected));
+                        createNotification();
+                        mConnectProgress.setVisibility(View.INVISIBLE);
                         break;
                     case AppConstants.STATE_DISCONNECTED:
                         addTag("disconnected");
                         //beende service
+
+                        isPhoneConnectedToServer = false;
                         if (msg.obj != null) {
                             Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
                         }
-                        if (mAuthenticatorAsyncTask.getTCPClient().isRunning()) {
-                            mAuthenticatorAsyncTask.getTCPClient().stopClient();
-                        }
-                        mAuthenticatorAsyncTask.cancel(true);
+
+                        mConnectToServerBtn.setText(getResources().getString(R.string.connect));
+                        mConnectToServerBtn.setEnabled(true);
+                        mServerConnectionStatusText.setText(getResources().getString(R.string.disconnected));
+
+                        stopMeasurement();
+                        resetMainUIValues();
+                        mWatchConnectionStatusText.setText(R.string.disconnected);
+                        dismissNotification();
                         disconnectFromWatch();
+
+                        mConnectProgress.setVisibility(View.INVISIBLE);
+
                         break;
                     case AppConstants.STATE_AUTHENTICATED:
                         addTag("authenticated");
@@ -363,16 +383,11 @@ public class MainActivity extends AppCompatActivity implements
                         break;
                     case AppConstants.ERROR:
                         addTag("error");
+                        mConnectProgress.setVisibility(View.INVISIBLE);
                         mConnectToServerBtn.setText(getResources().getString(R.string.connect));
+                        mConnectToServerBtn.setEnabled(true);
                         mAuthenticatorAsyncTask = null;
                         Toast.makeText(MainActivity.this, "ERROR! Network problems!", Toast.LENGTH_SHORT).show();
-                        break;
-                    case AppConstants.START_LISTEN_TO_SOUND:
-                        addTag("listen_to_sound");
-                        if (msg.obj != null) {
-                            Toast.makeText(MainActivity.this, msg.obj.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                        //startListeningToSound();
                         break;
                     case AppConstants.STATE_LOCKED:
                         addTag("state_locked");
@@ -968,18 +983,16 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
             case R.id.connect_phone_to_server_btn:
-                if (mAuthenticatorAsyncTask == null ||
-                        !mAuthenticatorAsyncTask.getTCPClient().isRunning()) {
+
+                if (!isPhoneConnectedToServer) {
                     mAuthenticatorAsyncTask = new AuthenticatorAsyncTask(MainActivity.this, mHandler);
                     mAuthenticatorAsyncTask.execute();
-                    mConnectToServerBtn.setText(getResources().getString(R.string.disconnect));
                 } else {
-                    if (mAuthenticatorAsyncTask != null) {
-                        mAuthenticatorAsyncTask.getTCPClient().stopClient();
-                        mAuthenticatorAsyncTask.cancel(true);
-                    }
+                    mConnectToServerBtn.setEnabled(false);
+                    mConnectProgress.setVisibility(View.VISIBLE);
+                    mAuthenticatorAsyncTask.getTCPClient().stopClient();
+                    mAuthenticatorAsyncTask.cancel(true);
                     stopMeasurement();
-                    mConnectToServerBtn.setText(getResources().getString(R.string.connect));
                 }
                 break;
             case R.id.server_ip_btn:
@@ -1003,17 +1016,9 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        Log.d(TAG, "App finished");
-        disconnectFromWatch();
-    }
 
     private void disconnectFromWatch() {
 
-        stopMeasurement();
-        resetMainUIValues();
 
         if (!mResolvingError && (mGoogleApiClient != null) && (mGoogleApiClient.isConnected())) {
             Wearable.DataApi.removeListener(mGoogleApiClient, this);
@@ -1080,6 +1085,7 @@ public class MainActivity extends AppCompatActivity implements
         mStepsText.setText(getResources().getString(R.string.zero_value_double));
         mProximityText.setText(getResources().getString(R.string.placeholder));
         mLockstateText.setText(getResources().getString(R.string.placeholder));
+        mUsernameText.setText(getResources().getString(R.string.placeholder));
     }
 
 
@@ -1126,26 +1132,89 @@ public class MainActivity extends AppCompatActivity implements
 
 
     /* --------------------- Confirmation Dialog --------------------- */
-    public void showConfirmConnectionDialog(String message, final int number) {
-        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case DialogInterface.BUTTON_POSITIVE:
-                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM + ":" + number);
-                        connectToWatch();
-                        break;
-                    case DialogInterface.BUTTON_NEGATIVE:
-                        mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_DENY);
-                        break;
-                }
-            }
-        };
-
+    public void showConfirmConnectionDialog(final int checksum) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage(message).setPositiveButton(getResources().getString(R.string.confirm), dialogClickListener)
-                .setNegativeButton(getResources().getString(R.string.cancel), dialogClickListener).show();
+
+        StringBuilder sb = new StringBuilder();
+
+        if (checksum == 0) {
+
+            DialogInterface.OnClickListener dialogOKClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            mAuthenticatorAsyncTask.getTCPClient().stopClient();
+                            break;
+                    }
+                }
+            };
+
+            sb.append("Please click connect on desktop application first.");
+            builder.setMessage(sb.toString()).setPositiveButton(getResources().getString(R.string.ok), dialogOKClickListener).show();
+
+        } else {
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which) {
+                        case DialogInterface.BUTTON_POSITIVE:
+                            mConnectProgress.setVisibility(View.VISIBLE);
+                            mConnectToServerBtn.setEnabled(false);
+                            mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM + ":" + checksum);
+                            connectToWatch();
+                            break;
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            mAuthenticatorAsyncTask.getTCPClient().sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_DENY);
+                            break;
+                    }
+                }
+            };
+
+            sb.append(getResources().getString(R.string.allow_connection));
+            sb.append(" (");
+            sb.append(checksum);
+            sb.append(")");
+
+            builder.setMessage(sb.toString()).setPositiveButton(getResources().getString(R.string.confirm), dialogClickListener)
+                    .setNegativeButton(getResources().getString(R.string.cancel), dialogClickListener).show();
+        }
+    }
+
+    private void createNotification() {
+
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.mipmap.ic_authenticator_gray_circle)
+                        .setContentTitle("Authenticator")
+                        .setContentText("Sending and receiving data...");
+
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        PendingIntent resultPendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+
+
+        mBuilder.setContentIntent(resultPendingIntent);
+        // Sets an ID for the notification
+        int mNotificationId = 001;
+        // Gets an instance of the NotificationManager service
+        NotificationManager mNotifyMgr =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // Builds the notification and issues it.
+        mNotifyMgr.notify(mNotificationId, mBuilder.build());
+    }
+
+    private void dismissNotification() {
+        NotificationManager mNotifyMgr =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mNotifyMgr.cancel(001);
     }
 
 

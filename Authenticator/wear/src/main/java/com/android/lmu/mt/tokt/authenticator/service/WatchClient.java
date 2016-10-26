@@ -64,7 +64,7 @@ public class WatchClient {
         long timeAgo = t - lastTimestamp;
 
         if (lastTimestamp != 0) {
-            if (timeAgo < 250) {
+            if (timeAgo < 100) {
                 return;
             }
         }

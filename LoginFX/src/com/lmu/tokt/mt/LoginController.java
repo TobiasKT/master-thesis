@@ -281,10 +281,10 @@ public class LoginController implements Initializable {
 					@Override
 					public void run() {
 						resetAllFields();
-						//setLockStateFields(true);
-						//setLoginStateFields(false);
 						setAppFullscreen(true);
 						lblInformation.setText(message);
+
+						Checksum.getInstance().resetChecksum();
 					}
 				});
 				System.out.println(TAG + ": ERROR Failing to connect to Smartwatch/Phone");
@@ -389,7 +389,7 @@ public class LoginController implements Initializable {
 
 						setTypingDetectorFields(mGreyKeyboardImg, false, "Typing-Detector off", false, false);
 						enableTypingDetectorFields(true);
-						
+
 						lblInformation.setText(message);
 					}
 				});
@@ -785,6 +785,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private void onCancelConnectToWatchClicked(MouseEvent event) {
 		setConnectToWatchFields(mGreyWatchImg, false, "Not connected", false);
+		Checksum.getInstance().resetChecksum();
 	}
 
 	private void startKeyPressDetection() {
@@ -1098,8 +1099,8 @@ public class LoginController implements Initializable {
 	public Label getServerPort() {
 		return lblServerPort;
 	}
-	
-	public Label getInformationLbl(){
+
+	public Label getInformationLbl() {
 		return lblInformation;
 	}
 

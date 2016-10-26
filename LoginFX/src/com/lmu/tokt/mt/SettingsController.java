@@ -95,7 +95,6 @@ public class SettingsController implements Initializable {
 		TCPServer server = LoginController.getInstance().getTCPServer();
 		if (server.isConnected()) {
 			server.sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
-
 			server.resetValues(true);
 
 			Platform.runLater(new Runnable() {
