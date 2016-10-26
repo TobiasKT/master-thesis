@@ -133,8 +133,8 @@ public class MainActivity extends WearableActivity {
                     mConnectionStateText.setText(message);
                     mCuesContainerRL.setVisibility(View.GONE);
                     mTypingContainerRL.setVisibility(View.VISIBLE);
-                  //  mKeyPressDetectorTask = new KeypressDetectorTask(MainActivity.this, mHandler);
-                   // mKeyPressDetectorTask.execute();
+                    mKeyPressDetectorTask = new KeypressDetectorTask(MainActivity.this, mHandler);
+                    mKeyPressDetectorTask.execute();
 
                 }
 

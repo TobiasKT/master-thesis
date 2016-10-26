@@ -690,8 +690,8 @@ public class LoginController implements Initializable {
 
 	@FXML
 	private void btnLoginAction(ActionEvent event) {
-		login();
-
+		mKeyDetectorstarted = false;
+		mTCPServer.sendMessage(AppConstants.COMMAND_STOP_TYPING_SENSORS);
 	}
 
 	@FXML

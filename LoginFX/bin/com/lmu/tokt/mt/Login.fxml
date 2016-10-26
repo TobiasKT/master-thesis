@@ -180,7 +180,7 @@
 														<Insets right="16.0" />
 													</HBox.margin>
 												</AnchorPane>
-                                    <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                    <VBox alignment="CENTER_LEFT">
                                        <children>
       												<Label fx:id="lblTyping" disable="true" prefWidth="200.0" text="Typing-Detector off" textFill="#212121">
       													<HBox.margin>
@@ -190,8 +190,16 @@
       														<Font name="Helvetica Neue" size="14.0" />
       													</font>
       												</Label>
+                                          <Label prefWidth="200.0" text="(Open authenticator app on watch)" textFill="#9e9e9e">
+                                             <font>
+                                                <Font name="Helvetica Neue" size="10.0" />
+                                             </font>
+                                          </Label>
                                        </children>
-                                    </HBox>
+                                       <HBox.margin>
+                                          <Insets right="8.0" />
+                                       </HBox.margin>
+                                    </VBox>
 												<AnchorPane>
 													<children>
 														<Button fx:id="btnStartTypingDetector" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onStartTypingDetectorAction" prefHeight="28.0" prefWidth="28.0">
