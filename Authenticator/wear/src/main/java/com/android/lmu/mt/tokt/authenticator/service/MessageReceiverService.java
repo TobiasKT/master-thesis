@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
@@ -24,6 +25,13 @@ public class MessageReceiverService extends WearableListenerService {
 
     private static final String TAG = MessageReceiverService.class.getSimpleName();
 
+    private static final long[] logoutVibratePattern = {0, 250, 50, 250};
+
+    private static final long lockUnLockDuration = 150;
+
+    //TODO: first unlock
+    private static final long autehnticated = 500;
+
     private WatchClient mWatchClient;
 
     private LocalBroadcastManager mLocalBroadcastManager;
@@ -31,6 +39,8 @@ public class MessageReceiverService extends WearableListenerService {
     private SharedPreferences mSharedPreferences;
 
     private Intent mAuthenticatorIntent;
+
+    private Vibrator mVibrator;
 
 
     @Override
@@ -45,6 +55,8 @@ public class MessageReceiverService extends WearableListenerService {
                 AppConstants.SHARED_PREF_APP_KEY, Context.MODE_PRIVATE);
 
         mAuthenticatorIntent = new Intent(this, AuthenticatorWatchService.class);
+
+        mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
     }
 
@@ -110,6 +122,8 @@ public class MessageReceiverService extends WearableListenerService {
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_STOP_MEASUREMENT)) {
 
+            mVibrator.vibrate(logoutVibratePattern, -1);
+
             sendResult(AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_RESULT,
                     AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_MESSAGE, "STOP TYPING DETECTION");
             sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "DISCONNECTED");
@@ -123,9 +137,11 @@ public class MessageReceiverService extends WearableListenerService {
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_LOCKED)) {
+            mVibrator.vibrate(lockUnLockDuration);
             sendResult(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT, AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE, "locked");
         }
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_UNLOCKED)) {
+            mVibrator.vibrate(lockUnLockDuration);
             sendResult(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT, AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE, "unlocked");
         }
 
