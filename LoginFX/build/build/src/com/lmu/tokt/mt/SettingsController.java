@@ -10,8 +10,10 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import com.lmu.tokt.mt.server.TCPServer;
 import com.lmu.tokt.mt.util.AppConstants;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -90,8 +92,20 @@ public class SettingsController implements Initializable {
 	@FXML
 	private void onDisconnectClicked(MouseEvent event) {
 
-		LoginController.getInstance().getTCPServer().sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
+		TCPServer server = LoginController.getInstance().getTCPServer();
+		if (server.isConnected()) {
+			server.sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
+			server.resetValues(true);
 
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					LoginController.getInstance().resetAllFields();
+					LoginController.getInstance().setAppFullscreen(true);
+					LoginController.getInstance().getInformationLbl().setText("Server disconnected!");
+				}
+			});
+		}
 	}
 
 	@FXML
@@ -143,6 +157,7 @@ public class SettingsController implements Initializable {
 	private void onPlayTutorialClicked(MouseEvent event) {
 
 		try {
+			LoginController.getInstance().setAppFullscreen(false);
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/lmu/tokt/mt/Intro.fxml"));
 			Parent root1 = (Parent) fxmlLoader.load();
 			Stage stage = new Stage();

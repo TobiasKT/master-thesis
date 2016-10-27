@@ -77,7 +77,7 @@ public class TCPServer extends Thread {
 		mServerIsRunning = true;
 
 		if (mMessageListener != null) {
-			mMessageListener.callbackMessageReceiver(AppConstants.STATE_SERVER_RUNNING, "(Server is runnning)");
+			mMessageListener.callbackMessageReceiver(AppConstants.STATE_SERVER_RUNNING, "Server is runnning");
 		}
 
 		try {
@@ -156,12 +156,12 @@ public class TCPServer extends Thread {
 					if (receivedChecksum == mChecksum.getChecksum()) {
 						mIsConnectedToWatch = true;
 						mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_CONNECTED,
-								"Confirmation successful!");
+								"Confirmation on phone successful!");
 						sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECT);
 					} else {
 						resetValues(true);
 						mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED,
-								"Confirmation failed!");
+								"Confirmation on phone failed!");
 						sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
 					}
 
@@ -171,7 +171,7 @@ public class TCPServer extends Thread {
 					System.out.println(TAG + ":message COMMAND_PHONE_WATCH_CONNECTION_DENY");
 					resetValues(true);
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED,
-							"Confirmation denied!");
+							"Confirmation on phone denied!");
 				}
 
 				if (mIncomingMessage.equals(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT)) {
@@ -188,7 +188,7 @@ public class TCPServer extends Thread {
 				if (mIncomingMessage.equals(AppConstants.COMMAND_USER_AUTHENTICATED)) {
 					isAuthenticated = true;
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_AUTHENTICATED,
-							"User authenticated");
+							"User successfully authenticated");
 				}
 
 				if (mIncomingMessage.equals(AppConstants.COMMAND_USER_TYPING_SUCCESS)) {
@@ -283,7 +283,7 @@ public class TCPServer extends Thread {
 		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
 
 		float heartrate = values[0];
-		if (heartrate > 30 && heartrate < 200) {
+		if (heartrate > 30 && heartrate < 230) {
 			System.out.println("E/" + TAG + ": New HEARTRATE [" + heartrate + "]");
 			mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING, "" + heartrate);
 			mLastHeartrateTimestamp = System.currentTimeMillis();
@@ -303,27 +303,37 @@ public class TCPServer extends Thread {
 		if (stepCount > mLastStepCount) {
 			System.out.println("E/" + TAG + ": New step count [" + stepCount + "]");
 			mLastStepCount = stepCount;
-			if (stepCountGap <= 3) {
+			if (stepCountGap <= 2) {
 				mLastStepCountTimeStamp = System.currentTimeMillis();
 			}
 		}
 	}
 
+	private int mIsFarCounter = 0;
+	private long mLastBeaconValueTimeStamp;
+
 	private void validateBeacon(String name, int type, int accuracy, long timestamp, float[] values) {
 
 		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
 
-		String proximityString;
+		String proximityString = "undefined";
 
 		int rssi = (int) values[0];
-		if (rssi >= -71) {
-			proximityString = AppConstants.PROXIMITY_IMMEDIATE;
-			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
-		} else if (rssi < -71 && rssi >= -88) {
+		if (rssi >= -85) {
 			proximityString = AppConstants.PROXIMITY_NEAR;
 			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
-		} else {
+			mLastBeaconValueTimeStamp = System.currentTimeMillis();
+			mIsFarCounter = 0;
+			System.out.println(TAG + ": far counter - " + mIsFarCounter);
+		} else if (rssi < -85) {
+			mIsFarCounter++;
+			System.out.println(TAG + ": far counter - " + mIsFarCounter);
+			mLastBeaconValueTimeStamp = System.currentTimeMillis();
 			proximityString = AppConstants.PROXIMITY_FAR;
+		}
+		
+		if(!isAuthenticated){
+			mLastBeaconValueTimeStamp = 0;
 		}
 
 		mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY_DETECTED, proximityString);
@@ -338,7 +348,9 @@ public class TCPServer extends Thread {
 
 			System.out.println("I/" + TAG + ": last HEART BEAT time ago:" + timeAgo);
 
-			if (timeAgo > 18000) {
+			//Moto sport
+			//if (timeAgo > 30000) {
+			if (timeAgo > 12000) {
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "NO HEARTBEAT");
 				isHeartBeating = false;
 			}
@@ -356,7 +368,7 @@ public class TCPServer extends Thread {
 
 			System.out.println("I/ " + TAG + ": last STEP COUNT time ago:" + timeAgo);
 
-			if (timeAgo > 2000) {
+			if (timeAgo > 3000) {
 
 				isWalking = false;
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_STILL, "still");
@@ -367,7 +379,7 @@ public class TCPServer extends Thread {
 				if (mNEWUserStateTimeStamp != 0) {
 					long lastUserstate = getTimeAgo(mNEWUserStateTimeStamp);
 
-					if (lastUserstate < 2500) {
+					if (lastUserstate < 4500) {
 						System.out.println(TAG + ": LAST USER STATE (walking): " + lastUserstate);
 						return;
 					}
@@ -381,6 +393,8 @@ public class TCPServer extends Thread {
 		}
 	}
 
+	private long mIsFarTimeStamp = 0;
+
 	private void validateProximityByTimeStamp() {
 
 		if (mLastProximityImmediateNearTimestamp != 0) {
@@ -388,9 +402,21 @@ public class TCPServer extends Thread {
 			long timeAgo = getTimeAgo(mLastProximityImmediateNearTimestamp);
 			System.out.println("I/ " + TAG + ": last PROXIMTIY IMMEDIATE/NEARtime ago:" + timeAgo);
 
-			if (timeAgo > 3000) {
+			if (timeAgo > 2000 & mIsFarCounter >= 2) {
+				System.out.println(TAG + ": User is FAR (timeAgo: " + timeAgo + ", counter: " + mIsFarCounter + ")");
+				mIsFarTimeStamp = System.currentTimeMillis();
 				isFar = true;
 			} else {
+
+				if (mIsFarTimeStamp != 0) {
+					long isFarTimeAgo = getTimeAgo(mIsFarTimeStamp);
+
+					if (isFarTimeAgo < 2000) {
+						System.out.println(TAG + ": last far time ago: " + isFarTimeAgo);
+						return;
+					}
+				}
+				System.out.println(TAG + ": User is NEAR (timeAgo: " + timeAgo + ", counter: " + mIsFarCounter + ")");
 				isFar = false;
 			}
 		}
@@ -417,19 +443,37 @@ public class TCPServer extends Thread {
 
 		// autenticate again, re enter password
 		if (!isHeartBeating && mLastHeartrateTimestamp != 0) {
-			System.out.println(TAG + ": LOGOUT user & lock screen");
-			mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED, "No Heartrate");
-			sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
-			resetValues(true);
-			// mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED,"");
-			// resetValues(false);
-			// sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
+			System.out.println(TAG + ": LOGOUT user & lock screen (no heartrate)");
+			resetValues(false);
+			mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED,
+					"No Heart Rate! Not wearing a watch?");
+			sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
 
 			if (getRandomNumber() > 7) {
 				System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
 				mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED, "logout");
 			}
 		}
+		
+		// autenticate again, re enter password
+	/*	if(mLastBeaconValueTimeStamp != 0){
+			long timeAgo = getTimeAgo(mLastBeaconValueTimeStamp);
+			
+			if(timeAgo > 10000){
+				System.out.println(TAG + ": LOGOUT user & lock screen (no beacon signal)");
+				resetValues(false);
+				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED,
+						"No Beacon Signal! Beacon plugged in?");
+				sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
+
+				if (getRandomNumber() > 7) {
+					System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
+					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED, "logout");
+				}
+				
+				
+			}
+		}*/
 
 		// lock
 		if (isHeartBeating && (isWalking || isFar)) {
@@ -463,11 +507,13 @@ public class TCPServer extends Thread {
 
 	}
 
-	private void resetValues(boolean disconnect) {
+	public void resetValues(boolean disconnect) {
+		
 		if (disconnect) {
 			mIsConnectedToWatch = false;
 			mDataExchangeIsRunning = false;
 		}
+		
 		isAuthenticated = false;
 		isLocked = true;
 
@@ -480,7 +526,10 @@ public class TCPServer extends Thread {
 		mLastStepCountTimeStamp = 0;
 		mLastStepCount = 0;
 
+		mIsFarCounter = 0;
 		mNEWUserStateTimeStamp = 0;
+		mIsFarTimeStamp = 0;
+		mLastBeaconValueTimeStamp = 0;
 	}
 
 	public boolean isConnected() {
@@ -507,7 +556,10 @@ public class TCPServer extends Thread {
 		this.isAuthenticated = isAuthenticated;
 	}
 
-	// show on Screen, use as callback to show if authenticated or not
+	public ServerSocket getServerSocket() {
+		return mServer;
+	}
+
 	public interface MessageCallback {
 		public void callbackMessageReceiver(String message);
 
