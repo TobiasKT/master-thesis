@@ -21,6 +21,7 @@ import com.lmu.tokt.mt.util.AppConstants;
 import com.lmu.tokt.mt.util.Checksum;
 
 import javafx.animation.Animation;
+import javafx.animation.FadeTransition;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
@@ -99,6 +100,8 @@ public class LoginController implements Initializable {
 	private ImageView imgHeartBeat, imgProximity, imgUserState;
 	@FXML
 	private ProgressIndicator progressHeartrateDetection, progressProximity;
+	@FXML
+	private HBox hboxInfobox;
 
 	// add user fields
 	@FXML
@@ -151,6 +154,8 @@ public class LoginController implements Initializable {
 		return instance;
 	}
 
+	private FadeTransition animation = new FadeTransition(Duration.millis(1000));
+
 	/*---------------- INIT ----------------*/
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -179,6 +184,13 @@ public class LoginController implements Initializable {
 		if (LoginApp.getInstance().isUserFromIntro()) {
 			showAddUserPane(true);
 		}
+
+		// initAnimation
+		animation.setFromValue(1.0);
+		animation.setToValue(0.3);
+		animation.setCycleCount(Timeline.INDEFINITE);
+		animation.setAutoReverse(true);
+		animation.setNode(lblInformation);
 
 	}
 
@@ -237,7 +249,6 @@ public class LoginController implements Initializable {
 
 			ip = InetAddress.getLocalHost();
 			lblPublicIP.setText(ip.getHostAddress());
-			System.out.println(TAG + ": Current ip address : " + ip.getHostAddress());
 		} catch (UnknownHostException e) {
 			System.out.println(TAG + ": ERROR getting public ip. Exception: " + e.toString());
 
@@ -250,7 +261,7 @@ public class LoginController implements Initializable {
 			int port = mLoginModel.getServerPort();
 			lblServerPort.setText("" + port);
 		} catch (SQLException e) {
-			System.out.println(TAG + ": ERROR getting server port from DB. Exception: " + e.toString());
+			System.out.println(TAG + ": ERROR getting server port from DB.Exception: " + e.toString());
 		}
 	}
 
@@ -261,7 +272,8 @@ public class LoginController implements Initializable {
 
 		@Override
 		public void callbackMessageReceiver(String message) {
-			System.out.println(TAG + ":callbackMessageReceiver() - Message from client: " + message);
+			// System.out.println(TAG + ":callbackMessageReceiver() - Message
+			// from client: " + message);
 		}
 
 		@Override
@@ -287,7 +299,8 @@ public class LoginController implements Initializable {
 						Checksum.getInstance().resetChecksum();
 					}
 				});
-				System.out.println(TAG + ": ERROR Failing to connect to Smartwatch/Phone");
+				// System.out.println(TAG + ": ERROR Failing to connect to
+				// Smartwatch/Phone");
 				break;
 			case AppConstants.STATE_PHONE_WATCH_CONNECTED:
 				Platform.runLater(new Runnable() {
@@ -391,11 +404,13 @@ public class LoginController implements Initializable {
 						enableTypingDetectorFields(true);
 
 						lblInformation.setText(message);
+						animation.play();
+
 					}
 				});
 				break;
 			case AppConstants.STATE_USER_AUTHENTICATED:
-				System.out.println(TAG + ":" + message);
+				// System.out.println(TAG + ":" + message);
 				break;
 			case AppConstants.DIALOG_EVENT_TYPE_LOCK:
 				Platform.runLater(new Runnable() {
@@ -454,9 +469,10 @@ public class LoginController implements Initializable {
 					public void run() {
 						if (!onStoppingTypingSensorClicked) {
 							setPasswordFields(mGreyKeyImg, true, true, false, true);
-							setTypingDetectorFields(mGreyKeyboardImg, false, "No typing (start again)", false, false);
+							setTypingDetectorFields(mGreyKeyboardImg, false, "No typing detected", false, false);
 							enableTypingDetectorFields(true);
 							lblInformation.setText("Are you wearing the watch?");
+							animation.play();
 						}
 						onStoppingTypingSensorClicked = false;
 					}
@@ -510,6 +526,8 @@ public class LoginController implements Initializable {
 
 	public void resetAllFields() {
 
+		animation.stop();
+		
 		onStoppingTypingSensorClicked = false;
 
 		setLockStateFields(true);
@@ -699,7 +717,8 @@ public class LoginController implements Initializable {
 
 		int checksum = mChecksum.calculateChecksum();
 
-		System.out.println(TAG + ": connecting to watch/phone (checksum:" + checksum + ")");
+		// System.out.println(TAG + ": connecting to watch/phone (checksum:" +
+		// checksum + ")");
 
 		setConnectToWatchFields(mGreyWatchImg, true, "Connecting (" + checksum + ") ...", false);
 	}
@@ -709,6 +728,7 @@ public class LoginController implements Initializable {
 	@FXML
 	private void onStartTypingDetectorAction(ActionEvent event) {
 		startKeyPressDetection();
+		animation.stop();
 	}
 
 	private boolean onStoppingTypingSensorClicked = false;
@@ -754,7 +774,7 @@ public class LoginController implements Initializable {
 		try {
 			if (mLoginModel.isValidCredentials(lblUserName.getText(), txtPassword.getText())) {
 
-				System.out.println(TAG + ": username and password CORRECT");
+				// System.out.println(TAG + ": username and password CORRECT");
 				lblLog.setText("");
 
 				setPasswordFields(mBlackKeyImg, false, true, true, true);
@@ -778,7 +798,8 @@ public class LoginController implements Initializable {
 				startKeyPressDetection();
 			}
 		} catch (SQLException sqle) {
-			System.out.println(TAG + ": SQL ERROR login user. Exception: " + sqle.toString());
+			// System.out.println(TAG + ": SQL ERROR login user. Exception: " +
+			// sqle.toString());
 		}
 	}
 
@@ -800,6 +821,12 @@ public class LoginController implements Initializable {
 
 		setTypingDetectorFields(mBlackKeyboardImg, false, "Typing-Detector active", false, true);
 
+	}
+
+	@FXML
+	private void onAuthenticatorBoxMouseEntered(MouseEvent event) {
+		//animation.setToValue(1);
+		//animation.stop();
 	}
 
 	/*----------------ADD USER----------------*/
@@ -919,7 +946,8 @@ public class LoginController implements Initializable {
 				txtUsername.selectAll();
 			}
 		} catch (SQLException e) {
-			System.out.println(TAG + ": SQL ERROR resgister new user. Exception: " + e.toString());
+			// System.out.println(TAG + ": SQL ERROR resgister new user.
+			// Exception: " + e.toString());
 		}
 	}
 
@@ -1005,7 +1033,8 @@ public class LoginController implements Initializable {
 				txtChangeUserPassword.selectAll();
 			}
 		} catch (SQLException e) {
-			System.out.println(TAG + ": SQL ERROR changing user. Exception: " + e.toString());
+			// System.out.println(TAG + ": SQL ERROR changing user. Exception: "
+			// + e.toString());
 		}
 	}
 
@@ -1019,7 +1048,7 @@ public class LoginController implements Initializable {
 		if ("Mac OS X".equals(operatingSystem)) {
 			shutdownCommand = new String[] { "osascript", "-e",
 					"tell application \"loginwindow\" to «event aevtrsdn»" };
-			System.out.println(shutdownCommand);
+			// System.out.println(shutdownCommand);
 		} else if ("Windows".equals(operatingSystem)) {
 			shutdownCommand = new String[] { "shutdown -s -t 60" };
 		} else {
@@ -1027,9 +1056,10 @@ public class LoginController implements Initializable {
 		}
 		try {
 			Runtime.getRuntime().exec(shutdownCommand);
-			System.out.println(TAG + ": Shutdown PC ");
+			// System.out.println(TAG + ": Shutdown PC ");
 		} catch (IOException e) {
-			System.out.println(TAG + ": ERROR executing SHUTDOWN command. Exception: " + e.toString());
+			// System.out.println(TAG + ": ERROR executing SHUTDOWN command.
+			// Exception: " + e.toString());
 		}
 	}
 
@@ -1049,9 +1079,10 @@ public class LoginController implements Initializable {
 		}
 		try {
 			Runtime.getRuntime().exec(sleepCommand);
-			System.out.println(TAG + ": Send PC to sleep");
+			// System.out.println(TAG + ": Send PC to sleep");
 		} catch (IOException e) {
-			System.out.println(TAG + ": ERROR executing SLEEP command. Exception: " + e.toString());
+			// System.out.println(TAG + ": ERROR executing SLEEP command.
+			// Exception: " + e.toString());
 		}
 
 	}
@@ -1068,7 +1099,8 @@ public class LoginController implements Initializable {
 			popOver.show(imgSettings);
 
 		} catch (IOException e) {
-			System.out.println(TAG + ": ERROR opening settings. Exception: " + e.toString());
+			// System.out.println(TAG + ": ERROR opening settings. Exception: "
+			// + e.toString());
 		}
 
 	}

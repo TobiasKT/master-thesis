@@ -133,8 +133,8 @@ public class MainActivity extends WearableActivity {
                     mConnectionStateText.setText(message);
                     mCuesContainerRL.setVisibility(View.GONE);
                     mTypingContainerRL.setVisibility(View.VISIBLE);
-                    mKeyPressDetectorTask = new KeypressDetectorTask(MainActivity.this, mHandler);
-                    mKeyPressDetectorTask.execute();
+                    //mKeyPressDetectorTask = new KeypressDetectorTask(MainActivity.this, mHandler);
+                    //mKeyPressDetectorTask.execute();
 
                 }
 
@@ -143,9 +143,9 @@ public class MainActivity extends WearableActivity {
                     String message = intent.getStringExtra(AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_MESSAGE);
                     mConnectionStateText.setText(message);
 
-                    if (mKeyPressDetectorTask != null) {
-                        mKeyPressDetectorTask.stopKeyDetector();
-                    }
+                    // if (mKeyPressDetectorTask != null) {
+                    //    mKeyPressDetectorTask.stopKeyDetector();
+                    // }
                     mTypingContainerRL.setVisibility(View.GONE);
                     mCuesContainerRL.setVisibility(View.VISIBLE);
 

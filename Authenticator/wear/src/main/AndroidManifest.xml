@@ -15,7 +15,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -47,6 +47,7 @@
         </activity>
 
         <service android:name=".service.AuthenticatorWatchService" />
+        <service android:name=".keydetection.KeyPressDetectionService" />
 
         <!-- Services -->
         <service android:name=".service.MessageReceiverService">

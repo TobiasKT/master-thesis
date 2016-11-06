@@ -623,12 +623,16 @@ public class MainActivity extends AppCompatActivity implements
                 //TODO: auslagern und im hintergrund senden
                 //forward dot server
                 sendSensorDataToServer(dataString);
-                BusProvider.updateTextViewOnMainThread(mHeartrateText, Arrays.toString(values));
+                if (values != null && values[0] > 0) {
+                    BusProvider.updateTextViewOnMainThread(mHeartrateText, Arrays.toString(values));
+                }
                 break;
             case AppConstants.SENSOR_TYPE_STEP_COUNTER:
                 //TODO: send to server
                 sendSensorDataToServer(dataString);
-                BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
+                if (values != null && values[0] > 0) {
+                    BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
+                }
                 break;
             case -1:
                 Log.e(TAG, "Unknown sensorType");
@@ -705,10 +709,14 @@ public class MainActivity extends AppCompatActivity implements
         //update MainUi watch
         switch (sensorType) {
             case AppConstants.SENSOR_TYPE_HEART_RATE:
-                BusProvider.updateTextViewOnMainThread(mHeartrateText, Arrays.toString(values));
+                if (values != null && values[0] > 0) {
+                    BusProvider.updateTextViewOnMainThread(mHeartrateText, Arrays.toString(values));
+                }
                 break;
             case AppConstants.SENSOR_TYPE_STEP_COUNTER:
-                BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
+                if (values != null && values[0] > 0) {
+                    BusProvider.updateTextViewOnMainThread(mStepsText, Arrays.toString(values));
+                }
                 break;
             case AppConstants.SENSOR_TYPE_BEACON:
                 BusProvider.updateTextViewOnMainThread(mProximityText, Util.getProximityStringByRSSI((int) values[0]));
@@ -1081,7 +1089,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void resetMainUIValues() {
-        mHeartrateText.setText(getResources().getString(R.string.zero_value_double));
+        mHeartrateText.setText(getResources().getString(R.string.placeholder));
         mStepsText.setText(getResources().getString(R.string.zero_value_double));
         mProximityText.setText(getResources().getString(R.string.placeholder));
         mLockstateText.setText(getResources().getString(R.string.placeholder));

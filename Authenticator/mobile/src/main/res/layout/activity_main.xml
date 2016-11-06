@@ -280,11 +280,11 @@
                             android:id="@+id/connection_progress"
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:visibility="invisible"
                             android:layout_alignParentLeft="true"
                             android:layout_centerVertical="true"
                             android:layout_marginLeft="16dp"
-                            android:indeterminate="true" />
+                            android:indeterminate="true"
+                            android:visibility="invisible" />
 
                     </RelativeLayout>
                 </LinearLayout>
@@ -448,7 +448,7 @@
                             android:layout_centerVertical="true"
                             android:layout_toRightOf="@id/proximity_title_text"
                             android:gravity="center"
-                            android:text="@string/placeholder"
+                            android:text="@string/zero_value_double"
                             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
                     </RelativeLayout>

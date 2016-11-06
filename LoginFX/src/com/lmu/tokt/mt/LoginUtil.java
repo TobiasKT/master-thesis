@@ -56,11 +56,11 @@ public class LoginUtil {
 
 			this.serverport = mLoginModel.getServerPort();
 
-			System.out.println(TAG + ": loading user settings successful");
+			// System.out.println(TAG + ": loading user settings successful");
 		} catch (SQLException e) {
-			System.out.println(TAG + ": SQL ERROR loadUserSettings. Exception: " + e.toString());
+			System.out.println(TAG + ": SQL ERROR loadUserSettings Exception: " + e.toString());
 		} catch (IOException e) {
-			System.out.println(TAG + ": IO ERROR loadUserSettings. Exception: " + e.toString());
+			System.out.println(TAG + ": IO ERROR loadUserSettings. Exception:" + e.toString());
 		}
 
 	}

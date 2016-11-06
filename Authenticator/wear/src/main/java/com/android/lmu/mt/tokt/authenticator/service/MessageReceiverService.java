@@ -8,6 +8,7 @@ import android.os.Vibrator;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.android.lmu.mt.tokt.authenticator.keydetection.KeyPressDetectionService;
 import com.android.lmu.mt.tokt.authenticator.shared.AppConstants;
 import com.android.lmu.mt.tokt.authenticator.ui.MainActivity;
 import com.google.android.gms.wearable.DataEvent;
@@ -17,6 +18,8 @@ import com.google.android.gms.wearable.MessageEvent;
 import com.google.android.gms.wearable.WearableListenerService;
 
 import java.nio.charset.Charset;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by tobiaskeinath on 28.08.16.
@@ -35,10 +38,12 @@ public class MessageReceiverService extends WearableListenerService {
     private WatchClient mWatchClient;
 
     private LocalBroadcastManager mLocalBroadcastManager;
-
     private SharedPreferences mSharedPreferences;
 
+    private ExecutorService mExecutorService;
+
     private Intent mAuthenticatorIntent;
+    private Intent mKeydetectorIntent;
 
     private Vibrator mVibrator;
 
@@ -50,11 +55,13 @@ public class MessageReceiverService extends WearableListenerService {
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         mWatchClient = WatchClient.getInstance(this);
+        mExecutorService = Executors.newCachedThreadPool();
 
         mSharedPreferences = getSharedPreferences(
                 AppConstants.SHARED_PREF_APP_KEY, Context.MODE_PRIVATE);
 
         mAuthenticatorIntent = new Intent(this, AuthenticatorWatchService.class);
+        mKeydetectorIntent = new Intent(this, KeyPressDetectionService.class);
 
         mVibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
 
@@ -98,12 +105,25 @@ public class MessageReceiverService extends WearableListenerService {
 
             sendResult(AppConstants.MESSAGE_RECEIVER_START_TYPING_DETECTION_RESULT,
                     AppConstants.MESSAGE_RECEIVER_START_TYPING_DETECTION_MESSAGE, "START TYPING DETECTION");
+            mExecutorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    startService(mKeydetectorIntent);
+                }
+            });
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_STOP_KEYPRESS_DETECTOR)) {
             Log.d(TAG, "message from phone received: STOP KeyDetectorService");
             sendResult(AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_RESULT,
                     AppConstants.MESSAGE_RECEIVER_STOP_TYPING_DETECTION_MESSAGE, "STOP TYPING DETECTION");
+
+            mExecutorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    stopService(mKeydetectorIntent);
+                }
+            });
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_START_MEASUREMENT)) {
@@ -114,7 +134,14 @@ public class MessageReceiverService extends WearableListenerService {
             editor.commit();
 
             //start service
-            startService(mAuthenticatorIntent);
+
+            mExecutorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    startService(mAuthenticatorIntent);
+                }
+            });
+
             //UpdatedUI
             sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "Collecting Data");
 
@@ -129,7 +156,12 @@ public class MessageReceiverService extends WearableListenerService {
             sendResult(AppConstants.MESSAGE_RECEIVER_RESULT, AppConstants.MESSAGE_RECEIVER_MESSAGE, "DISCONNECTED");
 
             //stopservice
-            stopService(mAuthenticatorIntent);
+            mExecutorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    stopService(mAuthenticatorIntent);
+                }
+            });
         }
 
         if (messageEvent.getPath().equals(AppConstants.CLIENT_PATH_LISTEN_TO_SOUND)) {

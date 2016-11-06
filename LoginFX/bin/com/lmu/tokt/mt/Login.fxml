@@ -12,11 +12,11 @@
 
 <BorderPane fx:id="root" minHeight="600.0" minWidth="800.0" prefHeight="768.0" prefWidth="1024.0" style="-fx-background-color: #757575;" styleClass="authenticator-bg" stylesheets="@application.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lmu.tokt.mt.LoginController">
 	<center>
-		<AnchorPane fx:id="anchorPaneContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="525.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+		<AnchorPane fx:id="anchorPaneContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="600.0" BorderPane.alignment="CENTER">
 			<children>
 				<AnchorPane fx:id="anchorPaneLogin" prefWidth="600.0">
 					<children>
-						<VBox alignment="CENTER" layoutX="150.0" layoutY="7.0" prefWidth="325.0">
+						<VBox alignment="CENTER" layoutX="124.0" layoutY="14.0" onMouseEntered="#onAuthenticatorBoxMouseEntered" prefWidth="325.0">
 							<children>
 								<VBox alignment="CENTER" layoutX="207.0" layoutY="18.0" style="-fx-background-color: #ffffff22;" VBox.vgrow="ALWAYS">
 									<children>
@@ -128,23 +128,19 @@
       												</Label>
                                        </children>
                                     </HBox>
-												<AnchorPane>
+												<AnchorPane prefWidth="64.0">
 													<children>
-														<Button fx:id="btnConnectToWatch" alignment="CENTER" contentDisplay="CENTER" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectToWatchAction" prefHeight="28.0" prefWidth="28.0">
+														<Button fx:id="btnConnectToWatch" alignment="CENTER" contentDisplay="CENTER" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onConnectToWatchAction" prefHeight="24.0" prefWidth="64.0" styleClass="rectangle-dark-grey-btn" text="Connect" textFill="WHITE">
 															<font>
-																<Font name="Helvetica Neue" size="12.0" />
+																<Font name="Helvetica Neue Light" size="12.0" />
 															</font>
-                                             <styleClass>
-                                                <String fx:value="round-dark-gray-btn" />
-                                                <String fx:value="connect-icon" />
-                                             </styleClass>
 														</Button>
-														<ImageView fx:id="imgConnectedToWatchSuccess" fitHeight="24.0" fitWidth="24.0" layoutX="2.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" visible="false">
+														<ImageView fx:id="imgConnectedToWatchSuccess" fitHeight="24.0" fitWidth="24.0" layoutX="20.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" visible="false">
 															<image>
 																<Image url="@../../../../drawable/icons/success/success_grey.png" />
 															</image>
 														</ImageView>
-														<ImageView fx:id="imgCancelConnectToWatch" fitHeight="24.0" fitWidth="24.0" layoutX="2.0" layoutY="8.0" onMouseClicked="#onCancelConnectToWatchClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+														<ImageView fx:id="imgCancelConnectToWatch" fitHeight="24.0" fitWidth="24.0" layoutX="20.0" layoutY="7.0" onMouseClicked="#onCancelConnectToWatchClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
 															<image>
 																<Image url="@../../../../drawable/icons/actions/cancel_gray.png" />
 															</image>
@@ -190,33 +186,24 @@
       														<Font name="Helvetica Neue" size="14.0" />
       													</font>
       												</Label>
-                                          <Label prefWidth="200.0" text="(Open authenticator app on watch)" textFill="#9e9e9e">
-                                             <font>
-                                                <Font name="Helvetica Neue" size="10.0" />
-                                             </font>
-                                          </Label>
                                        </children>
                                        <HBox.margin>
                                           <Insets right="8.0" />
                                        </HBox.margin>
                                     </VBox>
-												<AnchorPane>
+												<AnchorPane prefWidth="64.0">
 													<children>
-														<Button fx:id="btnStartTypingDetector" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onStartTypingDetectorAction" prefHeight="28.0" prefWidth="28.0">
+														<Button fx:id="btnStartTypingDetector" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onStartTypingDetectorAction" prefHeight="24.0" prefWidth="64.0" styleClass="rectangle-dark-grey-btn" text="Start" textFill="WHITE">
 															<font>
 																<Font name="Helvetica Neue" size="12.0" />
 															</font>
-                                             <styleClass>
-                                                <String fx:value="round-dark-gray-btn" />
-                                                <String fx:value="start-icon" />
-                                             </styleClass>
 														</Button>
-														<ImageView fx:id="imgStartingKeyDetectorSuccess" fitHeight="24.0" fitWidth="24.0" layoutX="2.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" visible="false">
+														<ImageView fx:id="imgStartingKeyDetectorSuccess" fitHeight="24.0" fitWidth="24.0" layoutX="20.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" visible="false">
 															<image>
 																<Image url="@../../../../drawable/icons/success/success_grey.png" />
 															</image>
 														</ImageView>
-														<ImageView fx:id="imgCancelStartKeyDetection" fitHeight="24.0" fitWidth="24.0" layoutX="2.0" layoutY="8.0" onMouseClicked="#onCancelStartKeyDetectionClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
+														<ImageView fx:id="imgCancelStartKeyDetection" fitHeight="24.0" fitWidth="24.0" layoutX="20.0" layoutY="7.0" onMouseClicked="#onCancelStartKeyDetectionClicked" pickOnBounds="true" preserveRatio="true" styleClass="hand-cursor" visible="false">
 															<image>
 																<Image url="@../../../../drawable/icons/actions/cancel_gray.png" />
 															</image>
@@ -262,21 +249,17 @@
       												</AnchorPane>
                                        </children>
                                     </HBox>
-												<AnchorPane layoutX="410.0" layoutY="327.0">
+												<AnchorPane prefWidth="64.0">
 													<children>
-														<ImageView fx:id="imgPasswordCorrect" fitHeight="24.0" fitWidth="24.0" layoutX="2.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" visible="false">
+														<ImageView fx:id="imgPasswordCorrect" fitHeight="24.0" fitWidth="24.0" layoutX="22.0" layoutY="7.0" pickOnBounds="true" preserveRatio="true" visible="false">
 															<image>
 																<Image url="@../../../../drawable/icons/success/success_grey.png" />
 															</image>
 														</ImageView>
-														<Button fx:id="btnLogin" disable="true" layoutY="4.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginAction" prefHeight="28.0" prefWidth="28.0">
+														<Button fx:id="btnLogin" disable="true" layoutY="6.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#btnLoginAction" prefHeight="24.0" prefWidth="64.0" styleClass="rectangle-dark-grey-btn" text="Login" textFill="WHITE">
 															<font>
-																<Font name="Helvetica Neue" size="14.0" />
+																<Font name="Helvetica Neue Light" size="12.0" />
 															</font>
-                                             <styleClass>
-                                                <String fx:value="round-dark-gray-btn" />
-                                                <String fx:value="login-icon" />
-                                             </styleClass>
 														</Button>
 													</children>
                                        <HBox.margin>
@@ -302,8 +285,8 @@
                                  <children>
 														<AnchorPane>
 															<children>
-																<ProgressIndicator fx:id="progressHeartrateDetection" layoutX="45.0" layoutY="1.0" prefHeight="18.0" prefWidth="18.0" visible="false" />
-																<ImageView fx:id="imgHeartBeat" fitHeight="20.0" fitWidth="20.0" layoutX="44.0" pickOnBounds="true">
+																<ProgressIndicator fx:id="progressHeartrateDetection" layoutX="50.0" layoutY="1.0" prefHeight="18.0" prefWidth="18.0" visible="false" />
+																<ImageView fx:id="imgHeartBeat" fitHeight="20.0" fitWidth="20.0" layoutX="49.0" pickOnBounds="true">
 																	<image>
 																		<Image url="@../../../../drawable/icons/heart/heart_grey_1.png" />
 																	</image>
@@ -343,8 +326,8 @@
                                  <children>
                                     <AnchorPane>
                                        <children>
-                                          <ProgressIndicator fx:id="progressProximity" layoutX="45.0" layoutY="1.0" prefHeight="18.0" prefWidth="18.0" visible="false" />
-      														<ImageView fx:id="imgProximity" fitHeight="20.0" fitWidth="20.0" layoutX="44.0" pickOnBounds="true">
+                                          <ProgressIndicator fx:id="progressProximity" layoutX="50.0" layoutY="1.0" prefHeight="18.0" prefWidth="18.0" visible="false" />
+      														<ImageView fx:id="imgProximity" fitHeight="20.0" fitWidth="20.0" layoutX="49.0" pickOnBounds="true">
       															<image>
       																<Image url="@../../../../drawable/icons/signal/signal_grey_1.png" />
       															</image>
@@ -413,7 +396,7 @@
                               <Insets bottom="8.0" top="16.0" />
                            </padding>
                         </HBox>
-                        <HBox alignment="CENTER" prefHeight="28.0" style="-fx-background-color: #616161aa;">
+                        <HBox fx:id="hboxInfobox" alignment="CENTER" prefHeight="28.0" style="-fx-background-color: #616161aa;">
                            <children>
                               <Label fx:id="lblInformation" text="-" textFill="WHITE" HBox.hgrow="ALWAYS">
                                  <font>

@@ -349,8 +349,8 @@ public class TCPServer extends Thread {
 			System.out.println("I/" + TAG + ": last HEART BEAT time ago:" + timeAgo);
 
 			//Moto sport
-			//if (timeAgo > 30000) {
-			if (timeAgo > 12000) {
+			if (timeAgo > 30000) {
+			//if (timeAgo > 12000) {
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "NO HEARTBEAT");
 				isHeartBeating = false;
 			}

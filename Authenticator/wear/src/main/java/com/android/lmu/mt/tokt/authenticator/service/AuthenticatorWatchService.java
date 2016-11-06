@@ -128,9 +128,9 @@ public class AuthenticatorWatchService extends Service
 
     private void resetMainUIValue() {
         sendResult(AppConstants.SENSOR_HEART_RATE_RESULT, AppConstants.SENSOR_HEART_RATE_MESSAGE,
-                "0.0");
+                "-");
         sendResult(AppConstants.SENSOR_STEP_COUNT_RESULT, AppConstants.SENSOR_STEP_COUNT_MESSAGE,
-                "0.0");
+                "-");
         sendResultToMainUI(AppConstants.BEACON_RESULT, AppConstants.BEACON_MESSAGE, "-");
         sendResult(AppConstants.MESSAGE_RECEIVER_LOCK_RESULT, AppConstants.MESSAGE_RECEIVER_LOCK_MESSAGE, "-");
         sendResultToMainUI(AppConstants.BEACON_IDENTIFIER_RESULT, AppConstants.BEACON_IDENTIFIER_MESSAGE, "");
@@ -161,12 +161,16 @@ public class AuthenticatorWatchService extends Service
         //update Watch UI
         switch (type) {
             case AppConstants.SENSOR_TYPE_HEART_RATE:
-                sendResult(AppConstants.SENSOR_HEART_RATE_RESULT, AppConstants.SENSOR_HEART_RATE_MESSAGE,
-                        Arrays.toString(sensorEvent.values));
+                if (sensorEvent.values[0] > 0) {
+                    sendResult(AppConstants.SENSOR_HEART_RATE_RESULT, AppConstants.SENSOR_HEART_RATE_MESSAGE,
+                            Arrays.toString(sensorEvent.values));
+                }
                 break;
             case AppConstants.SENSOR_TYPE_STEP_COUNTER:
-                sendResult(AppConstants.SENSOR_STEP_COUNT_RESULT, AppConstants.SENSOR_STEP_COUNT_MESSAGE,
-                        Arrays.toString(sensorEvent.values));
+                if (sensorEvent.values[0] > 0) {
+                    sendResult(AppConstants.SENSOR_STEP_COUNT_RESULT, AppConstants.SENSOR_STEP_COUNT_MESSAGE,
+                            Arrays.toString(sensorEvent.values));
+                }
                 break;
         }
 
@@ -303,12 +307,12 @@ public class AuthenticatorWatchService extends Service
             if (mHeartRateSensor != null) {
 
                 //moto360 sport
-                //final int measurementDuration = 20;   // Seconds
-                //final int measurementBreak = 2;    // Seconds
+                final int measurementDuration = 20;   // Seconds
+                final int measurementBreak = 2;    // Seconds
 
                 //moto 360
-                final int measurementDuration = 8;   // Seconds
-                final int measurementBreak = 1;    // Seconds
+                // final int measurementDuration = 8;   // Seconds
+                // final int measurementBreak = 1;    // Seconds
 
                 mScheduler = Executors.newScheduledThreadPool(1);
                 mScheduler.scheduleAtFixedRate(
