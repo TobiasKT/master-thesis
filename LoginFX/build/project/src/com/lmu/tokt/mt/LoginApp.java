@@ -57,7 +57,7 @@ public class LoginApp extends Application {
 				openMainApp(primaryStage, false);
 			}
 		} catch (Exception e) {
-			System.out.println(TAG + ": ERROR loading primary stage. Exception: " + e.toString());
+			System.out.println(TAG + ": ERROR loading primary stage.Exception: " + e.toString());
 			e.printStackTrace();
 		}
 
@@ -89,7 +89,6 @@ public class LoginApp extends Application {
 
 			@Override
 			public void handle(WindowEvent event) {
-				System.out.println(TAG + ": handling close Event");
 				Alert alert = new Alert(AlertType.NONE);
 				alert.setTitle("Confirmation - Close Application");
 				alert.setContentText("Do you want do close the \nAuthenticator application?");
@@ -105,7 +104,7 @@ public class LoginApp extends Application {
 						mLoginModel.updateLastLoggedInUser(LoginUtil.getInstance().getUsername());
 					} catch (SQLException e) {
 						System.out.println(
-								TAG + ": ERROR updatating" + " last logged in user. Exception: " + e.toString());
+								TAG + ": ERROR updatating" + " last logged in user.Exception: " + e.toString());
 					}
 					// stop server
 					LoginController.getInstance().getTCPServer().interrupt();
@@ -128,8 +127,9 @@ public class LoginApp extends Application {
 
 	@Override
 	public void stop() throws Exception {
-		super.stop();
 		System.out.println(TAG + ": stop application");
+		super.stop();
+
 	}
 
 	public Stage getStage() {

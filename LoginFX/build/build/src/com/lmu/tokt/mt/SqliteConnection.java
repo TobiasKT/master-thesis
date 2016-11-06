@@ -12,7 +12,7 @@ public class SqliteConnection {
 		try {
 			Class.forName("org.sqlite.JDBC");
 			Connection connection = DriverManager.getConnection("jdbc:sqlite:Authenticator.sqlite");
-			System.out.println(TAG + ": Getting DB connection successful");
+			//System.out.println(TAG + ": Getting DB connection successful");
 			return connection;
 		} catch (Exception e) {
 			System.out.println(TAG + ": ERROR getting DB connection. Exception: " + e.toString());

@@ -33,6 +33,16 @@
 	 -fx-background-image: url("../../../../drawable/icons/actions/play_white.png");
 }
 
+.rectangle-dark-grey-btn{
+	-fx-background-color: #424242;
+    -fx-background-radius: 2;
+}
+
+.rectangle-dark-grey-btn:hover{
+	-fx-background-color: #424242CC;
+    -fx-cursor: hand;
+}
+
 .hand-cursor:hover{
 	-fx-cursor: hand;
 }

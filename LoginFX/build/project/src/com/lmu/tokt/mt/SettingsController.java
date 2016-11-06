@@ -149,7 +149,8 @@ public class SettingsController implements Initializable {
 			LoginController.getInstance().getServerPort().setText("" + port);
 			mLoginModel.updateServerPort(port);
 		} catch (SQLException e) {
-			System.out.println(TAG + ": SQL ERROR updating server port in DB. Exception: " + e.toString());
+			// System.out.println(TAG + ": SQL ERROR updating server port in DB.
+			// Exception: " + e.toString());
 		}
 	}
 
@@ -178,7 +179,8 @@ public class SettingsController implements Initializable {
 					BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT, BackgroundSize.DEFAULT);
 			LoginController.getInstance().getRoot().setBackground(new Background(myBI));
 		} catch (FileNotFoundException e) {
-			System.out.println(TAG + ": FILE NOT FOUND ERROR updating background image. Exception: " + e.toString());
+			// System.out.println(TAG + ": FILE NOT FOUND ERROR updating
+			// background image. Exception: " + e.toString());
 		}
 
 	}
@@ -192,7 +194,8 @@ public class SettingsController implements Initializable {
 			LoginController.getInstance().getAvatarCircle().setFill(new ImagePattern(img));
 
 		} catch (FileNotFoundException e) {
-			System.out.println(TAG + ": FILE NOT FOUND ERROR updating avater image. Exception: " + e.toString());
+			// System.out.println(TAG + ": FILE NOT FOUND ERROR updating avater
+			// image. Exception: " + e.toString());
 		}
 
 	}
@@ -202,7 +205,8 @@ public class SettingsController implements Initializable {
 		try {
 			mLoginModel.updateImageInDBSucceeded("Tobias Keinath", file, dbField);
 		} catch (SQLException e) {
-			System.out.println(TAG + ": SQL ERROR updating image in DB (" + dbField + "). Exception: " + e.toString());
+			// System.out.println(TAG + ": SQL ERROR updating image in DB (" +
+			// dbField + "). Exception: " + e.toString());
 		}
 
 	}
@@ -215,7 +219,8 @@ public class SettingsController implements Initializable {
 			lblServerIp.setText(ip.getHostAddress());
 			System.out.println(TAG + ": Current ip address : " + ip.getHostAddress());
 		} catch (UnknownHostException e) {
-			System.out.println(TAG + ": ERROR getting public ip. Exception: " + e.toString());
+			// System.out.println(TAG + ": ERROR getting public ip. Exception: "
+			// + e.toString());
 
 		}
 	}
@@ -226,7 +231,8 @@ public class SettingsController implements Initializable {
 			int port = mLoginModel.getServerPort();
 			editServerPort.setText("" + port);
 		} catch (SQLException e) {
-			System.out.println(TAG + ": ERROR getting server port from DB. Exception: " + e.toString());
+			// System.out.println(TAG + ": ERROR getting server port from DB.
+			// Exception: " + e.toString());
 		}
 	}
 

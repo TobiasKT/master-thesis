@@ -53,10 +53,10 @@ public class LoginModel {
 			resulsSet = preparedStatement.executeQuery();
 
 			if (resulsSet.next()) {
-				System.out.println(TAG + ": Credentials CORRECT.");
+				//System.out.println(TAG + ": Credentials CORRECT.");
 				return true;
 			} else {
-				System.out.println(TAG + ": Credentials INCORRECT.");
+				//System.out.println(TAG + ": Credentials INCORRECT.");
 				return false;
 			}
 
@@ -83,7 +83,7 @@ public class LoginModel {
 			preparedStatement.setString(1, username);
 			preparedStatement.setString(2, password);
 			preparedStatement.executeUpdate();
-			System.out.println(TAG + ": Register new user in DB successful");
+			//System.out.println(TAG + ": Register new user in DB successful");
 			return true;
 
 		} catch (SQLException sql) {
@@ -117,7 +117,7 @@ public class LoginModel {
 			fis = new FileInputStream(file);
 			preparedStatement.setBinaryStream(1, fis, (int) file.length());
 			preparedStatement.executeUpdate();
-			System.out.println(TAG + ": Saving image to User (" + dbField + ") in DB successful!");
+			//System.out.println(TAG + ": Saving image to User (" + dbField + ") in DB successful!");
 			return true;
 		} catch (SQLException e) {
 			System.out.println(TAG + ": SQL ERROR saving image to User (" + dbField + "). Exception: " + e.toString());
@@ -140,7 +140,7 @@ public class LoginModel {
 		} else if (imageType == AppConstants.IMAGE_TYPE_AVATAR) {
 			dbField = AppConstants.DB_FIELD_AVATAR;
 		} else {
-			System.out.println(TAG + ": INVALID imageType in readImageFromDB");
+			//System.out.println(TAG + ": INVALID imageType in readImageFromDB");
 			return null;
 		}
 
@@ -160,15 +160,15 @@ public class LoginModel {
 				if (blob != null) {
 					input = new ByteArrayInputStream(blob);
 					BufferedImage image = ImageIO.read(input);
-					System.out.println(TAG + ": Reading blob (" + dbField + ") from DB successful");
+					//System.out.println(TAG + ": Reading blob (" + dbField + ") from DB successful");
 					return image;
 				} else {
-					System.out.println(TAG + ": NO blob (" + dbField + ") found in DB");
+					//System.out.println(TAG + ": NO blob (" + dbField + ") found in DB");
 					return null;
 				}
 
 			} else {
-				System.out.println(TAG + ": NO blob (" + dbField + ") found in DB");
+				//System.out.println(TAG + ": NO blob (" + dbField + ") found in DB");
 				return null;
 			}
 
@@ -197,7 +197,7 @@ public class LoginModel {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setString(1, username);
 			preparedStatement.executeUpdate();
-			System.out.println(TAG + ": Saving last logged in user in DB successful");
+			//System.out.println(TAG + ": Saving last logged in user in DB successful");
 			return true;
 		} catch (SQLException e) {
 			System.out.println(TAG + ": ERROR saving last logged in user in DB. Exception: " + e.toString());
@@ -219,10 +219,10 @@ public class LoginModel {
 			resultSet = preparedStatement.executeQuery();
 
 			if (resultSet.next()) {
-				System.out.println(TAG + ": Getting last logged in user from DB successful");
+				//System.out.println(TAG + ": Getting last logged in user from DB successful");
 				return resultSet.getString(1);
 			} else {
-				System.out.println(TAG + ": No last logged in User");
+				//System.out.println(TAG + ": No last logged in User");
 				return null;
 			}
 		} catch (SQLException e) {
@@ -244,10 +244,10 @@ public class LoginModel {
 			resultSet = preparedStatement.executeQuery();
 
 			if (resultSet.next()) {
-				System.out.println(TAG + ": Getting first user from DB successful");
+				//System.out.println(TAG + ": Getting first user from DB successful");
 				return resultSet.getString(1);
 			} else {
-				System.out.println(TAG + ": No user registered");
+				//System.out.println(TAG + ": No user registered");
 				return null;
 			}
 		} catch (SQLException e) {
@@ -268,11 +268,11 @@ public class LoginModel {
 			resultSet = preparedStatement.executeQuery();
 
 			if (resultSet.next()) {
-				System.out.println(TAG + ": Getting server port from DB successful");
+				//System.out.println(TAG + ": Getting server port from DB successful");
 				return resultSet.getInt(1);
 			} else {
-				System.out.println(TAG + ": NO svaed server port in DB. Return default port ("
-						+ AppConstants.DEFAULT_SERVER_PORT + ")");
+				//System.out.println(TAG + ": NO svaed server port in DB. Return default port ("
+					//	+ AppConstants.DEFAULT_SERVER_PORT + ")");
 				return AppConstants.DEFAULT_SERVER_PORT;
 			}
 		} catch (SQLException e) {
@@ -291,7 +291,7 @@ public class LoginModel {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setInt(1, port);
 			preparedStatement.executeUpdate();
-			System.out.println(TAG + ": Saving server port in DB successful");
+			//System.out.println(TAG + ": Saving server port in DB successful");
 			return true;
 		} catch (SQLException e) {
 			System.out.println(TAG + ": ERROR saving server port in DB. Exception: " + e.toString());
@@ -310,7 +310,7 @@ public class LoginModel {
 			preparedStatement = connection.prepareStatement(query);
 			preparedStatement.setInt(1, state);
 			preparedStatement.executeUpdate();
-			System.out.println(TAG + ": Saving didIntro in DB successful");
+			//System.out.println(TAG + ": Saving didIntro in DB successful");
 			return true;
 		} catch (SQLException e) {
 			System.out.println(TAG + ": ERROR saving didIntro state in DB. Exception: " + e.toString());
@@ -331,10 +331,10 @@ public class LoginModel {
 			resultSet = preparedStatement.executeQuery();
 
 			if (resultSet.next()) {
-				System.out.println(TAG + ": Getting didIntro state from DB successful");
+				//System.out.println(TAG + ": Getting didIntro state from DB successful");
 				return resultSet.getInt(1);
 			} else {
-				System.out.println(TAG + ": NO saved didIntro state in DB. Return default state (" + 0 + ")");
+				//System.out.println(TAG + ": NO saved didIntro state in DB. Return default state (" + 0 + ")");
 				return 0;
 			}
 		} catch (SQLException e) {

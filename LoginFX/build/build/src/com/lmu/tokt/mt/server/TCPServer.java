@@ -10,6 +10,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -50,10 +54,14 @@ public class TCPServer extends Thread {
 	private long mLastStepCountTimeStamp = 0;
 	private long mLastProximityImmediateNearTimestamp = 0;
 
+	private long mLastSensorData = 0;
+
 	private float mLastStepCount = 0;
 
 	private boolean isAuthenticated = false;
 	private boolean isLocked = true;
+
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
 	/* ------ Constructors ------- */
 
@@ -73,7 +81,6 @@ public class TCPServer extends Thread {
 	}
 
 	public void startRunning() {
-
 		mServerIsRunning = true;
 
 		if (mMessageListener != null) {
@@ -88,21 +95,22 @@ public class TCPServer extends Thread {
 					setupStreams();
 					whileDataExchange();
 				}
-				System.out.println(TAG + ": server STOPPED");
+				// System.out.println(TAG + ": server STOPPED");
 			} catch (EOFException eof) {
-				System.out.println(TAG + ": server ENDED the connection ");
+				// System.out.println(TAG + ": server ENDED the connection ");
 			} finally {
 				if (mServerIsRunning) {
 					closeConnection();
 				}
 			}
 		} catch (IOException ioe) {
-			System.out.println(TAG + ": IO ERROR startRunning(). Exception: " + ioe.toString());
+			// System.out.println(TAG + ": IO ERROR startRunning(). Exception: "
+			// + ioe.toString());
 		}
 	}
 
 	public void stopRunning() {
-		System.out.println(TAG + ": Server stopped!");
+		// System.out.println(TAG + ": Server stopped!");
 		closeConnection();
 		mDataExchangeIsRunning = false;
 		mIsConnectedToWatch = false;
@@ -115,8 +123,10 @@ public class TCPServer extends Thread {
 
 		try {
 			mConnection = mServer.accept();
-			System.out.println(
-					TAG + ": CLIENT connected to " + mConnection.getInetAddress().getHostAddress() + ":" + SERVER_PORT);
+			// System.out.println(
+			// TAG + ": CLIENT connected to " +
+			// mConnection.getInetAddress().getHostAddress() + ":" +
+			// SERVER_PORT);
 			mDataExchangeIsRunning = true;
 
 		} catch (IOException ioe) {
@@ -131,7 +141,7 @@ public class TCPServer extends Thread {
 		mOutput.flush();
 
 		mInput = new BufferedReader(new InputStreamReader(mConnection.getInputStream(), "UTF-8"));
-		System.out.println(TAG + ": streams are nset up successfully");
+		// System.out.println(TAG + ": streams are nset up successfully");
 	}
 
 	private synchronized void whileDataExchange() throws IOException {
@@ -139,7 +149,8 @@ public class TCPServer extends Thread {
 		if (!mIsConnectedToWatch) {
 			// send ConfirmConnectionRequest
 			sendMessage(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM + ":" + mChecksum.getChecksum());
-			System.out.println(TAG + ": confirmation Request to client with: " + mChecksum.getChecksum());
+			// System.out.println(TAG + ": confirmation Request to client with:
+			// " + mChecksum.getChecksum());
 		}
 
 		while (mDataExchangeIsRunning) {
@@ -150,7 +161,8 @@ public class TCPServer extends Thread {
 
 				// confirm connection
 				if (mIncomingMessage.contains(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_CONFIRM)) {
-					System.out.println(TAG + ":message COMMAND_PHONE_WATCH_CONNECTION_CONFIRM");
+					// System.out.println(TAG + ":message
+					// COMMAND_PHONE_WATCH_CONNECTION_CONFIRM");
 
 					int receivedChecksum = Integer.parseInt(mIncomingMessage.split(":")[1]);
 					if (receivedChecksum == mChecksum.getChecksum()) {
@@ -168,7 +180,8 @@ public class TCPServer extends Thread {
 				}
 
 				if (mIncomingMessage.contains(AppConstants.COMMAND_PHONE_WATCH_CONNECTION_DENY)) {
-					System.out.println(TAG + ":message COMMAND_PHONE_WATCH_CONNECTION_DENY");
+					// System.out.println(TAG + ":message
+					// COMMAND_PHONE_WATCH_CONNECTION_DENY");
 					resetValues(true);
 					mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED,
 							"Confirmation on phone denied!");
@@ -183,6 +196,12 @@ public class TCPServer extends Thread {
 				if (mIncomingMessage.contains(AppConstants.SENSORDATA)) {
 					String data = mIncomingMessage.split("::")[1];
 					unpackSensorData(data);
+
+					if (mLastSensorData == 0) {
+						//checkSensorDataEvery(60);
+					}
+					mLastSensorData = System.currentTimeMillis();
+
 				}
 
 				if (mIncomingMessage.equals(AppConstants.COMMAND_USER_AUTHENTICATED)) {
@@ -219,7 +238,7 @@ public class TCPServer extends Thread {
 			mIncomingMessage = null;
 		}
 
-		System.out.println(TAG + ": Data exchange stopped!");
+		// System.out.println(TAG + ": Data exchange stopped!");
 
 	}
 
@@ -274,17 +293,20 @@ public class TCPServer extends Thread {
 				validateBeacon(name, type, accuracy, timestamp, values);
 			}
 		} catch (ParseException e) {
-			System.out.println(TAG + ": PARSE ERROR unpacking sensor data. Exception: " + e.toString());
+			// System.out.println(TAG + ": PARSE ERROR unpacking sensor data.
+			// Exception: " + e.toString());
 		}
 	}
 
 	private void validateHeartRate(String name, int type, int accuracy, long timestamp, float[] values) {
 
-		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
+		// System.out.println(TAG + ": " + name + " (" + type + "), values [" +
+		// Arrays.toString(values) + "]");
 
 		float heartrate = values[0];
 		if (heartrate > 30 && heartrate < 230) {
-			System.out.println("E/" + TAG + ": New HEARTRATE [" + heartrate + "]");
+			// System.out.println("E/" + TAG + ": New HEARTRATE [" + heartrate +
+			// "]");
 			mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_BEATING, "" + heartrate);
 			mLastHeartrateTimestamp = System.currentTimeMillis();
 			isHeartBeating = true;
@@ -293,15 +315,17 @@ public class TCPServer extends Thread {
 
 	private void validateStepCount(String name, int type, int accuracy, long timestamp, float[] values) {
 
-		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
+		// System.out.println(TAG + ": " + name + " (" + type + "), values [" +
+		// Arrays.toString(values) + "]");
 
 		float stepCount = values[0];
 		double stepCountGap = stepCount - mLastStepCount;
 
-		System.out.println(TAG + ": stepgap " + stepCountGap);
+		// System.out.println(TAG + ": stepgap " + stepCountGap);
 
 		if (stepCount > mLastStepCount) {
-			System.out.println("E/" + TAG + ": New step count [" + stepCount + "]");
+			// System.out.println("E/" + TAG + ": New step count [" + stepCount
+			// + "]");
 			mLastStepCount = stepCount;
 			if (stepCountGap <= 2) {
 				mLastStepCountTimeStamp = System.currentTimeMillis();
@@ -310,11 +334,11 @@ public class TCPServer extends Thread {
 	}
 
 	private int mIsFarCounter = 0;
-	private long mLastBeaconValueTimeStamp;
 
 	private void validateBeacon(String name, int type, int accuracy, long timestamp, float[] values) {
 
-		System.out.println(TAG + ": " + name + " (" + type + "), values [" + Arrays.toString(values) + "]");
+		// System.out.println(TAG + ": " + name + " (" + type + "), values [" +
+		// Arrays.toString(values) + "]");
 
 		String proximityString = "undefined";
 
@@ -322,18 +346,12 @@ public class TCPServer extends Thread {
 		if (rssi >= -85) {
 			proximityString = AppConstants.PROXIMITY_NEAR;
 			mLastProximityImmediateNearTimestamp = System.currentTimeMillis();
-			mLastBeaconValueTimeStamp = System.currentTimeMillis();
 			mIsFarCounter = 0;
-			System.out.println(TAG + ": far counter - " + mIsFarCounter);
+			// System.out.println(TAG + ": far counter - " + mIsFarCounter);
 		} else if (rssi < -85) {
 			mIsFarCounter++;
-			System.out.println(TAG + ": far counter - " + mIsFarCounter);
-			mLastBeaconValueTimeStamp = System.currentTimeMillis();
+			// System.out.println(TAG + ": far counter - " + mIsFarCounter);
 			proximityString = AppConstants.PROXIMITY_FAR;
-		}
-		
-		if(!isAuthenticated){
-			mLastBeaconValueTimeStamp = 0;
 		}
 
 		mMessageListener.callbackMessageReceiver(AppConstants.STATE_PROXIMITY_DETECTED, proximityString);
@@ -346,11 +364,12 @@ public class TCPServer extends Thread {
 
 			long timeAgo = getTimeAgo(mLastHeartrateTimestamp);
 
-			System.out.println("I/" + TAG + ": last HEART BEAT time ago:" + timeAgo);
+			// System.out.println("I/" + TAG + ": last HEART BEAT time ago:" +
+			// timeAgo);
 
-			//Moto sport
-			if (timeAgo > 30000) {
-			//if (timeAgo > 12000) {
+			// Moto sport
+			// if (timeAgo > 30000) {
+			if (timeAgo > 12000) {
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_HEART_STOPPED, "NO HEARTBEAT");
 				isHeartBeating = false;
 			}
@@ -366,7 +385,8 @@ public class TCPServer extends Thread {
 
 			long timeAgo = getTimeAgo(mLastStepCountTimeStamp);
 
-			System.out.println("I/ " + TAG + ": last STEP COUNT time ago:" + timeAgo);
+			// System.out.println("I/ " + TAG + ": last STEP COUNT time ago:" +
+			// timeAgo);
 
 			if (timeAgo > 3000) {
 
@@ -380,7 +400,8 @@ public class TCPServer extends Thread {
 					long lastUserstate = getTimeAgo(mNEWUserStateTimeStamp);
 
 					if (lastUserstate < 4500) {
-						System.out.println(TAG + ": LAST USER STATE (walking): " + lastUserstate);
+						// System.out.println(TAG + ": LAST USER STATE
+						// (walking): " + lastUserstate);
 						return;
 					}
 				}
@@ -400,10 +421,12 @@ public class TCPServer extends Thread {
 		if (mLastProximityImmediateNearTimestamp != 0) {
 
 			long timeAgo = getTimeAgo(mLastProximityImmediateNearTimestamp);
-			System.out.println("I/ " + TAG + ": last PROXIMTIY IMMEDIATE/NEARtime ago:" + timeAgo);
+			// System.out.println("I/ " + TAG + ": last PROXIMTIY
+			// IMMEDIATE/NEARtime ago:" + timeAgo);
 
 			if (timeAgo > 2000 & mIsFarCounter >= 2) {
-				System.out.println(TAG + ": User is FAR (timeAgo: " + timeAgo + ", counter: " + mIsFarCounter + ")");
+				// System.out.println(TAG + ": User is FAR (timeAgo: " + timeAgo
+				// + ", counter: " + mIsFarCounter + ")");
 				mIsFarTimeStamp = System.currentTimeMillis();
 				isFar = true;
 			} else {
@@ -412,11 +435,13 @@ public class TCPServer extends Thread {
 					long isFarTimeAgo = getTimeAgo(mIsFarTimeStamp);
 
 					if (isFarTimeAgo < 2000) {
-						System.out.println(TAG + ": last far time ago: " + isFarTimeAgo);
+						// System.out.println(TAG + ": last far time ago: " +
+						// isFarTimeAgo);
 						return;
 					}
 				}
-				System.out.println(TAG + ": User is NEAR (timeAgo: " + timeAgo + ", counter: " + mIsFarCounter + ")");
+				// System.out.println(TAG + ": User is NEAR (timeAgo: " +
+				// timeAgo + ", counter: " + mIsFarCounter + ")");
 				isFar = false;
 			}
 		}
@@ -435,7 +460,8 @@ public class TCPServer extends Thread {
 	private int getRandomNumber() {
 		Random rnd = new Random();
 		int number = rnd.nextInt(MAX - MIN) + MIN;
-		System.out.println(TAG + ": random number genereated (" + number + ")");
+		// System.out.println(TAG + ": random number genereated (" + number +
+		// ")");
 		return number;
 	}
 
@@ -443,48 +469,29 @@ public class TCPServer extends Thread {
 
 		// autenticate again, re enter password
 		if (!isHeartBeating && mLastHeartrateTimestamp != 0) {
-			System.out.println(TAG + ": LOGOUT user & lock screen (no heartrate)");
+			// System.out.println(TAG + ": LOGOUT user & lock screen (no
+			// heartrate)");
 			resetValues(false);
 			mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED,
 					"No Heart Rate! Not wearing a watch?");
 			sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
 
 			if (getRandomNumber() > 7) {
-				System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
+				// System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
 				mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED, "logout");
 			}
 		}
-		
-		// autenticate again, re enter password
-	/*	if(mLastBeaconValueTimeStamp != 0){
-			long timeAgo = getTimeAgo(mLastBeaconValueTimeStamp);
-			
-			if(timeAgo > 10000){
-				System.out.println(TAG + ": LOGOUT user & lock screen (no beacon signal)");
-				resetValues(false);
-				mMessageListener.callbackMessageReceiver(AppConstants.STATE_USER_NOT_AUTHENTICATED,
-						"No Beacon Signal! Beacon plugged in?");
-				sendMessage(AppConstants.COMMAND_USER_NOT_AUTHENTICATED);
-
-				if (getRandomNumber() > 7) {
-					System.out.println(TAG + ": show NOT AUTHENTICATED dialog");
-					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED, "logout");
-				}
-				
-				
-			}
-		}*/
 
 		// lock
 		if (isHeartBeating && (isWalking || isFar)) {
 			if (!isLocked) {
 				mMessageListener.callbackMessageReceiver(AppConstants.STATE_APP_LOCKED, "locked");
 				isLocked = true;
-				System.out.println(TAG + ": LOCK screen");
+				// System.out.println(TAG + ": LOCK screen");
 				sendMessage(AppConstants.COMMAND_LOCKED);
 
 				if (getRandomNumber() > 7) {
-					System.out.println(TAG + ": show LOCK dialog");
+					// System.out.println(TAG + ": show LOCK dialog");
 					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_LOCK, "lock");
 				}
 			}
@@ -499,7 +506,7 @@ public class TCPServer extends Thread {
 				sendMessage(AppConstants.COMMAND_UNLOCKED);
 
 				if (getRandomNumber() > 7) {
-					System.out.println(TAG + ": show UNLOCK dialog");
+					// System.out.println(TAG + ": show UNLOCK dialog");
 					mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_UNLOCK, "unlock");
 				}
 			}
@@ -507,13 +514,47 @@ public class TCPServer extends Thread {
 
 	}
 
+	private ScheduledFuture<?> checkerHandle;
+
+	public void checkSensorDataEvery(int seconds) {
+		final Runnable checker = new Runnable() {
+			public void run() {
+				if (mLastSensorData != 0) {
+					long timeAgo = getTimeAgo(mLastSensorData);
+
+					if (timeAgo > 60) {
+						// System.out.println(TAG + ": LOGOUT user & lock screen
+						// (no sensordata)");
+
+						mMessageListener.callbackMessageReceiver(AppConstants.STATE_PHONE_WATCH_DISCONNECTED,
+								"No Sensordata! Connection lost?");
+						sendMessage(AppConstants.COMMAND_PHONE_WATCH_DISCONNECT);
+
+						if (getRandomNumber() > 7) {
+							// System.out.println(TAG + ": show NO SENSODATA
+							// dialog");
+							mMessageListener.callbackMessageReceiver(AppConstants.DIALOG_EVENT_TYPE_NOT_AUTHENTICATED,
+									"disconnected");
+						}
+						resetValues(true);
+						stopRunning();
+					}
+				}
+			}
+		};
+		checkerHandle = scheduler.scheduleAtFixedRate(checker, 0, seconds, TimeUnit.SECONDS);
+
+		// checkerHandle.cancel(true);
+
+	}
+
 	public void resetValues(boolean disconnect) {
-		
+
 		if (disconnect) {
 			mIsConnectedToWatch = false;
 			mDataExchangeIsRunning = false;
 		}
-		
+
 		isAuthenticated = false;
 		isLocked = true;
 
@@ -529,7 +570,13 @@ public class TCPServer extends Thread {
 		mIsFarCounter = 0;
 		mNEWUserStateTimeStamp = 0;
 		mIsFarTimeStamp = 0;
-		mLastBeaconValueTimeStamp = 0;
+
+		mLastSensorData = 0;
+
+		if (checkerHandle != null) {
+			checkerHandle.cancel(true);
+		}
+
 	}
 
 	public boolean isConnected() {
